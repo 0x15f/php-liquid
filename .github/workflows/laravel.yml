@@ -1,0 +1,61 @@
+name: Laravel and Redis
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - laravel: '12'
+            testbench: '^10.0'
+          - laravel: '13'
+            testbench: '^11.0'
+    name: Laravel ${{ matrix.laravel }} / Redis
+    services:
+      redis:
+        image: redis:7.4-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, pdo_sqlite, redis, intl, dom, xml, xmlwriter
+          coverage: none
+      - run: composer require --dev 'orchestra/testbench:${{ matrix.testbench }}' -W --no-interaction --prefer-dist --no-progress
+      - run: vendor/bin/pest tests/Laravel
+        env:
+          LIQUID_REDIS_HOST: 127.0.0.1
+      - run: vendor/bin/phpstan analyse --no-progress
+
+  standalone:
+    runs-on: ubuntu-latest
+    name: Framework-free installation
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring
+          coverage: none
+      - name: Install as a production dependency
+        run: |
+          mkdir -p "$RUNNER_TEMP/liquid-consumer"
+          php -r 'file_put_contents(getenv("RUNNER_TEMP")."/liquid-consumer/composer.json", json_encode(["name"=>"example/consumer","repositories"=>[["type"=>"path","url"=>getcwd()]],"require"=>["0x15f/liquid"=>"@dev"],"minimum-stability"=>"dev","prefer-stable"=>true], JSON_PRETTY_PRINT));'
+          composer install --working-dir="$RUNNER_TEMP/liquid-consumer" --no-dev --no-interaction --prefer-dist
+          php tools/standalone-smoke.php "$RUNNER_TEMP/liquid-consumer/vendor/autoload.php"

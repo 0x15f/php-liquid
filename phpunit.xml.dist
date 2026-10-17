@@ -12,6 +12,9 @@
         <testsuite name="Integration">
             <directory>tests/Integration</directory>
         </testsuite>
+        <testsuite name="Laravel">
+            <directory>tests/Laravel</directory>
+        </testsuite>
     </testsuites>
     <logging>
         <junit outputFile="build/report.junit.xml"/>

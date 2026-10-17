@@ -13,3 +13,10 @@
 /art export-ignore
 /docs export-ignore
 /UPGRADING.md export-ignore
+/performance export-ignore
+/evaluation export-ignore
+/tools export-ignore
+/phpbench.json export-ignore
+/phpstan.neon export-ignore
+/phpstan-baseline.neon export-ignore
+/pint.json export-ignore

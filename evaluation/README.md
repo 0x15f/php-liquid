@@ -20,11 +20,11 @@ claimed for the derivative's hardening changes.
 
 The timing workload renders four upstream fixture pages using 29 templates, with
 fresh fixture objects and contexts. It excludes Laravel and database/network work.
-The warmup and alternating backend order are documented in ADOPTION.md. An initial
+Warmup and alternating backend order are implemented in `performance/review-render.php`. An initial
 PHPBench run was stopped because variance-triggered retries were unproductive;
 these numbers come from the bounded harness, not from that interrupted run.
 
-Use an isolated production-like host and actual PHP and Laravel workloads before
+Use an isolated production-like host and actual application workloads before
 making a PHP/native/WASM decision. A useful comparison must include all context
 encoding, host callbacks, output copies, and worker initialization that the chosen
 integration actually performs.

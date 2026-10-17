@@ -1,67 +1,72 @@
-# PHP Liquid for PHP and Laravel
+# PHP Liquid
 
-Experimental derivative of [Keepsuit PHP Liquid](https://github.com/keepsuit/php-liquid),
-based on upstream commit `95508eb821e8375ac1992bf9c00470fccc120e64`.
-Original MIT license and history are preserved. The PHP namespace remains
-`Keepsuit\Liquid`; the Composer package is `0x15f/liquid` and cannot be installed
-alongside `keepsuit/liquid`.
+Liquid templates for PHP and Laravel, with compiled PHP rendering, Redis-backed template caching and bounded data loading.
 
-This repository adds request output isolation, bounded work accounting for empty
-bodies, and Shopify reference fixes for variable shadowing, duplicate case matches,
-and bracket pseudo-property access. It is an evaluation package, not a claim of
-complete Shopify theme compatibility or production capacity.
+Derived from [Keepsuit PHP Liquid](https://github.com/keepsuit/php-liquid), preserving its MIT license and attribution. The Composer package is `0x15f/liquid`; the PHP namespace remains `Keepsuit\Liquid`. It replaces, and cannot be installed alongside, `keepsuit/liquid`.
 
-Read [the audit and adoption notes](ADOPTION.md) before integrating. Compilation is
-inherited from upstream development work; no performance speedup is claimed for
-this derivative without representative measurements.
+- Standalone PHP renderer with parsed, compiled and streaming backends.
+- Laravel package discovery, `.liquid` views, facade and deployment commands.
+- Local compiled PHP artifacts for OPcache, optionally backed by Redis or another Laravel cache store.
+- Request-scoped Laravel services and revision/tenant cache namespaces.
+- AST dependency hints and bounded collection providers for lazy batched data access.
 
-## Upstream documentation
+## Requirements and compatibility
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/keepsuit/liquid.svg?style=flat-square)](https://packagist.org/packages/keepsuit/liquid)
-[![Tests](https://img.shields.io/github/actions/workflow/status/keepsuit/php-liquid/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/keepsuit/liquid/actions/workflows/run-tests.yml)
-[![Total Downloads](https://img.shields.io/packagist/dt/keepsuit/liquid.svg?style=flat-square)](https://packagist.org/packages/keepsuit/liquid)
+PHP 8.2+ and mbstring. Laravel integration supports Laravel 12 and 13; framework packages are optional for standalone use. Laravel 13 requires PHP 8.3+. Redis uses Laravel's configured PhpRedis or Predis client.
 
-This is a PHP porting of the [Shopify Liquid template engine](https://github.com/Shopify/liquid).
-
-If you are using laravel, you can use the [laravel-liquid](https://github.com/keepsuit/laravel-liquid) package.
-
-Liquid is a template engine with interesting advantages:
-
-- It is easy to learn and has a simple syntax.
-- It is safe since it does not allow users to run insecure code on your server.
-- It is extensible, allowing you to add your own filters and tags.
-
-## Shopify Liquid version compatibility
-
-|    PHP Liquid | Shopify Liquid |
-| ------------: | -------------: |
-| v0.11 - v0.12 |          v5.13 |
-|         v0.10 |          v5.12 |
-|          v0.9 |           v5.8 |
-|          v0.8 |           v5.7 |
-|          v0.7 |           v5.6 |
-|   v0.1 - v0.6 |           v5.5 |
-
-#### Differences from Shopify Liquid
-
-- **Error Modes** are not implemented, the parsing is always strict.
-  Invalid syntax raises `SyntaxException` when parsed, independently of `strictVariables`,
-  `strictFilters`, and `rethrowErrors`. These options control rendering errors.
-  `lazyParsing` permits loading uncached partials during rendering; their syntax is still
-  parsed strictly, and errors then follow the rendering error handler or `rethrowErrors`.
-- `case` renders all matching `when` branches, as Shopify does. A `case` block
-  can contain at most one `else`, after its `when` sections; `else` before a
-  `when` or a `when` after `else` is a syntax error.
-- `size`, `first` and `last` pseudo-properties use dot notation. Bracket notation resolves actual keys.
-- `include` tag is not implemented because it is deprecated and can be replaced with `render`.
+The reference fixtures use Shopify Ruby Liquid 5.13. This library is not Shopify's hosted theme platform: platform objects, sections and money/translation/asset filters require application integrations. Parsing is strict; the deprecated `include` tag is unsupported (use `render`). See [adoption notes](ADOPTION.md) and [security guidance](SECURITY.md).
 
 ## Installation
 
-You can install the package via composer:
+Install directly from the public Git repository:
 
 ```bash
-composer require 0x15f/liquid:dev-main
+composer config repositories.liquid vcs https://github.com/0x15f/php-liquid
+composer require 0x15f/liquid:^0.1
 ```
+
+The VCS repository configuration works independently of Packagist registration.
+
+## Laravel quick start
+
+Package discovery registers the provider automatically. Create `resources/views/greeting.liquid`:
+
+```liquid
+<h1>Hello {{ name | escape }}!</h1>
+```
+
+```php
+return view('greeting', ['name' => 'Alex']);
+```
+
+Or use the facade:
+
+```php
+use Keepsuit\Liquid\Laravel\Facades\Liquid;
+
+echo Liquid::render('greeting', ['name' => 'Alex']);
+echo Liquid::renderString('Hello {{ name | escape }}', ['name' => 'Alex']);
+```
+
+Enable compiled templates with Redis as a shared parsed-template cache:
+
+```dotenv
+LIQUID_CACHE_DRIVER=compiled
+LIQUID_CACHE_STORE=redis
+LIQUID_CACHE_VERSION=release-1
+```
+
+```bash
+php artisan vendor:publish --tag=liquid-config
+php artisan liquid:cache greeting
+php artisan liquid:clear
+```
+
+Compiled PHP stays on local disk for OPcache; Redis stores parsed templates, not executable PHP. Set `LIQUID_CACHE_DRIVER=cache` for Redis-only parsed-template caching. [Laravel integration](LARAVEL.md) covers stores, invalidation, namespaces, extensions and worker lifecycle.
+
+## Performance and lazy data
+
+[Renderer comparisons](performance/comparison/REPORT.md) cover compiled PHP, native Rust and WASM. [Loading experiments](performance/Loading/REPORT.md) cover field projection, bounded collection slices and batched lazy relationships. Measurements are synthetic local ARM64 experiments, not production capacity promises. Raw samples and reproduction instructions are included.
 
 ## Usage
 
@@ -156,7 +161,7 @@ $template = $environment->parseTemplate('hello');
 echo $template->render($environment->newRenderContext(data: ['name' => 'John']));
 ```
 
-The first miss returns a parsed template; disk hits return a compiled template. With
+Cache misses compile named templates; subsequent hits load the compiled artifact. With
 `keepInMemory: true` (the default), compiled templates stay in memory for the cache
 instance once loaded; templates written on a miss are loaded by the next hit.
 Use `remove($name)` or `clear()` when templates change or the library is upgraded.
@@ -481,24 +486,9 @@ But this package provides some custom tags and filters that you can use.
         {{ false | ternary: 'yes', 'no' }} # no
         ```
 
-## Testing
+## Testing and contributing
 
-```bash
-composer test
-```
-
-This runs the full suite twice, using in-memory and compiled templates with the same
-expected outputs. Rendering helpers compile roots and partials, including partials
-loaded lazily. Parser, AST and serialized-cache tests retain their parsed fixtures;
-compiler-specific tests continue to exercise their explicit backends. Streaming
-output comparisons concatenate chunks when their boundaries are not part of the test.
-
-To run a single backend:
-
-```bash
-composer test:in-memory
-composer test:compiled
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for Docker-based development, Redis integration tests, static analysis and formatting checks.
 
 ## Changelog
 
@@ -508,7 +498,7 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 - [Shopify](https://github.com/Shopify/liquid)
 - [Fabio Capucci](https://github.com/cappuc)
-- [All Contributors](../../contributors)
+- [All Contributors](https://github.com/0x15f/php-liquid/graphs/contributors)
 
 ## License
 

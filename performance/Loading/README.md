@@ -1,6 +1,6 @@
 # Planned, bounded Liquid data loading — prototype
 
-This adds an advisory AST dependency planner and an opt-in collection slicing contract to the library. A **development-only SQLite catalog adapter** demonstrates projection, lazy batched relationships and request-scoped field caches. It does not connect to or modify PHP and Laravel. Results and limits are in [REPORT.md](REPORT.md).
+This adds an advisory AST dependency planner and an opt-in collection slicing contract to the library. A **development-only SQLite catalog adapter** demonstrates projection, lazy batched relationships and request-scoped field caches. It does not connect to a production application. Results and limits are in [REPORT.md](REPORT.md).
 
 ## Request flow
 
@@ -64,4 +64,4 @@ CPU/wall values are batch means per render, summarized as median of fresh-proces
 
 The library code (`src/Analysis`, the slicing contract and resource exception) is reusable. Classes under `performance/Loading` are experiment adapters loaded through Composer's development autoloader, **not a production Laravel package**. They do not implement Shopify's complete object model, arbitrary relationship graphs, Eloquent integration, application authorization, snapshot/version consistency during concurrent updates, shared catalog caches or invalidation. Product/variant fields and SQL identifiers are an explicit fixed schema. Unknown/custom tags and filters must use application-owned resolvers.
 
-A production the application adapter should own tenant/customer authorization, use consistent catalog versions or transactions across batches, and measure the real database/indexes, cache hit/miss mixes and concurrent HTTP requests. This experiment does not compare native Rust/WASM callbacks into Laravel; previous renderer-only results must not be extrapolated to that architecture.
+A production application adapter should own tenant/customer authorization, use consistent catalog versions or transactions across batches, and measure the real database/indexes, cache hit/miss mixes and concurrent HTTP requests. This experiment does not compare native Rust/WASM callbacks into Laravel; previous renderer-only results must not be extrapolated to that architecture.

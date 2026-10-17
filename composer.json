@@ -1,9 +1,12 @@
 {
     "name": "0x15f/liquid",
-    "description": "Experimental compiled PHP Liquid renderer for PHP and Laravel, derived from keepsuit/liquid",
+    "description": "Liquid templates for PHP and Laravel with compiled rendering, Redis caching and bounded data loading",
     "keywords": [
-        "keepsuit",
-        "liquid"
+        "liquid",
+        "templates",
+        "laravel",
+        "redis",
+        "shopify"
     ],
     "homepage": "https://github.com/0x15f/php-liquid",
     "license": "MIT",
@@ -31,7 +34,8 @@
         "spatie/ray": "^1.28",
         "spatie/temporary-directory": "^2.3",
         "symfony/console": "^7.0 || ^8.0",
-        "symfony/var-exporter": "^7.0 || ^8.0"
+        "symfony/var-exporter": "^7.0 || ^8.0",
+        "orchestra/testbench": "^10.0 || ^11.0"
     },
     "autoload": {
         "psr-4": {
@@ -67,5 +71,17 @@
     "prefer-stable": true,
     "conflict": {
         "keepsuit/liquid": "*"
+    },
+    "suggest": {
+        "illuminate/cache": "Laravel cache stores, including Redis (^12.0 || ^13.0).",
+        "illuminate/support": "Laravel service provider and facade integration (^12.0 || ^13.0).",
+        "illuminate/view": "Laravel .liquid view integration (^12.0 || ^13.0)."
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Keepsuit\\Liquid\\Laravel\\LiquidServiceProvider"
+            ]
+        }
     }
 }

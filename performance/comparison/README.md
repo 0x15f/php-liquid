@@ -1,6 +1,6 @@
 # PHP / native Rust / WASM comparison
 
-This experiment measures personalized HTML rendering for the planned the application path. It does not modify or integrate with the application. See [REPORT.md](REPORT.md) for results and limitations. The bridge is experimental benchmark code, not a supported PHP extension.
+This experiment measures personalized HTML rendering from prepared PHP arrays. See [REPORT.md](REPORT.md) for results and limitations. The bridge is experimental benchmark code, not a supported PHP extension.
 
 ## Reproduce
 

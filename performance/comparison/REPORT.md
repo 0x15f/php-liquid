@@ -2,7 +2,7 @@
 
 ## Decision
 
-**Keep optimized compiled PHP as the candidate for the application's per-request PHP-array rendering path.** It wins every measured workload, even without PHP JIT. Tracing JIT improves it further. Native Rust is competitive for nested snippets; the tested WASM path is substantially slower. Do not integrate yet: run the same contract on the application's production ARM server class and actual merchant templates first.
+**Compiled PHP is the fastest tested option when each render starts from PHP arrays.** It wins every measured workload, even without PHP JIT. Tracing JIT improves it further. Native Rust is competitive for nested snippets; the tested WASM path is substantially slower. Repeat on the target production ARM server class and actual templates before adopting these results.
 
 This is the fastest **tested implementation under this input contract**, not proof that PHP beats every possible Rust renderer, native extension or WASM runtime. A second control below shows native Rust can win when its contexts already exist in native memory. Architecture and data ownership matter.
 
@@ -55,7 +55,7 @@ All engines preparse/precompile templates outside timing. PHP compiled templates
 
 ## Workload and correctness
 
-Four synthetic HTML contracts model the application product arrays, four variants per product, availability, escaped text/URLs, customer IDs/segments, wishlists and B2B-specific prices. Nested grids render a card snippet and nested price snippet per product; the inline control removes snippet contexts. There are 16 personalized inputs per workload, 64 total, plus A -> B -> A reuse checks. Inputs are approximately 2–49 KB of projected JSON, not complete database records. Prices are preformatted upstream; Shopify money filters are not benchmarked.
+Four synthetic HTML contracts model product arrays, four variants per product, availability, escaped text/URLs, customer IDs/segments, wishlists and B2B-specific prices. Nested grids render a card snippet and nested price snippet per product; the inline control removes snippet contexts. There are 16 personalized inputs per workload, 64 total, plus A -> B -> A reuse checks. Inputs are approximately 2–49 KB of projected JSON, not complete database records. Prices are preformatted upstream; Shopify money filters are not benchmarked.
 
 Shopify's [Ruby Liquid](https://github.com/Shopify/liquid) **5.13.0** is the output reference. All 64 outputs match it byte for byte for parsed PHP, both compiled PHP versions, native Rust and WASM before timing. These synthetic cases do not substitute for actual theme traces or Shopify's server-provided objects/tags.
 
@@ -73,15 +73,15 @@ CPU µs per render, same-process controls (one process per mode):
 | inline_24 | 159.8 | 152.5 | 132.9 | 150.8 | 1,035.3 |
 
 
-The prepared control stores all 64 Liquid contexts inside the native/WASM engine before timing, sending only a template name and input index per call. It removes per-request context construction and most input serialization. This is a single fresh-process diagnostic per PHP mode, not part of the three-process main ranking. It shows why “Rust is intrinsically slower” would be the wrong conclusion: native rendering can win if the application can keep the relevant product/customer state in native memory cheaply. A real reusable-catalog implementation would still need to measure personalization overlays, invalidation, memory, lifecycle and update costs; the indexed control pays none of those.
+The prepared control stores all 64 Liquid contexts inside the native/WASM engine before timing, sending only a template name and input index per call. It removes per-request context construction and most input serialization. This is a single fresh-process diagnostic per PHP mode, not part of the three-process main ranking. It shows why “Rust is intrinsically slower” would be the wrong conclusion: native rendering can win if an application can keep the relevant product/customer state in native memory cheaply. A real reusable-catalog implementation would still need to measure personalization overlays, invalidation, memory, lifecycle and update costs; the indexed control pays none of those.
 
 ## Validation and next decision
 
 - Full PHP suite: **3,834 tests, 10,149 assertions passed**; new tests exercise fast-path fallback, strict missing/null behavior, lazy-object normalization and streamed output on both PHP backends.
 - Normal PHPStan library/existing performance scope passes; changed PHP files pass Pint. The standalone FFI/generated-baseline harness has an explicit separate analysis exclusion and is checked through runtime parity/smoke runs.
 - Rust release unit test verifies repeated personalized calls do not share assignments; both release targets build from the lock file.
-- Source fingerprints match the final local PHP implementation. the application's checkout is unchanged.
+- Source fingerprints identify the measured implementation snapshot. Later integration changes have not been rebenchmarked.
 
 Before integration, replay real product grids/snippets on the production ARM server class with production PHP/FPM or Octane settings. Measure cache hit/miss mixes, personalization cardinality, concurrent HTTP p50/p95/p99, worker RSS, cold deploys and template invalidation separately. If most context data can stay native across requests, benchmark a catalog-plus-personalization API before dismissing native Rust. Otherwise compiled PHP is the evidence-supported default; WASM provides no speed advantage in this experiment.
 
-Raw data, reference hashes, locks and summaries are in [results/](results/). [README.md](README.md) describes reproduction and measurement boundaries. No the application integration or deployment is included.
+Raw data, reference hashes, locks and summaries are in [results/](results/). [README.md](README.md) describes reproduction and measurement boundaries. No application deployment is included.

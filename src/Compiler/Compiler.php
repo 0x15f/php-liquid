@@ -15,7 +15,7 @@ class Compiler
     {
         $directory = dirname($compiledPath);
 
-        if (! is_dir($directory) && ! mkdir($directory, 0755, true) && ! is_dir($directory)) {
+        if (! is_dir($directory) && ! @mkdir($directory, 0755, true) && ! is_dir($directory)) {
             throw new \RuntimeException(sprintf('Unable to create compiled template directory: %s', $directory));
         }
 

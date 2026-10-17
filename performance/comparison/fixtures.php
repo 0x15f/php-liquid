@@ -1,6 +1,6 @@
 <?php
 
-/** Synthetic HTML contract shaped after the application products, variants and B2B pricing. */
+/** Synthetic HTML contract for products, variants and B2B pricing. */
 function comparisonFixtures(): array
 {
     $templates = [

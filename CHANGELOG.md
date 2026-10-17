@@ -1,3 +1,16 @@
+# Open-source release
+
+## 0.1.0
+
+- Standalone compiled Liquid rendering with Shopify reference fixes and request isolation.
+- Laravel 12/13 discovery, `.liquid` views, facade, configuration and cache warming/clearing commands.
+- Redis/Laravel repository-backed parsed templates and shared-to-local compiled caching.
+- Request-scoped services, cache namespaces/revisions and generation-based invalidation.
+- Advisory AST dependencies, bounded collection providers and lazy-loading experiments.
+- Reproducible PHP/native Rust/WASM and database-loading measurements.
+
+Earlier upstream development notes are preserved below for provenance; upstream version numbers are not release versions of this package.
+
 # Changelog
 
 All notable changes to `liquid` will be documented in this file.
