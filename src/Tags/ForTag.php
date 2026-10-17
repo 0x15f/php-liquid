@@ -348,9 +348,14 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
 
         try {
             $output = '';
+            $byteLimit = $context->resourceLimits->intermediateBytesLimit;
             foreach ($segment as $value) {
                 $context->set($this->variableName, $value);
-                $context->resourceLimits->append($output, $this->forBlock->render($context));
+                $chunk = $this->forBlock->render($context);
+                if ($byteLimit !== null && strlen($chunk) > $byteLimit - strlen($output)) {
+                    $context->resourceLimits->throwLimitReachedException();
+                }
+                $output .= $chunk;
                 $loopVars->increment();
 
                 if ($context->popInterrupt() instanceof BreakInterrupt) {

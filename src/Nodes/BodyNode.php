@@ -290,7 +290,14 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
                         }
                     } else {
                         foreach ($value as $output) {
-                            $context->resourceLimits->append($buffer, $output);
+                            if (is_string($output)) {
+                                if ($byteLimit !== null && strlen($output) > $byteLimit - strlen($buffer)) {
+                                    $context->resourceLimits->throwLimitReachedException();
+                                }
+                                $buffer .= $output;
+                            } else {
+                                $context->resourceLimits->append($buffer, $output);
+                            }
 
                             if (strlen($buffer) >= self::MAX_BUFFERED_BYTES) {
                                 yield $buffer;
