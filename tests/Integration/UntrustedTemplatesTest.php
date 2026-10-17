@@ -293,3 +293,18 @@ test('magic property probes cannot swallow provider loading-budget failures', fu
     expect(fn () => testParseString($environment, '{{ record.field }}')->render($environment->newRenderContext(data: ['record' => new ApprovedBudgetedObject])))
         ->toThrow(Keepsuit\Liquid\Exceptions\DataLoadingLimitException::class, 'Query budget');
 })->with([false, true]);
+
+test('hot render paths retain range allocation guards when inputs change', function (bool $compiled) {
+    $environment = EnvironmentFactory::forUntrustedTemplates()
+        ->setTemplatesCache($compiled ? testCompiledTemplatesCache() : new Keepsuit\Liquid\TemplatesCache\MemoryTemplatesCache)->build();
+    $template = testParseString($environment, '{% for n in (1..end) %}x{% endfor %}');
+    for ($i = 0; $i < 1000; $i++) {
+        if ($template->render($environment->newRenderContext(data: ['end' => 3])) !== 'xxx') {
+            throw new RuntimeException('Warm output changed.');
+        }
+    }
+    $before = memory_get_usage();
+    expect(fn () => $template->render($environment->newRenderContext(data: ['end' => 1000000000])))
+        ->toThrow(ResourceLimitException::class);
+    expect(memory_get_usage() - $before)->toBeLessThan(2_000_000);
+})->with([false, true]);

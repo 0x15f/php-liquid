@@ -5,10 +5,10 @@ These are local synthetic measurements, not production capacity estimates. The w
 ## Runtime and method
 
 - Linux ARM64 (`aarch64`), PHP 8.4.26, local container with a two-CPU quota.
-- Three fresh processes; 51 measured rounds after 15 warm-up rounds. Core modes alternate in balanced/reversed batches in the same process. Timing uses process CPU time, with no profilers loaded and no JIT.
+- Three fresh processes per cohort; 51 measured rounds after 15 warm-up rounds. Core modes alternate in balanced/reversed batches in the same process. Timing uses process CPU time, with no profilers loaded. The default cohort has JIT disabled; a separate cohort enables tracing JIT.
 - Warm parsed/compiled caches, fresh render contexts and complete prepared PHP input arrays for every request. Authorization, Laravel/HTTP bootstrap, database work, source retrieval, Redis/network misses and compilation are outside this core timing.
 - Baseline commit `9d2aa0a` has the same `src/` tree as public v0.1.0. It is loaded under a separate namespace for paired timing.
-- All six raw result files use engine source SHA-256 `881753fcf50d21b5bec81654248e07b79211a90a5e168e0bd08f847a6717094a`.
+- All nine core/isolated timing result files use engine source SHA-256 `881753fcf50d21b5bec81654248e07b79211a90a5e168e0bd08f847a6717094a`.
 
 ## Core rendering
 
@@ -28,6 +28,26 @@ Compiled PHP is about 21% faster than the restricted interpreter on this workloa
 Security is not free: the restricted profile uses about twice the CPU of the v0.1.0 baseline. It validates input structure/capabilities, binds cache authorization and meters work, allocations and deadlines. The compatibility-mode regression also remains visible above; it is not hidden by comparing only the restricted implementations. Earlier native Rust/WASM figures in REPORT.md do not measure equivalent security policies and should not be used to claim a secure-backend winner.
 
 Raw core results: [run 1](results/security-core-1.json), [run 2](results/security-core-2.json), [run 3](results/security-core-3.json).
+
+### Tracing JIT
+
+A separate three-process cohort uses CLI OPcache with a 128 MiB JIT buffer and `opcache.jit=tracing`. Metadata confirms JIT was enabled and active. All reference output hashes match.
+
+| Mode | CPU µs/render | Process-median range |
+| --- | ---: | ---: |
+| v0.1.0 compiled baseline, without restrictions | 403 | 383–406 |
+| Current compiled compatibility mode | 397 | 378–399 |
+| Current interpreted compatibility mode | 520 | 492–532 |
+| Restricted compiled PHP | **709** | 693–733 |
+| Restricted compiled streaming, fully consumed | 784 | 750–788 |
+| Restricted interpretation | 868 | 833–916 |
+
+Restricted compiled rendering uses about 14% less CPU than the non-JIT cohort and about 18% less than the JIT restricted interpreter. Fully consumed streaming costs about 11% more than JIT restricted string rendering. Cross-cohort differences can include host variation; the paired modes within each cohort are the stronger comparison. The compatibility-mode overhead seen without JIT is not apparent in this JIT cohort.
+
+JIT is an application deployment choice, not an INI change made by the library. These measurements cover PHP 8.4.26 on ARM64; verify your production PHP build. OPcache/JIT memory sits outside the PHP heap allowance and needs separate deployment accounting. The minimal isolated worker deliberately disables CLI OPcache/JIT. The security suite also passes with function/loop hot thresholds set to 1, including a warmed small range followed by a billion-item range that must fail before allocation.
+
+Raw JIT results: [run 1](results/security-jit-1.json), [run 2](results/security-jit-2.json), [run 3](results/security-jit-3.json).
+
 
 ## Isolated PHP worker
 
@@ -58,16 +78,24 @@ That is a 99.5% reduction for this deliberately large response, not a general me
 
 ## Verification and reproduction
 
-The release gate passes 3,987 tests / 24,096 assertions with real Redis, PHPStan and Pint. Streaming is checked against all 64 personalized Shopify reference cases across interpreted/compiled and restricted/compatibility execution. Adversarial tests cover range/string/collection growth, parser depth and token limits, PHP capabilities, cache authorization, global callback isolation, data-provider budgets, parent transport expansion, worker heap exhaustion, deadlines, cancellation, recovery and bounded private-cache disk retention.
+The release gate passes 3,989 tests / 24,100 assertions with real Redis, PHPStan and Pint. Streaming is checked against all 64 personalized Shopify reference cases across interpreted/compiled and restricted/compatibility execution. Adversarial tests cover range/string/collection growth, parser depth and token limits, PHP capabilities, cache authorization, global callback isolation, data-provider budgets, parent transport expansion, worker heap exhaustion, deadlines, cancellation, recovery and bounded private-cache disk retention.
 
-Inside the repository's PHP development container:
+Prepare the baseline with Python and Git on the host (or in a container with both installed):
 
 ```bash
 python3 performance/comparison/prepare-baseline.py --revision 9d2aa0a
 cp performance/comparison/results/reference-hashes.json build/reference-hashes.json
+```
+
+Then run inside the repository's PHP development container:
+
+```bash
 php -d opcache.enable_cli=1 performance/comparison/run.php \
   --php-only --security --paired-baseline --workload=grid_24 \
   --rounds=51 --warmup=15 --output=/tmp/core.json
+php -d opcache.enable_cli=1 -d opcache.jit_buffer_size=128M -d opcache.jit=tracing \
+  performance/comparison/run.php --php-only --security --paired-baseline \
+  --workload=grid_24 --rounds=51 --warmup=15 --output=/tmp/jit.json
 php performance/comparison/isolated.php --samples=320 --output=/tmp/isolated.json
 php performance/comparison/stream-memory.php
 ```
