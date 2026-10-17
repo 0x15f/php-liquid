@@ -18,14 +18,11 @@ The reference fixtures use Shopify Ruby Liquid 5.13. This library is not Shopify
 
 ## Installation
 
-Install directly from the public Git repository:
+Install from [Packagist](https://packagist.org/packages/0x15f/liquid):
 
 ```bash
-composer config repositories.liquid vcs https://github.com/0x15f/php-liquid
 composer require 0x15f/liquid:^0.1
 ```
-
-The VCS repository configuration works independently of Packagist registration.
 
 ## Laravel quick start
 
