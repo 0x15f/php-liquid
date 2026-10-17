@@ -229,6 +229,13 @@ final class RenderContext
      */
     public function findVariable(string $key): mixed
     {
+        // Loop variables and explicit partial arguments normally live in the
+        // innermost scope. Avoid opening the scope iterator for this common case.
+        // Defined nulls still use the full walk and shadow outer values.
+        if (isset($this->scopes[0][$key])) {
+            return is_object($value = $this->scopes[0][$key]) ? $this->resolveVariable($value) : $value;
+        }
+
         // Deliberately not written as a loop over [...$this->scopes, $this->data, ...]:
         // building that list would allocate an array on every variable reference.
         foreach ($this->scopes as $scope) {

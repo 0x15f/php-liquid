@@ -2790,7 +2790,7 @@ test('storefront header compiles static partial rendering with direct values', f
 
         expect($compiledSource)
             ->not->toContain('new Variable(')
-            ->toContain("::evaluateParts(\$context, 'shop', ['name'])")
+            ->toContain("::evaluateKey(\$context, 'shop', 'name')")
             ->toContain('yieldPartial')
             ->not->toContain('yield from [];')
             ->not->toContain('private readonly mixed $value');

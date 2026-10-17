@@ -803,6 +803,11 @@ final class CompilerContext
                 return $this->writeClassName(VariableLookup::class).'::evaluateName($context, '.$this->writeValue($value->name).')';
             }
 
+            if (count($value->lookups) === 1 && isset($value->lookups[0]) && (is_string($key = $value->lookups[0]) || is_int($key))) {
+                return $this->writeClassName(VariableLookup::class).'::evaluateKey($context, '
+                    .$this->writeValue($value->name).', '.$this->writeValue($key).')';
+            }
+
             return $this->writeClassName(VariableLookup::class).'::evaluateParts($context, '
                 .$this->writeValue($value->name).', '.$this->writeCachedValue($value->lookups).')';
         }

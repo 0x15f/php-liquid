@@ -8,6 +8,11 @@ parameters:
         - performance
         - tests/Stubs
     tmpDir: build/phpstan
+    # Standalone cross-runtime experiment loads generated baseline classes and
+    # runtime C FFI symbols. Validate it through output parity and smoke runs.
+    excludePaths:
+        analyse:
+            - performance/comparison
     treatPhpDocTypesAsCertain: false
     checkPhpDocMissingReturn: true
 

@@ -1,0 +1,216 @@
+{
+    "native": {
+        "truthiness": {
+            "pass": true,
+            "expected": "TTT",
+            "actual": "TTT"
+        },
+        "nil shadows outer property": {
+            "pass": false,
+            "expected": "",
+            "error": "ERROR:liquid: Unknown index\n  with:\n    variable=product\n    requested index=title\n    available indexes=\n"
+        },
+        "missing property shadows outer property": {
+            "pass": false,
+            "expected": "",
+            "error": "ERROR:liquid: Unknown index\n  with:\n    variable=product\n    requested index=title\n    available indexes=id\n"
+        },
+        "duplicate case matches": {
+            "pass": false,
+            "expected": "AB",
+            "actual": "A"
+        },
+        "array bracket pseudo properties": {
+            "pass": false,
+            "expected": "||",
+            "actual": "2|a|b"
+        },
+        "array dot pseudo properties": {
+            "pass": true,
+            "expected": "2|a|b",
+            "actual": "2|a|b"
+        },
+        "default false": {
+            "pass": false,
+            "expected": "false",
+            "error": "ERROR:liquid: Unexpected named argument `allow_false`\nfrom: Filter parsing error\n  with:\n    filter=default: \"fallback\", allow_false: true\n"
+        },
+        "empty blank": {
+            "pass": true,
+            "expected": "BE",
+            "actual": "BE"
+        },
+        "decimal arithmetic": {
+            "pass": false,
+            "expected": "7.25|0.3",
+            "actual": "7.249999999999999|0.30000000000000004"
+        },
+        "negative integer division": {
+            "pass": false,
+            "expected": "-3|1",
+            "actual": "-2|-1"
+        },
+        "unicode truncate": {
+            "pass": true,
+            "expected": "\u00e9...",
+            "actual": "\u00e9..."
+        },
+        "negative slice": {
+            "pass": true,
+            "expected": "de",
+            "actual": "de"
+        },
+        "loop continue offset": {
+            "pass": false,
+            "expected": "12|34",
+            "error": "ERROR:liquid: Unknown variable\n  with:\n    requested variable=continue\n"
+        },
+        "loop break": {
+            "pass": true,
+            "expected": "12",
+            "actual": "12"
+        },
+        "loop continue": {
+            "pass": true,
+            "expected": "13",
+            "actual": "13"
+        },
+        "whitespace control": {
+            "pass": true,
+            "expected": " ab1c ",
+            "actual": " ab1c "
+        },
+        "escape apostrophe": {
+            "pass": true,
+            "expected": "&lt;a x=&quot;1&quot;&gt;&#39;&amp;",
+            "actual": "&lt;a x=&quot;1&quot;&gt;&#39;&amp;"
+        },
+        "filter boolean conversion": {
+            "pass": true,
+            "expected": "false!",
+            "actual": "false!"
+        },
+        "numeric coercion": {
+            "pass": false,
+            "expected": "13",
+            "error": "ERROR:liquid: Invalid argument\n  with:\n    argument=operand\n    cause=Number expected\nfrom: Filter error\n  with:\n    filter=plus : 1\n    input=\"12abc\"\n"
+        },
+        "contains string": {
+            "pass": true,
+            "expected": "Y",
+            "actual": "Y"
+        },
+        "capture": {
+            "pass": true,
+            "expected": "Hi Alice",
+            "actual": "Hi Alice"
+        }
+    },
+    "wasm": {
+        "truthiness": {
+            "pass": true,
+            "expected": "TTT",
+            "actual": "TTT"
+        },
+        "nil shadows outer property": {
+            "pass": false,
+            "expected": "",
+            "error": "liquid: Unknown index\n  with:\n    variable=product\n    requested index=title\n    available indexes=\n"
+        },
+        "missing property shadows outer property": {
+            "pass": false,
+            "expected": "",
+            "error": "liquid: Unknown index\n  with:\n    variable=product\n    requested index=title\n    available indexes=id\n"
+        },
+        "duplicate case matches": {
+            "pass": false,
+            "expected": "AB",
+            "actual": "A"
+        },
+        "array bracket pseudo properties": {
+            "pass": false,
+            "expected": "||",
+            "actual": "2|a|b"
+        },
+        "array dot pseudo properties": {
+            "pass": true,
+            "expected": "2|a|b",
+            "actual": "2|a|b"
+        },
+        "default false": {
+            "pass": false,
+            "expected": "false",
+            "error": "liquid: Unexpected named argument `allow_false`\nfrom: Filter parsing error\n  with:\n    filter=default: \"fallback\", allow_false: true\n"
+        },
+        "empty blank": {
+            "pass": true,
+            "expected": "BE",
+            "actual": "BE"
+        },
+        "decimal arithmetic": {
+            "pass": false,
+            "expected": "7.25|0.3",
+            "actual": "7.249999999999999|0.30000000000000004"
+        },
+        "negative integer division": {
+            "pass": false,
+            "expected": "-3|1",
+            "actual": "-2|-1"
+        },
+        "unicode truncate": {
+            "pass": true,
+            "expected": "\u00e9...",
+            "actual": "\u00e9..."
+        },
+        "negative slice": {
+            "pass": true,
+            "expected": "de",
+            "actual": "de"
+        },
+        "loop continue offset": {
+            "pass": false,
+            "expected": "12|34",
+            "error": "liquid: Unknown variable\n  with:\n    requested variable=continue\n"
+        },
+        "loop break": {
+            "pass": true,
+            "expected": "12",
+            "actual": "12"
+        },
+        "loop continue": {
+            "pass": true,
+            "expected": "13",
+            "actual": "13"
+        },
+        "whitespace control": {
+            "pass": true,
+            "expected": " ab1c ",
+            "actual": " ab1c "
+        },
+        "escape apostrophe": {
+            "pass": true,
+            "expected": "&lt;a x=&quot;1&quot;&gt;&#39;&amp;",
+            "actual": "&lt;a x=&quot;1&quot;&gt;&#39;&amp;"
+        },
+        "filter boolean conversion": {
+            "pass": true,
+            "expected": "false!",
+            "actual": "false!"
+        },
+        "numeric coercion": {
+            "pass": false,
+            "expected": "13",
+            "error": "liquid: Invalid argument\n  with:\n    argument=operand\n    cause=Number expected\nfrom: Filter error\n  with:\n    filter=plus : 1\n    input=\"12abc\"\n"
+        },
+        "contains string": {
+            "pass": true,
+            "expected": "Y",
+            "actual": "Y"
+        },
+        "capture": {
+            "pass": true,
+            "expected": "Hi Alice",
+            "actual": "Hi Alice"
+        }
+    }
+}

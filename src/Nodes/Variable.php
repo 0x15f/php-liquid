@@ -59,7 +59,7 @@ class Variable extends Node implements CanBeCompiled, CanBeEvaluated, CanBeStrea
         if ($context->isRendering()) {
             $value = $context->temporaryVariable();
             $context->writeOutput('(is_string('.$value.' = '.$context->writeVariableExpression($this->name).') ? '.$value
-                .' : '.$context->writeClassName(self::class).'::renderValue($context, '.$value.'))');
+                .' : (is_int('.$value.') ? (string) '.$value.' : '.$context->writeClassName(self::class).'::renderValue($context, '.$value.')))');
         } else {
             $context->write('if (is_string($value = '.$context->writeVariableExpression($this->name).')'
                 .' || is_string($value = '.$context->writeClassName(self::class).'::streamValue($context, $value))) {')
@@ -113,7 +113,7 @@ class Variable extends Node implements CanBeCompiled, CanBeEvaluated, CanBeStrea
                 $args = ', '.$this->compileFilterArguments($context, $filterArgs, $filterNamedArgs);
             }
 
-            $context->write($value.' = $context->applyFilter('.$context->writeValue($filterName).', '.$value.$args.');');
+            $context->write($value.' = $context->environment->filterRegistry->invoke($context, '.$context->writeValue($filterName).', '.$value.$args.');');
         }
 
         return $value;

@@ -123,6 +123,31 @@ class VariableLookup implements CanBeEvaluated, CanBeExported, HasParseTreeVisit
     }
 
     /**
+     * Common compiled storefront lookup, without allocating/walking a path.
+     * Objects, nulls, pseudo-properties and negative indices retain the generic
+     * evaluator so extension behavior and strict-variable errors are unchanged.
+     *
+     * @internal
+     */
+    public static function evaluateKey(RenderContext $context, string $name, string|int $key): mixed
+    {
+        $variable = $context->findVariable($name);
+
+        if (is_array($variable) && (is_string($key) || $key >= 0)
+            && isset($variable[$key]) && ! is_object($value = $variable[$key])) {
+            return $value;
+        }
+
+        if ($variable instanceof MissingValue) {
+            return self::undefinedValue($context, $name, [$key]);
+        }
+
+        $result = self::walkLookupParts($context, $variable, [$key]);
+
+        return $result instanceof MissingValue ? self::undefinedValue($context, $name, [$key]) : $result;
+    }
+
+    /**
      * Resolve an immutable compiler lookup descriptor or an already known literal.
      *
      * @param  CompiledLookup  $value
@@ -196,6 +221,19 @@ class VariableLookup implements CanBeEvaluated, CanBeExported, HasParseTreeVisit
         }
 
         foreach ($lookups as $lookup) {
+            // Prepared storefront contexts predominantly contain hashes and
+            // scalars. Resolve these without object normalization, virtual
+            // lookups or pseudo-property dispatch. Nulls and objects retain the
+            // full path; negative list indices must also retain Liquid indexing.
+            if (is_array($object)
+                && (is_string($lookup) || (is_int($lookup) && $lookup >= 0))
+                && isset($object[$lookup])
+                && ! is_object($value = $object[$lookup])) {
+                $object = $value;
+
+                continue;
+            }
+
             $key = match (true) {
                 $lookup instanceof VariableLookup => $context->evaluate($lookup),
                 $lookup instanceof BracketKey => $lookup->value,

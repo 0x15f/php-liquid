@@ -15,3 +15,5 @@ vendor
 tests/cache
 
 .review-gems
+performance/comparison/artifacts
+performance/comparison/rust/target

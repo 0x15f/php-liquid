@@ -1,5 +1,7 @@
 # Benchmark suite
 
+For the ARM64 personalized HTML comparison across compiled PHP, native Rust and WASM, see [comparison/REPORT.md](comparison/REPORT.md) and its [reproduction instructions](comparison/README.md).
+
 ```bash
 composer benchmark             # default group: the storefront theme
 composer benchmark:cache       # cache group: template-cache backends
