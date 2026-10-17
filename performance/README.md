@@ -9,6 +9,8 @@ composer benchmark:operations  # operations group: individual operations
 php performance/profile-theme.php --output=profile.json
 ```
 
+For bounded database loading, AST planning, lazy relationship batches and memory measurements, see [Loading/REPORT.md](Loading/REPORT.md).
+
 ## What each group is for
 
 The benchmark groups have different jobs, and conflating them is how a benchmark suite

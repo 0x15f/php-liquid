@@ -1,0 +1,3091 @@
+{
+    "utc": "2026-10-17T15:26:00+00:00",
+    "php": "8.4.23",
+    "arch": "aarch64",
+    "kernel": "7.0.14-orbstack-00380-ga7e0a2dc9535",
+    "cpu_affinity": "pid 15996's current affinity list: 4",
+    "cpu_max": "max 100000\n",
+    "profilers_loaded": {
+        "pcov": false,
+        "xdebug": false
+    },
+    "sqlite": "3.45.1",
+    "opcache": true,
+    "jit": {
+        "enabled": false,
+        "on": false,
+        "kind": 0,
+        "opt_level": 0,
+        "opt_flags": 0,
+        "buffer_size": 0,
+        "buffer_free": 0
+    },
+    "plan_build_ms": 12.01173,
+    "plans": {
+        "grid": {
+            "version": 1,
+            "paths": [
+                "collection.products",
+                "collection.products.*",
+                "collection.products.*.id",
+                "collection.products.*.image",
+                "collection.products.*.price_formatted",
+                "collection.products.*.title",
+                "collection.products.*.url",
+                "collection.products.*.variants",
+                "collection.products.*.variants.*.available",
+                "collection.products.*.variants.*.title",
+                "customer",
+                "customer.id",
+                "customer.show_variants"
+            ],
+            "loops": [
+                {
+                    "path": "collection.products",
+                    "limit": 24,
+                    "offset": 0,
+                    "reversed": false,
+                    "static_window": true
+                },
+                {
+                    "path": "collection.products.*.variants",
+                    "limit": null,
+                    "offset": 0,
+                    "reversed": false,
+                    "static_window": false
+                }
+            ],
+            "templates": [
+                "card",
+                "price"
+            ],
+            "runtime_reasons": [
+                "filter semantics require runtime evaluation",
+                "conditional or unsupported tag: if"
+            ]
+        },
+        "dynamic": {
+            "version": 1,
+            "paths": [
+                "collection.products",
+                "collection.products.*.*",
+                "collection.products.*.variants",
+                "collection.products.*.variants.*.*",
+                "field",
+                "variant_field"
+            ],
+            "loops": [
+                {
+                    "path": "collection.products",
+                    "limit": 24,
+                    "offset": 0,
+                    "reversed": false,
+                    "static_window": true
+                },
+                {
+                    "path": "collection.products.*.variants",
+                    "limit": null,
+                    "offset": 0,
+                    "reversed": false,
+                    "static_window": false
+                }
+            ],
+            "templates": [],
+            "runtime_reasons": [
+                "filter semantics require runtime evaluation",
+                "dynamic bracket lookup"
+            ]
+        }
+    },
+    "checks": {
+        "grid_without_variants": {
+            "inputs": 16,
+            "shopify_reference": true,
+            "output_bytes": 3364
+        },
+        "grid_with_variants": {
+            "inputs": 16,
+            "shopify_reference": true,
+            "output_bytes": 5884
+        },
+        "dynamic_fields": {
+            "inputs": 16,
+            "shopify_reference": true,
+            "output_bytes": 3010
+        }
+    },
+    "samples": {
+        "grid_without_variants": {
+            "eager_full": [
+                {
+                    "round": 0,
+                    "renders": 16,
+                    "cpu_us": 498.375,
+                    "wall_us": 498.2031875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 1,
+                    "renders": 16,
+                    "cpu_us": 593.0625,
+                    "wall_us": 592.80425,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 2,
+                    "renders": 16,
+                    "cpu_us": 683.75,
+                    "wall_us": 683.462625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 3,
+                    "renders": 16,
+                    "cpu_us": 573.5,
+                    "wall_us": 573.1871875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 4,
+                    "renders": 16,
+                    "cpu_us": 414.8125,
+                    "wall_us": 414.6593125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 5,
+                    "renders": 16,
+                    "cpu_us": 583.875,
+                    "wall_us": 583.7365625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 6,
+                    "renders": 16,
+                    "cpu_us": 488.75,
+                    "wall_us": 488.494875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 7,
+                    "renders": 16,
+                    "cpu_us": 839.4375,
+                    "wall_us": 839.1285625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 8,
+                    "renders": 16,
+                    "cpu_us": 676.625,
+                    "wall_us": 676.2881875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 9,
+                    "renders": 16,
+                    "cpu_us": 566.375,
+                    "wall_us": 566.166375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 10,
+                    "renders": 16,
+                    "cpu_us": 478.0625,
+                    "wall_us": 477.86475,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 11,
+                    "renders": 16,
+                    "cpu_us": 550.3125,
+                    "wall_us": 550.119625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 12,
+                    "renders": 16,
+                    "cpu_us": 430.4375,
+                    "wall_us": 430.2009375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 13,
+                    "renders": 16,
+                    "cpu_us": 531.4375,
+                    "wall_us": 531.2889375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 14,
+                    "renders": 16,
+                    "cpu_us": 439.125,
+                    "wall_us": 438.9560625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 15,
+                    "renders": 16,
+                    "cpu_us": 439.375,
+                    "wall_us": 439.1956875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 16,
+                    "renders": 16,
+                    "cpu_us": 524.1875,
+                    "wall_us": 523.9973125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 17,
+                    "renders": 16,
+                    "cpu_us": 548.6875,
+                    "wall_us": 548.4841875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 18,
+                    "renders": 16,
+                    "cpu_us": 488.4375,
+                    "wall_us": 488.3021875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 19,
+                    "renders": 16,
+                    "cpu_us": 433.625,
+                    "wall_us": 433.49,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 20,
+                    "renders": 16,
+                    "cpu_us": 426.0625,
+                    "wall_us": 425.9535625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 21,
+                    "renders": 16,
+                    "cpu_us": 519.75,
+                    "wall_us": 519.572875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 22,
+                    "renders": 16,
+                    "cpu_us": 436.9375,
+                    "wall_us": 436.8050625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 23,
+                    "renders": 16,
+                    "cpu_us": 464.4375,
+                    "wall_us": 464.2528125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3364
+                }
+            ],
+            "eager_projected": [
+                {
+                    "round": 0,
+                    "renders": 16,
+                    "cpu_us": 330.5,
+                    "wall_us": 330.425375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 1,
+                    "renders": 16,
+                    "cpu_us": 365.5,
+                    "wall_us": 365.422625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 2,
+                    "renders": 16,
+                    "cpu_us": 663.3125,
+                    "wall_us": 663.0435,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 3,
+                    "renders": 16,
+                    "cpu_us": 451.5,
+                    "wall_us": 451.3310625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 4,
+                    "renders": 16,
+                    "cpu_us": 456.75,
+                    "wall_us": 456.5654375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 5,
+                    "renders": 16,
+                    "cpu_us": 386.25,
+                    "wall_us": 386.0995625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 6,
+                    "renders": 16,
+                    "cpu_us": 518.4375,
+                    "wall_us": 518.1015625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 7,
+                    "renders": 16,
+                    "cpu_us": 505,
+                    "wall_us": 504.8229375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 8,
+                    "renders": 16,
+                    "cpu_us": 502.75,
+                    "wall_us": 502.4349375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 9,
+                    "renders": 16,
+                    "cpu_us": 520.1875,
+                    "wall_us": 519.8775625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 10,
+                    "renders": 16,
+                    "cpu_us": 577,
+                    "wall_us": 576.721,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 11,
+                    "renders": 16,
+                    "cpu_us": 490.3125,
+                    "wall_us": 490.112125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 12,
+                    "renders": 16,
+                    "cpu_us": 463.5,
+                    "wall_us": 463.3778125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 13,
+                    "renders": 16,
+                    "cpu_us": 369.9375,
+                    "wall_us": 369.779375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 14,
+                    "renders": 16,
+                    "cpu_us": 426.4375,
+                    "wall_us": 426.237375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 15,
+                    "renders": 16,
+                    "cpu_us": 493.25,
+                    "wall_us": 493.06525,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 16,
+                    "renders": 16,
+                    "cpu_us": 359.25,
+                    "wall_us": 359.128375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 17,
+                    "renders": 16,
+                    "cpu_us": 355.9375,
+                    "wall_us": 355.756,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 18,
+                    "renders": 16,
+                    "cpu_us": 485.4375,
+                    "wall_us": 485.255375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 19,
+                    "renders": 16,
+                    "cpu_us": 440.125,
+                    "wall_us": 439.94825,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 20,
+                    "renders": 16,
+                    "cpu_us": 465.75,
+                    "wall_us": 465.568,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 21,
+                    "renders": 16,
+                    "cpu_us": 401.9375,
+                    "wall_us": 403.328625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 22,
+                    "renders": 16,
+                    "cpu_us": 449.4375,
+                    "wall_us": 449.383125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 23,
+                    "renders": 16,
+                    "cpu_us": 469.0625,
+                    "wall_us": 468.966375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 3364
+                }
+            ],
+            "naive": [
+                {
+                    "round": 0,
+                    "renders": 16,
+                    "cpu_us": 771.75,
+                    "wall_us": 771.6080625,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 1,
+                    "renders": 16,
+                    "cpu_us": 638.6875,
+                    "wall_us": 638.4550625,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 2,
+                    "renders": 16,
+                    "cpu_us": 716.3125,
+                    "wall_us": 716.0484375,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 3,
+                    "renders": 16,
+                    "cpu_us": 684.0625,
+                    "wall_us": 683.941875,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 4,
+                    "renders": 16,
+                    "cpu_us": 632.75,
+                    "wall_us": 632.5150625,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 5,
+                    "renders": 16,
+                    "cpu_us": 699.625,
+                    "wall_us": 699.335,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 6,
+                    "renders": 16,
+                    "cpu_us": 628.5,
+                    "wall_us": 628.2910625,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 7,
+                    "renders": 16,
+                    "cpu_us": 702.25,
+                    "wall_us": 702.1110625,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 8,
+                    "renders": 16,
+                    "cpu_us": 1340.4375,
+                    "wall_us": 1339.9984375,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 9,
+                    "renders": 16,
+                    "cpu_us": 843.125,
+                    "wall_us": 842.899375,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 10,
+                    "renders": 16,
+                    "cpu_us": 634.5625,
+                    "wall_us": 634.33275,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 11,
+                    "renders": 16,
+                    "cpu_us": 622.9375,
+                    "wall_us": 634.2025625,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 12,
+                    "renders": 16,
+                    "cpu_us": 626.8125,
+                    "wall_us": 626.6426875,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 13,
+                    "renders": 16,
+                    "cpu_us": 604.375,
+                    "wall_us": 604.1166875,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 14,
+                    "renders": 16,
+                    "cpu_us": 627.5,
+                    "wall_us": 627.3978125,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 15,
+                    "renders": 16,
+                    "cpu_us": 748.9375,
+                    "wall_us": 748.6785,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 16,
+                    "renders": 16,
+                    "cpu_us": 665.5625,
+                    "wall_us": 665.4419375,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 17,
+                    "renders": 16,
+                    "cpu_us": 613.6875,
+                    "wall_us": 613.54375,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 18,
+                    "renders": 16,
+                    "cpu_us": 652.6875,
+                    "wall_us": 652.48625,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 19,
+                    "renders": 16,
+                    "cpu_us": 596.6875,
+                    "wall_us": 600.632375,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 20,
+                    "renders": 16,
+                    "cpu_us": 613.9375,
+                    "wall_us": 613.765125,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 21,
+                    "renders": 16,
+                    "cpu_us": 700.5,
+                    "wall_us": 700.3219375,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 22,
+                    "renders": 16,
+                    "cpu_us": 696.6875,
+                    "wall_us": 696.519875,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 23,
+                    "renders": 16,
+                    "cpu_us": 677.125,
+                    "wall_us": 676.8898125,
+                    "queries": 25,
+                    "rows": 48,
+                    "payload_bytes": 210981,
+                    "output_bytes": 3364
+                }
+            ],
+            "planned": [
+                {
+                    "round": 0,
+                    "renders": 16,
+                    "cpu_us": 231.875,
+                    "wall_us": 231.761875,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 1,
+                    "renders": 16,
+                    "cpu_us": 249.75,
+                    "wall_us": 249.6628125,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 2,
+                    "renders": 16,
+                    "cpu_us": 328.75,
+                    "wall_us": 328.44625,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 3,
+                    "renders": 16,
+                    "cpu_us": 383.0625,
+                    "wall_us": 382.7454375,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 4,
+                    "renders": 16,
+                    "cpu_us": 229.625,
+                    "wall_us": 229.5118125,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 5,
+                    "renders": 16,
+                    "cpu_us": 277.375,
+                    "wall_us": 277.1965,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 6,
+                    "renders": 16,
+                    "cpu_us": 240.8125,
+                    "wall_us": 240.7279375,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 7,
+                    "renders": 16,
+                    "cpu_us": 366.5,
+                    "wall_us": 366.2013125,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 8,
+                    "renders": 16,
+                    "cpu_us": 405.25,
+                    "wall_us": 404.7375625,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 9,
+                    "renders": 16,
+                    "cpu_us": 286.125,
+                    "wall_us": 285.792875,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 10,
+                    "renders": 16,
+                    "cpu_us": 236.3125,
+                    "wall_us": 236.207125,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 11,
+                    "renders": 16,
+                    "cpu_us": 301.3125,
+                    "wall_us": 301.0844375,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 12,
+                    "renders": 16,
+                    "cpu_us": 244,
+                    "wall_us": 243.7930625,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 13,
+                    "renders": 16,
+                    "cpu_us": 239.6875,
+                    "wall_us": 239.6055,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 14,
+                    "renders": 16,
+                    "cpu_us": 248.9375,
+                    "wall_us": 248.7618125,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 15,
+                    "renders": 16,
+                    "cpu_us": 232.9375,
+                    "wall_us": 232.894625,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 16,
+                    "renders": 16,
+                    "cpu_us": 331.375,
+                    "wall_us": 331.2951875,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 17,
+                    "renders": 16,
+                    "cpu_us": 233.5625,
+                    "wall_us": 233.5144375,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 18,
+                    "renders": 16,
+                    "cpu_us": 258.5,
+                    "wall_us": 258.38675,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 19,
+                    "renders": 16,
+                    "cpu_us": 254.125,
+                    "wall_us": 253.957,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 20,
+                    "renders": 16,
+                    "cpu_us": 230.75,
+                    "wall_us": 230.6576875,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 21,
+                    "renders": 16,
+                    "cpu_us": 225.25,
+                    "wall_us": 225.1785,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 22,
+                    "renders": 16,
+                    "cpu_us": 246.1875,
+                    "wall_us": 246.0976875,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                },
+                {
+                    "round": 23,
+                    "renders": 16,
+                    "cpu_us": 248.8125,
+                    "wall_us": 248.7305625,
+                    "queries": 1,
+                    "rows": 24,
+                    "payload_bytes": 1701,
+                    "output_bytes": 3364
+                }
+            ]
+        },
+        "grid_with_variants": {
+            "eager_full": [
+                {
+                    "round": 0,
+                    "renders": 16,
+                    "cpu_us": 852.6875,
+                    "wall_us": 852.4591875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 1,
+                    "renders": 16,
+                    "cpu_us": 787.375,
+                    "wall_us": 787.121,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 2,
+                    "renders": 16,
+                    "cpu_us": 753.875,
+                    "wall_us": 753.6471875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 3,
+                    "renders": 16,
+                    "cpu_us": 816.6875,
+                    "wall_us": 816.462,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 4,
+                    "renders": 16,
+                    "cpu_us": 751.3125,
+                    "wall_us": 750.983125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 5,
+                    "renders": 16,
+                    "cpu_us": 859,
+                    "wall_us": 858.69875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 6,
+                    "renders": 16,
+                    "cpu_us": 799.25,
+                    "wall_us": 799.042875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 7,
+                    "renders": 16,
+                    "cpu_us": 733.4375,
+                    "wall_us": 733.293125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 8,
+                    "renders": 16,
+                    "cpu_us": 745.125,
+                    "wall_us": 744.93375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 9,
+                    "renders": 16,
+                    "cpu_us": 885.375,
+                    "wall_us": 885.180375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 10,
+                    "renders": 16,
+                    "cpu_us": 730.375,
+                    "wall_us": 730.1473125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 11,
+                    "renders": 16,
+                    "cpu_us": 834.5,
+                    "wall_us": 834.2249375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 12,
+                    "renders": 16,
+                    "cpu_us": 782.8125,
+                    "wall_us": 782.329375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 13,
+                    "renders": 16,
+                    "cpu_us": 817.9375,
+                    "wall_us": 817.7171875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 14,
+                    "renders": 16,
+                    "cpu_us": 736.625,
+                    "wall_us": 736.478,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 15,
+                    "renders": 16,
+                    "cpu_us": 971.0625,
+                    "wall_us": 970.594,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 16,
+                    "renders": 16,
+                    "cpu_us": 783.375,
+                    "wall_us": 783.1783125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 17,
+                    "renders": 16,
+                    "cpu_us": 826.625,
+                    "wall_us": 826.373375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 18,
+                    "renders": 16,
+                    "cpu_us": 832.6875,
+                    "wall_us": 832.5165625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 19,
+                    "renders": 16,
+                    "cpu_us": 784.0625,
+                    "wall_us": 783.8215,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 20,
+                    "renders": 16,
+                    "cpu_us": 849.375,
+                    "wall_us": 849.188375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 21,
+                    "renders": 16,
+                    "cpu_us": 716.6875,
+                    "wall_us": 716.5354375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 22,
+                    "renders": 16,
+                    "cpu_us": 731.8125,
+                    "wall_us": 731.655125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 23,
+                    "renders": 16,
+                    "cpu_us": 806.5,
+                    "wall_us": 806.2979375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 5884
+                }
+            ],
+            "eager_projected": [
+                {
+                    "round": 0,
+                    "renders": 16,
+                    "cpu_us": 711.0625,
+                    "wall_us": 710.86875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 1,
+                    "renders": 16,
+                    "cpu_us": 660.9375,
+                    "wall_us": 660.81175,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 2,
+                    "renders": 16,
+                    "cpu_us": 668.625,
+                    "wall_us": 668.369,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 3,
+                    "renders": 16,
+                    "cpu_us": 616.125,
+                    "wall_us": 615.9578125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 4,
+                    "renders": 16,
+                    "cpu_us": 695.4375,
+                    "wall_us": 695.225625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 5,
+                    "renders": 16,
+                    "cpu_us": 618.4375,
+                    "wall_us": 618.30675,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 6,
+                    "renders": 16,
+                    "cpu_us": 666.4375,
+                    "wall_us": 666.3794375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 7,
+                    "renders": 16,
+                    "cpu_us": 763.1875,
+                    "wall_us": 762.433625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 8,
+                    "renders": 16,
+                    "cpu_us": 634.8125,
+                    "wall_us": 634.611375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 9,
+                    "renders": 16,
+                    "cpu_us": 651.5,
+                    "wall_us": 651.3873125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 10,
+                    "renders": 16,
+                    "cpu_us": 823.3125,
+                    "wall_us": 823.0530625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 11,
+                    "renders": 16,
+                    "cpu_us": 680,
+                    "wall_us": 679.8975625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 12,
+                    "renders": 16,
+                    "cpu_us": 812.3125,
+                    "wall_us": 812.0505625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 13,
+                    "renders": 16,
+                    "cpu_us": 688.5625,
+                    "wall_us": 688.3975625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 14,
+                    "renders": 16,
+                    "cpu_us": 604.3125,
+                    "wall_us": 604.1714375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 15,
+                    "renders": 16,
+                    "cpu_us": 763.9375,
+                    "wall_us": 763.5560625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 16,
+                    "renders": 16,
+                    "cpu_us": 610.8125,
+                    "wall_us": 610.71825,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 17,
+                    "renders": 16,
+                    "cpu_us": 823.1875,
+                    "wall_us": 822.988,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 18,
+                    "renders": 16,
+                    "cpu_us": 623.5625,
+                    "wall_us": 623.4499375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 19,
+                    "renders": 16,
+                    "cpu_us": 809.8125,
+                    "wall_us": 809.2563125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 20,
+                    "renders": 16,
+                    "cpu_us": 643.5,
+                    "wall_us": 643.29625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 21,
+                    "renders": 16,
+                    "cpu_us": 734.5,
+                    "wall_us": 733.077,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 22,
+                    "renders": 16,
+                    "cpu_us": 807.875,
+                    "wall_us": 807.6443125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 23,
+                    "renders": 16,
+                    "cpu_us": 722.5625,
+                    "wall_us": 723.9755,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                }
+            ],
+            "naive": [
+                {
+                    "round": 0,
+                    "renders": 16,
+                    "cpu_us": 1468.6875,
+                    "wall_us": 1468.5915,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 1,
+                    "renders": 16,
+                    "cpu_us": 1484.3125,
+                    "wall_us": 1484.0054375,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 2,
+                    "renders": 16,
+                    "cpu_us": 1503.25,
+                    "wall_us": 1502.9819375,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 3,
+                    "renders": 16,
+                    "cpu_us": 1428.625,
+                    "wall_us": 1428.5005,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 4,
+                    "renders": 16,
+                    "cpu_us": 1567.5,
+                    "wall_us": 1567.3540625,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 5,
+                    "renders": 16,
+                    "cpu_us": 1477.25,
+                    "wall_us": 1476.9925,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 6,
+                    "renders": 16,
+                    "cpu_us": 1568.625,
+                    "wall_us": 1570.2784375,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 7,
+                    "renders": 16,
+                    "cpu_us": 1441.4375,
+                    "wall_us": 1441.188,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 8,
+                    "renders": 16,
+                    "cpu_us": 1440.875,
+                    "wall_us": 1440.596875,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 9,
+                    "renders": 16,
+                    "cpu_us": 1334.125,
+                    "wall_us": 1333.9306875,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 10,
+                    "renders": 16,
+                    "cpu_us": 1508.125,
+                    "wall_us": 1507.8725625,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 11,
+                    "renders": 16,
+                    "cpu_us": 1526.375,
+                    "wall_us": 1526.1355,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 12,
+                    "renders": 16,
+                    "cpu_us": 1363.625,
+                    "wall_us": 1376.44875,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 13,
+                    "renders": 16,
+                    "cpu_us": 1478.5625,
+                    "wall_us": 1478.3310625,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 14,
+                    "renders": 16,
+                    "cpu_us": 1403.4375,
+                    "wall_us": 1403.2428125,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 15,
+                    "renders": 16,
+                    "cpu_us": 1895.6875,
+                    "wall_us": 1895.3784375,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 16,
+                    "renders": 16,
+                    "cpu_us": 1416.4375,
+                    "wall_us": 1416.370375,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 17,
+                    "renders": 16,
+                    "cpu_us": 1483.4375,
+                    "wall_us": 1483.3414375,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 18,
+                    "renders": 16,
+                    "cpu_us": 2335.5625,
+                    "wall_us": 2335.2798125,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 19,
+                    "renders": 16,
+                    "cpu_us": 1424.3125,
+                    "wall_us": 1424.011,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 20,
+                    "renders": 16,
+                    "cpu_us": 1480.75,
+                    "wall_us": 1480.302375,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 21,
+                    "renders": 16,
+                    "cpu_us": 1611.625,
+                    "wall_us": 1611.418875,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 22,
+                    "renders": 16,
+                    "cpu_us": 1339.0625,
+                    "wall_us": 1338.8369375,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 23,
+                    "renders": 16,
+                    "cpu_us": 1430,
+                    "wall_us": 1429.8365,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 5884
+                }
+            ],
+            "planned": [
+                {
+                    "round": 0,
+                    "renders": 16,
+                    "cpu_us": 739.5625,
+                    "wall_us": 739.3581875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 1,
+                    "renders": 16,
+                    "cpu_us": 689.75,
+                    "wall_us": 689.637125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 2,
+                    "renders": 16,
+                    "cpu_us": 594,
+                    "wall_us": 593.92925,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 3,
+                    "renders": 16,
+                    "cpu_us": 615.5,
+                    "wall_us": 615.2495,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 4,
+                    "renders": 16,
+                    "cpu_us": 585.5625,
+                    "wall_us": 585.4449375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 5,
+                    "renders": 16,
+                    "cpu_us": 651.875,
+                    "wall_us": 651.73625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 6,
+                    "renders": 16,
+                    "cpu_us": 630,
+                    "wall_us": 629.780625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 7,
+                    "renders": 16,
+                    "cpu_us": 673.125,
+                    "wall_us": 674.598125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 8,
+                    "renders": 16,
+                    "cpu_us": 588.0625,
+                    "wall_us": 587.9944375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 9,
+                    "renders": 16,
+                    "cpu_us": 699.5,
+                    "wall_us": 699.288125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 10,
+                    "renders": 16,
+                    "cpu_us": 753.5625,
+                    "wall_us": 753.394625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 11,
+                    "renders": 16,
+                    "cpu_us": 760.5,
+                    "wall_us": 760.44925,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 12,
+                    "renders": 16,
+                    "cpu_us": 705.125,
+                    "wall_us": 704.8844375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 13,
+                    "renders": 16,
+                    "cpu_us": 722.1875,
+                    "wall_us": 722.0796875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 14,
+                    "renders": 16,
+                    "cpu_us": 597.125,
+                    "wall_us": 596.9735,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 15,
+                    "renders": 16,
+                    "cpu_us": 661.6875,
+                    "wall_us": 661.5174375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 16,
+                    "renders": 16,
+                    "cpu_us": 1215,
+                    "wall_us": 1214.795875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 17,
+                    "renders": 16,
+                    "cpu_us": 657.5,
+                    "wall_us": 657.402875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 18,
+                    "renders": 16,
+                    "cpu_us": 754.4375,
+                    "wall_us": 754.1863125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 19,
+                    "renders": 16,
+                    "cpu_us": 773.125,
+                    "wall_us": 772.8736875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 20,
+                    "renders": 16,
+                    "cpu_us": 784.3125,
+                    "wall_us": 784.0689375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 21,
+                    "renders": 16,
+                    "cpu_us": 730.1875,
+                    "wall_us": 729.952,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 22,
+                    "renders": 16,
+                    "cpu_us": 666.75,
+                    "wall_us": 666.6425,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                },
+                {
+                    "round": 23,
+                    "renders": 16,
+                    "cpu_us": 683.875,
+                    "wall_us": 683.668375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 5829,
+                    "output_bytes": 5884
+                }
+            ]
+        },
+        "dynamic_fields": {
+            "eager_full": [
+                {
+                    "round": 0,
+                    "renders": 16,
+                    "cpu_us": 565.75,
+                    "wall_us": 565.559625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 1,
+                    "renders": 16,
+                    "cpu_us": 631.9375,
+                    "wall_us": 631.629625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 2,
+                    "renders": 16,
+                    "cpu_us": 496.0625,
+                    "wall_us": 495.8334375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 3,
+                    "renders": 16,
+                    "cpu_us": 551.625,
+                    "wall_us": 550.9998125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 4,
+                    "renders": 16,
+                    "cpu_us": 654.75,
+                    "wall_us": 654.444625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 5,
+                    "renders": 16,
+                    "cpu_us": 481.5,
+                    "wall_us": 481.36475,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 6,
+                    "renders": 16,
+                    "cpu_us": 585.1875,
+                    "wall_us": 584.718375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 7,
+                    "renders": 16,
+                    "cpu_us": 641.25,
+                    "wall_us": 641.0540625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 8,
+                    "renders": 16,
+                    "cpu_us": 518.5625,
+                    "wall_us": 518.3203125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 9,
+                    "renders": 16,
+                    "cpu_us": 601.5,
+                    "wall_us": 601.2729375,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 10,
+                    "renders": 16,
+                    "cpu_us": 688.125,
+                    "wall_us": 687.850625,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 11,
+                    "renders": 16,
+                    "cpu_us": 576.5,
+                    "wall_us": 576.187125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 12,
+                    "renders": 16,
+                    "cpu_us": 641.5,
+                    "wall_us": 641.27275,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 13,
+                    "renders": 16,
+                    "cpu_us": 519.9375,
+                    "wall_us": 519.7213125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 14,
+                    "renders": 16,
+                    "cpu_us": 483.3125,
+                    "wall_us": 483.1173125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 15,
+                    "renders": 16,
+                    "cpu_us": 476.4375,
+                    "wall_us": 476.2788125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 16,
+                    "renders": 16,
+                    "cpu_us": 679.3125,
+                    "wall_us": 679.0616875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 17,
+                    "renders": 16,
+                    "cpu_us": 471.375,
+                    "wall_us": 471.1408125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 18,
+                    "renders": 16,
+                    "cpu_us": 509.375,
+                    "wall_us": 509.1745,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 19,
+                    "renders": 16,
+                    "cpu_us": 483.125,
+                    "wall_us": 482.9636875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 20,
+                    "renders": 16,
+                    "cpu_us": 472.5,
+                    "wall_us": 472.3908125,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 21,
+                    "renders": 16,
+                    "cpu_us": 558.9375,
+                    "wall_us": 558.7236875,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 22,
+                    "renders": 16,
+                    "cpu_us": 498.9375,
+                    "wall_us": 498.586,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 23,
+                    "renders": 16,
+                    "cpu_us": 555.875,
+                    "wall_us": 555.755,
+                    "queries": 2,
+                    "rows": 120,
+                    "payload_bytes": 426885,
+                    "output_bytes": 3010
+                }
+            ],
+            "eager_projected": [
+                {
+                    "round": 0,
+                    "renders": 16,
+                    "cpu_us": 517.5625,
+                    "wall_us": 517.309875,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 1,
+                    "renders": 16,
+                    "cpu_us": 499.3125,
+                    "wall_us": 499.1485,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 2,
+                    "renders": 16,
+                    "cpu_us": 474.5,
+                    "wall_us": 474.3960625,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 3,
+                    "renders": 16,
+                    "cpu_us": 524.3125,
+                    "wall_us": 524.151,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 4,
+                    "renders": 16,
+                    "cpu_us": 543.875,
+                    "wall_us": 543.604,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 5,
+                    "renders": 16,
+                    "cpu_us": 509.125,
+                    "wall_us": 509.0989375,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 6,
+                    "renders": 16,
+                    "cpu_us": 495.3125,
+                    "wall_us": 495.1068125,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 7,
+                    "renders": 16,
+                    "cpu_us": 510.4375,
+                    "wall_us": 510.3385,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 8,
+                    "renders": 16,
+                    "cpu_us": 608.75,
+                    "wall_us": 608.6219375,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 9,
+                    "renders": 16,
+                    "cpu_us": 534,
+                    "wall_us": 533.7968125,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 10,
+                    "renders": 16,
+                    "cpu_us": 540.8125,
+                    "wall_us": 540.5675625,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 11,
+                    "renders": 16,
+                    "cpu_us": 520.8125,
+                    "wall_us": 520.6561875,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 12,
+                    "renders": 16,
+                    "cpu_us": 476.0625,
+                    "wall_us": 477.5131875,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 13,
+                    "renders": 16,
+                    "cpu_us": 523.4375,
+                    "wall_us": 523.25775,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 14,
+                    "renders": 16,
+                    "cpu_us": 511.5625,
+                    "wall_us": 513.2681875,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 15,
+                    "renders": 16,
+                    "cpu_us": 558.1875,
+                    "wall_us": 557.921625,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 16,
+                    "renders": 16,
+                    "cpu_us": 576.25,
+                    "wall_us": 576.135125,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 17,
+                    "renders": 16,
+                    "cpu_us": 538.5625,
+                    "wall_us": 538.38525,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 18,
+                    "renders": 16,
+                    "cpu_us": 484.625,
+                    "wall_us": 484.56,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 19,
+                    "renders": 16,
+                    "cpu_us": 517.3125,
+                    "wall_us": 517.153625,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 20,
+                    "renders": 16,
+                    "cpu_us": 583.5,
+                    "wall_us": 583.3434375,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 21,
+                    "renders": 16,
+                    "cpu_us": 512.0625,
+                    "wall_us": 511.8203125,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 22,
+                    "renders": 16,
+                    "cpu_us": 569.1875,
+                    "wall_us": 568.945,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 23,
+                    "renders": 16,
+                    "cpu_us": 493.5625,
+                    "wall_us": 493.3360625,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                }
+            ],
+            "naive": [
+                {
+                    "round": 0,
+                    "renders": 16,
+                    "cpu_us": 1176.25,
+                    "wall_us": 1176.01225,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 1,
+                    "renders": 16,
+                    "cpu_us": 1166,
+                    "wall_us": 1165.8846875,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 2,
+                    "renders": 16,
+                    "cpu_us": 1170.8125,
+                    "wall_us": 1170.5799375,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 3,
+                    "renders": 16,
+                    "cpu_us": 1288.1875,
+                    "wall_us": 1287.9491875,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 4,
+                    "renders": 16,
+                    "cpu_us": 1266.625,
+                    "wall_us": 1266.3685625,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 5,
+                    "renders": 16,
+                    "cpu_us": 1186,
+                    "wall_us": 1185.8065,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 6,
+                    "renders": 16,
+                    "cpu_us": 1290.1875,
+                    "wall_us": 1290.0559375,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 7,
+                    "renders": 16,
+                    "cpu_us": 1123.6875,
+                    "wall_us": 1123.46825,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 8,
+                    "renders": 16,
+                    "cpu_us": 1122.625,
+                    "wall_us": 1122.3693125,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 9,
+                    "renders": 16,
+                    "cpu_us": 1292.8125,
+                    "wall_us": 1292.7121875,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 10,
+                    "renders": 16,
+                    "cpu_us": 1112.5,
+                    "wall_us": 1112.3615,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 11,
+                    "renders": 16,
+                    "cpu_us": 1065.625,
+                    "wall_us": 1065.46075,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 12,
+                    "renders": 16,
+                    "cpu_us": 1335,
+                    "wall_us": 1334.922875,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 13,
+                    "renders": 16,
+                    "cpu_us": 1264.6875,
+                    "wall_us": 1264.451875,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 14,
+                    "renders": 16,
+                    "cpu_us": 1200.625,
+                    "wall_us": 1200.368875,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 15,
+                    "renders": 16,
+                    "cpu_us": 1328.5,
+                    "wall_us": 1328.321375,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 16,
+                    "renders": 16,
+                    "cpu_us": 1325.375,
+                    "wall_us": 1325.1573125,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 17,
+                    "renders": 16,
+                    "cpu_us": 1192.3125,
+                    "wall_us": 1192.0564375,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 18,
+                    "renders": 16,
+                    "cpu_us": 1294.375,
+                    "wall_us": 1294.128875,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 19,
+                    "renders": 16,
+                    "cpu_us": 1294.3125,
+                    "wall_us": 1294.0975625,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 20,
+                    "renders": 16,
+                    "cpu_us": 1208.3125,
+                    "wall_us": 1208.0459375,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 21,
+                    "renders": 16,
+                    "cpu_us": 1065.4375,
+                    "wall_us": 1065.2263125,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 22,
+                    "renders": 16,
+                    "cpu_us": 1272,
+                    "wall_us": 1271.7044375,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 23,
+                    "renders": 16,
+                    "cpu_us": 1106.4375,
+                    "wall_us": 1106.2235,
+                    "queries": 49,
+                    "rows": 144,
+                    "payload_bytes": 427077,
+                    "output_bytes": 3010
+                }
+            ],
+            "planned": [
+                {
+                    "round": 0,
+                    "renders": 16,
+                    "cpu_us": 606.5,
+                    "wall_us": 606.3666875,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 1,
+                    "renders": 16,
+                    "cpu_us": 571.1875,
+                    "wall_us": 570.434625,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 2,
+                    "renders": 16,
+                    "cpu_us": 631.375,
+                    "wall_us": 631.1713125,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 3,
+                    "renders": 16,
+                    "cpu_us": 493.4375,
+                    "wall_us": 493.263125,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 4,
+                    "renders": 16,
+                    "cpu_us": 533.9375,
+                    "wall_us": 533.7759375,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 5,
+                    "renders": 16,
+                    "cpu_us": 592.375,
+                    "wall_us": 592.1923125,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 6,
+                    "renders": 16,
+                    "cpu_us": 558.375,
+                    "wall_us": 558.09875,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 7,
+                    "renders": 16,
+                    "cpu_us": 518.1875,
+                    "wall_us": 517.979125,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 8,
+                    "renders": 16,
+                    "cpu_us": 481.6875,
+                    "wall_us": 481.5990625,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 9,
+                    "renders": 16,
+                    "cpu_us": 517.3125,
+                    "wall_us": 517.0755,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 10,
+                    "renders": 16,
+                    "cpu_us": 540.3125,
+                    "wall_us": 540.0545,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 11,
+                    "renders": 16,
+                    "cpu_us": 543.8125,
+                    "wall_us": 543.6769375,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 12,
+                    "renders": 16,
+                    "cpu_us": 536.1875,
+                    "wall_us": 536.124875,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 13,
+                    "renders": 16,
+                    "cpu_us": 521.75,
+                    "wall_us": 521.6093125,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 14,
+                    "renders": 16,
+                    "cpu_us": 612.6875,
+                    "wall_us": 612.5046875,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 15,
+                    "renders": 16,
+                    "cpu_us": 560.75,
+                    "wall_us": 560.5518125,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 16,
+                    "renders": 16,
+                    "cpu_us": 513.125,
+                    "wall_us": 512.9296875,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 17,
+                    "renders": 16,
+                    "cpu_us": 633.6875,
+                    "wall_us": 633.4968125,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 18,
+                    "renders": 16,
+                    "cpu_us": 512.75,
+                    "wall_us": 512.515625,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 19,
+                    "renders": 16,
+                    "cpu_us": 574.9375,
+                    "wall_us": 574.7835,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 20,
+                    "renders": 16,
+                    "cpu_us": 584.75,
+                    "wall_us": 584.4345625,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 21,
+                    "renders": 16,
+                    "cpu_us": 486.3125,
+                    "wall_us": 486.1824375,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 22,
+                    "renders": 16,
+                    "cpu_us": 519.5,
+                    "wall_us": 519.291625,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                },
+                {
+                    "round": 23,
+                    "renders": 16,
+                    "cpu_us": 508.8125,
+                    "wall_us": 508.5989375,
+                    "queries": 4,
+                    "rows": 240,
+                    "payload_bytes": 5199,
+                    "output_bytes": 3010
+                }
+            ]
+        }
+    },
+    "rounds": 24,
+    "warmup": 8,
+    "batch": 16,
+    "memory": {
+        "grid_without_variants": {
+            "eager_full": {
+                "php_peak_delta_bytes": 660704
+            },
+            "eager_projected": {
+                "php_peak_delta_bytes": 119888
+            },
+            "naive": {
+                "php_peak_delta_bytes": 353232
+            },
+            "planned": {
+                "php_peak_delta_bytes": 49552
+            }
+        },
+        "grid_with_variants": {
+            "eager_full": {
+                "php_peak_delta_bytes": 691688
+            },
+            "eager_projected": {
+                "php_peak_delta_bytes": 150872
+            },
+            "naive": {
+                "php_peak_delta_bytes": 701728
+            },
+            "planned": {
+                "php_peak_delta_bytes": 150872
+            }
+        },
+        "dynamic_fields": {
+            "eager_full": {
+                "php_peak_delta_bytes": 645280
+            },
+            "eager_projected": {
+                "php_peak_delta_bytes": 147776
+            },
+            "naive": {
+                "php_peak_delta_bytes": 649776
+            },
+            "planned": {
+                "php_peak_delta_bytes": 147776
+            }
+        }
+    },
+    "source_sha256": "0d7a9b346c5527450deb0ff909fd6e98b43bb85a43079e71996223539a8d0495",
+    "database_sha256": "14d9bc8628e4a78a30adac3201bd9f206b50dadc3d0d69fedf976253da913f61",
+    "database_bytes": 101740544,
+    "fixture_sha256": "daa7573441aa4cb0f3956b5285bfee6e4490bce9d543b74b932794ba9720fecc",
+    "reference_sha256": "cf71567b7614f4b90f3bfb6c7cd29ff6ab4cb4f48cfcdbd75b0a570937816743",
+    "jit_after": {
+        "enabled": false,
+        "on": false,
+        "kind": 0,
+        "opt_level": 0,
+        "opt_flags": 0,
+        "buffer_size": 0,
+        "buffer_free": 0
+    },
+    "process_rss_peak_kib": 104324
+}

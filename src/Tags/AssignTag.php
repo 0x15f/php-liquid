@@ -72,6 +72,16 @@ class AssignTag extends Tag implements CanBeCompiled, HasParseTreeVisitorChildre
         return true;
     }
 
+    /**
+     * @return array{target: string, value: Variable}
+     *
+     * @internal
+     */
+    public function dependencyMetadata(): array
+    {
+        return ['target' => $this->to, 'value' => $this->from];
+    }
+
     public function parseTreeVisitorChildren(): array
     {
         return [$this->from];

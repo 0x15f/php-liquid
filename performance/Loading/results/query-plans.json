@@ -1,0 +1,24 @@
+{
+    "product_page": {
+        "sql": "SELECT id,image,price_formatted,title,url FROM products WHERE tenant_id = ? ORDER BY id LIMIT ? OFFSET ?",
+        "plan": [
+            {
+                "id": 10,
+                "parent": 0,
+                "notused": 0,
+                "detail": "SEARCH products USING INDEX sqlite_autoindex_products_1 (tenant_id=?)"
+            }
+        ]
+    },
+    "batched_variants": {
+        "sql": "SELECT id,product_id,available,title FROM variants WHERE tenant_id = ? AND product_id IN (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ORDER BY product_id,id LIMIT ?",
+        "plan": [
+            {
+                "id": 7,
+                "parent": 0,
+                "notused": 0,
+                "detail": "SEARCH variants USING INDEX variants_products (tenant_id=? AND product_id=?)"
+            }
+        ]
+    }
+}

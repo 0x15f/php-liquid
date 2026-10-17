@@ -6,6 +6,7 @@ use Keepsuit\Liquid\Compiler\CompilerContext;
 use Keepsuit\Liquid\Contracts\CanBeCompiled;
 use Keepsuit\Liquid\Contracts\CanBeStreamed;
 use Keepsuit\Liquid\Contracts\HasParseTreeVisitorChildren;
+use Keepsuit\Liquid\Contracts\ProvidesCollectionSlice;
 use Keepsuit\Liquid\Drops\ForLoopDrop;
 use Keepsuit\Liquid\Exceptions\InvalidArgumentException;
 use Keepsuit\Liquid\Exceptions\SyntaxException;
@@ -193,6 +194,20 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
         return $this->elseBlock ? [$this->forBlock, $this->elseBlock] : [$this->forBlock];
     }
 
+    /**
+     * Read-only AST metadata for advisory dependency analysis.
+     *
+     * @return array{variable: string, collection: mixed, offset: mixed, limit: mixed, reversed: bool, body: BodyNode, else: ?BodyNode}
+     *
+     * @internal
+     */
+    public function dependencyMetadata(): array
+    {
+        return ['variable' => $this->variableName, 'collection' => $this->collection,
+            'offset' => $this->from, 'limit' => $this->limit, 'reversed' => $this->reversed,
+            'body' => $this->forBlock, 'else' => $this->elseBlock];
+    }
+
     public function parseTreeVisitorChildren(): array
     {
         return Arr::compact([
@@ -244,7 +259,7 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
         assert(is_array($offsets));
 
         $collection = $context->evaluate($expression);
-        if (! $collection instanceof Range || $collection::class !== Range::class) {
+        if (! $collection instanceof ProvidesCollectionSlice && (! $collection instanceof Range || $collection::class !== Range::class)) {
             $collection = Arr::fromCollection($collection);
         }
 
@@ -267,6 +282,7 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
             default => throw new InvalidArgumentException('Invalid integer'),
         };
         $segment = match (true) {
+            $collection instanceof ProvidesCollectionSlice => $collection->liquidSlice($offset, $length),
             $collection instanceof Range => $collection->slice($offset, $length),
             $offset === 0 && $length === null => $collection,
             default => array_slice($collection, $offset, $length)
@@ -292,7 +308,7 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
         assert(is_array($offsets));
 
         $collection = VariableLookup::evaluateDescriptor($context, $expression);
-        if (! $collection instanceof Range || $collection::class !== Range::class) {
+        if (! $collection instanceof ProvidesCollectionSlice && (! $collection instanceof Range || $collection::class !== Range::class)) {
             $collection = Arr::fromCollection($collection);
         }
 
@@ -315,6 +331,7 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
             default => throw new InvalidArgumentException('Invalid integer'),
         };
         $segment = match (true) {
+            $collection instanceof ProvidesCollectionSlice => $collection->liquidSlice($offset, $length),
             $collection instanceof Range => $collection->slice($offset, $length),
             $offset === 0 && $length === null => $collection,
             default => array_slice($collection, $offset, $length)

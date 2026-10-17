@@ -219,6 +219,17 @@ class RenderTag extends Tag implements CanBeCompiled, CanBeStreamed, HasParseTre
         yield from $partial->stream($partialContext);
     }
 
+    /**
+     * @return array{template: string|VariableLookup, value: mixed, alias: ?string, attributes: array<string, mixed>, for: bool}
+     *
+     * @internal
+     */
+    public function dependencyMetadata(): array
+    {
+        return ['template' => $this->templateNameExpression, 'value' => $this->variableNameExpression,
+            'alias' => $this->aliasName, 'attributes' => $this->attributes, 'for' => $this->isForLoop];
+    }
+
     public function parseTreeVisitorChildren(): array
     {
         return [

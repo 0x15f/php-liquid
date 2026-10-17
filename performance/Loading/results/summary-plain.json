@@ -1,0 +1,192 @@
+{
+  "runs": 3,
+  "prefix": "final-plain-",
+  "rows": {
+    "grid_without_variants": {
+      "eager_full": {
+        "cpu_us": 514.8125,
+        "wall_us": 514.75128125,
+        "cpu_run_medians": [
+          509.0625,
+          568.0625,
+          514.8125
+        ],
+        "process_spread_pct": 11.58993247391038,
+        "php_peak_delta_bytes": 660704,
+        "queries": 2,
+        "rows": 120,
+        "payload_bytes": 426885,
+        "output_bytes": 3364
+      },
+      "eager_projected": {
+        "cpu_us": 460.125,
+        "wall_us": 459.971625,
+        "cpu_run_medians": [
+          460.125,
+          444.9375,
+          504.40625
+        ],
+        "process_spread_pct": 13.36564124174744,
+        "php_peak_delta_bytes": 119888,
+        "queries": 2,
+        "rows": 120,
+        "payload_bytes": 5829,
+        "output_bytes": 3364
+      },
+      "naive": {
+        "cpu_us": 662.5625,
+        "wall_us": 662.46675,
+        "cpu_run_medians": [
+          659.125,
+          706.625,
+          662.5625
+        ],
+        "process_spread_pct": 7.20652380049307,
+        "php_peak_delta_bytes": 353232,
+        "queries": 25,
+        "rows": 48,
+        "payload_bytes": 210981,
+        "output_bytes": 3364
+      },
+      "planned": {
+        "cpu_us": 252.625,
+        "wall_us": 252.6323125,
+        "cpu_run_medians": [
+          248.875,
+          266.59375,
+          252.625
+        ],
+        "process_spread_pct": 7.119537920642882,
+        "php_peak_delta_bytes": 49552,
+        "queries": 1,
+        "rows": 24,
+        "payload_bytes": 1701,
+        "output_bytes": 3364
+      }
+    },
+    "grid_with_variants": {
+      "eager_full": {
+        "cpu_us": 812.09375,
+        "wall_us": 812.18940625,
+        "cpu_run_medians": [
+          793.3125,
+          844.21875,
+          812.09375
+        ],
+        "process_spread_pct": 6.416922713306539,
+        "php_peak_delta_bytes": 691688,
+        "queries": 2,
+        "rows": 120,
+        "payload_bytes": 426885,
+        "output_bytes": 5884
+      },
+      "eager_projected": {
+        "cpu_us": 694.3125,
+        "wall_us": 694.2729375,
+        "cpu_run_medians": [
+          684.28125,
+          745.125,
+          694.3125
+        ],
+        "process_spread_pct": 8.891628990272649,
+        "php_peak_delta_bytes": 150872,
+        "queries": 2,
+        "rows": 120,
+        "payload_bytes": 5829,
+        "output_bytes": 5884
+      },
+      "naive": {
+        "cpu_us": 1477.90625,
+        "wall_us": 1477.6617812499999,
+        "cpu_run_medians": [
+          1477.90625,
+          1616.4375,
+          1453.0625
+        ],
+        "process_spread_pct": 11.243494343842752,
+        "php_peak_delta_bytes": 701728,
+        "queries": 49,
+        "rows": 144,
+        "payload_bytes": 427077,
+        "output_bytes": 5884
+      },
+      "planned": {
+        "cpu_us": 701.125,
+        "wall_us": 701.215625,
+        "cpu_run_medians": [
+          686.8125,
+          747.28125,
+          701.125
+        ],
+        "process_spread_pct": 8.804258804258813,
+        "php_peak_delta_bytes": 150872,
+        "queries": 2,
+        "rows": 120,
+        "payload_bytes": 5829,
+        "output_bytes": 5884
+      }
+    },
+    "dynamic_fields": {
+      "eager_full": {
+        "cpu_us": 570.875,
+        "wall_us": 570.8946874999999,
+        "cpu_run_medians": [
+          553.75,
+          570.875,
+          571.84375
+        ],
+        "process_spread_pct": 3.2674943566591397,
+        "php_peak_delta_bytes": 645280,
+        "queries": 2,
+        "rows": 120,
+        "payload_bytes": 426885,
+        "output_bytes": 3010
+      },
+      "eager_projected": {
+        "cpu_us": 519.1875,
+        "wall_us": 518.9830312500001,
+        "cpu_run_medians": [
+          519.1875,
+          543.6875,
+          509.125
+        ],
+        "process_spread_pct": 6.788607905720601,
+        "php_peak_delta_bytes": 147776,
+        "queries": 4,
+        "rows": 240,
+        "payload_bytes": 5199,
+        "output_bytes": 3010
+      },
+      "naive": {
+        "cpu_us": 1219.5,
+        "wall_us": 1219.8173125,
+        "cpu_run_medians": [
+          1204.46875,
+          1226.3125,
+          1219.5
+        ],
+        "process_spread_pct": 1.8135588822873139,
+        "php_peak_delta_bytes": 649776,
+        "queries": 49,
+        "rows": 144,
+        "payload_bytes": 427077,
+        "output_bytes": 3010
+      },
+      "planned": {
+        "cpu_us": 528.90625,
+        "wall_us": 528.8646249999999,
+        "cpu_run_medians": [
+          538.25,
+          528.90625,
+          521.6875
+        ],
+        "process_spread_pct": 3.1747933389241645,
+        "php_peak_delta_bytes": 147776,
+        "queries": 4,
+        "rows": 240,
+        "payload_bytes": 5199,
+        "output_bytes": 3010
+      }
+    }
+  }
+}
