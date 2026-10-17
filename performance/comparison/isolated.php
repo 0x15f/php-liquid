@@ -5,7 +5,7 @@ require __DIR__.'/fixtures.php';
 
 use Keepsuit\Liquid\Security\IsolatedRenderer;
 
-if (extension_loaded('xdebug') || extension_loaded('pcov')) {
+if (extension_loaded('xdebug') || extension_loaded('pcov') || extension_loaded('xhprof')) {
     throw new RuntimeException('Timing requires profilers to be unloaded.');
 }
 $options = getopt('', ['output:', 'samples:']);
@@ -52,9 +52,10 @@ try {
     sort($ordered);
     $percentile = fn (float $p) => $ordered[(int) floor((count($ordered) - 1) * $p)];
     $result = ['time_utc' => gmdate('c'), 'php' => PHP_VERSION, 'arch' => php_uname('m'), 'kernel' => php_uname('r'),
+        'profilers_loaded' => ['xdebug' => extension_loaded('xdebug'), 'pcov' => extension_loaded('pcov'), 'xhprof' => extension_loaded('xhprof')],
         'engine_source_sha256' => hash_final($source), 'worker_sha256' => hash_file('sha256', dirname(__DIR__, 2).'/resources/isolated-worker.php'),
         'fixture_sha256' => hash('sha256', json_encode($fixtures, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)),
-        'cpu_max' => trim(file_get_contents('/sys/fs/cgroup/cpu.max')), 'mode' => 'sequential-isolated-render-wall-time',
+        'cpu_max' => is_readable('/sys/fs/cgroup/cpu.max') ? trim(file_get_contents('/sys/fs/cgroup/cpu.max')) : null, 'mode' => 'sequential-isolated-render-wall-time',
         'warmup_requests' => 32, 'worker_max_requests' => 100, 'worker_php_heap_mib' => 128,
         'cold_ms' => $cold, 'samples' => $count, 'p50_wall_us' => $percentile(0.5), 'p95_wall_us' => $percentile(0.95),
         'p99_wall_us' => $percentile(0.99), 'max_wall_us' => max($samples), 'raw_wall_us' => $samples,

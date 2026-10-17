@@ -54,6 +54,20 @@ jobs:
           lscpu > build/security-benchmarks/cpu.txt
           git rev-parse HEAD > build/security-benchmarks/revision.txt
 
+      - name: Verify measurement metadata
+        run: |
+          python3 - <<'PY'
+          import json, pathlib
+          for path in pathlib.Path('build/security-benchmarks').glob('*.json'):
+              result = json.loads(path.read_text())
+              assert result['arch'] == 'aarch64', path
+              assert not any(result.get('profilers_loaded', {}).values()), path
+              if 'samples' in result and isinstance(result['samples'], dict):
+                  assert result['checks']['grid_24']['shopify_reference'], path
+              if path.name.startswith('jit-'):
+                  assert result['jit']['enabled'] and result['jit']['on'], path
+          PY
+
       - uses: actions/upload-artifact@v4
         with:
           name: security-benchmarks-arm64

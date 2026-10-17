@@ -19,8 +19,8 @@ function comparisonCpuNs(): int
 $options = getopt('', ['output:', 'rounds:', 'label:', 'php-only', 'check-only', 'workload:', 'paired-baseline', 'warmup:', 'prepared', 'security']);
 $rounds = (int) ($options['rounds'] ?? 31);
 $warmup = (int) ($options['warmup'] ?? 10);
-if (! isset($options['check-only']) && (extension_loaded('xdebug') || extension_loaded('pcov'))) {
-    throw new RuntimeException('Timing requires Xdebug and PCOV to be unloaded, not merely disabled.');
+if (! isset($options['check-only']) && (extension_loaded('xdebug') || extension_loaded('pcov') || extension_loaded('xhprof'))) {
+    throw new RuntimeException('Timing requires profilers to be unloaded, not merely disabled.');
 }
 $fixtures = comparisonFixtures();
 $filesystem = new class($fixtures['templates']) implements LiquidFileSystem
@@ -119,6 +119,9 @@ if (isset($options['prepared'])) {
 $rustInit = $encode(['op' => 'init', 'templates' => $fixtures['templates'], 'inputs' => $nativeInputs]);
 $extismVersion = null;
 $referencePath = dirname(__DIR__, 2).'/build/reference-hashes.json';
+if (! is_file($referencePath)) {
+    $referencePath = __DIR__.'/results/reference-hashes.json';
+}
 $referenceHashes = is_file($referencePath) ? json_decode(file_get_contents($referencePath), true, flags: JSON_THROW_ON_ERROR) : null;
 if (! isset($options['php-only'])) {
     foreach (['rust_native' => NativeLiquidBridge::class, 'rust_wasm' => WasmLiquidBridge::class] as $name => $class) {
@@ -158,7 +161,7 @@ $result = ['label' => $options['label'] ?? 'unspecified', 'time_utc' => gmdate('
     'opcache' => opcache_get_status(false)['opcache_enabled'] ?? false, 'jit' => opcache_get_status(false)['jit'] ?? null,
     'profilers_loaded' => ['xdebug' => extension_loaded('xdebug'), 'pcov' => extension_loaded('pcov'), 'xhprof' => extension_loaded('xhprof')], 'warmup_rounds' => $warmup,
     'xdebug_mode' => ini_get('xdebug.mode'), 'cpu_affinity' => trim(shell_exec('taskset -pc '.getmypid()) ?? ''),
-    'cpu_max' => trim(file_get_contents('/sys/fs/cgroup/cpu.max')),
+    'cpu_max' => is_readable('/sys/fs/cgroup/cpu.max') ? trim(file_get_contents('/sys/fs/cgroup/cpu.max')) : null,
     'initialization_ms' => $initialization, 'fixture_sha256' => hash('sha256', $encode($fixtures)),
     'rounds' => $rounds, 'baseline_revision' => isset($options['paired-baseline']) ? trim(file_get_contents(dirname(__DIR__, 2).'/build/comparison-baseline/REVISION')) : null, 'input_mode' => isset($options['prepared']) ? 'preloaded-native-contexts' : (isset($options['php-only']) ? 'php-arrays' : 'php-arrays-with-bridge-conversion'), 'samples' => [], 'checks' => [], 'memory' => []];
 try {
