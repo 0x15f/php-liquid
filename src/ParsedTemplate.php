@@ -30,7 +30,7 @@ class ParsedTemplate extends AbstractTemplate
             $output = $this->root->render($context);
 
             // Partials are already part of the root output
-            if (! $context->isPartial()) {
+            if ($root) {
                 $context->resourceLimits->incrementWriteScore($output);
             }
 
@@ -59,7 +59,7 @@ class ParsedTemplate extends AbstractTemplate
             $this->prepareContext($context);
 
             // Partials are streamed through the root template's loop below
-            if ($context->isPartial()) {
+            if (! $root) {
                 yield from $this->root->stream($context);
 
                 return;

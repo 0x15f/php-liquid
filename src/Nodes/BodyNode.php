@@ -161,10 +161,14 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
         $output = '';
         $byteLimit = $context->resourceLimits->intermediateBytesLimit;
 
+        if ($byteLimit === null) {
+            return $this->renderUnbounded($context);
+        }
+
         foreach ($this->children as $node) {
             // Text is the majority of children and cannot fail or interrupt.
             if ($node instanceof Text) {
-                if ($byteLimit !== null && strlen($node->value) > $byteLimit - strlen($output)) {
+                if (strlen($node->value) > $byteLimit - strlen($output)) {
                     $context->resourceLimits->throwLimitReachedException();
                 }
                 $output .= $node->value;
@@ -178,7 +182,7 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
                 }
 
                 $chunk = $node->render($context);
-                if ($byteLimit !== null && strlen($chunk) > $byteLimit - strlen($output)) {
+                if (strlen($chunk) > $byteLimit - strlen($output)) {
                     $context->resourceLimits->throwLimitReachedException();
                 }
                 $output .= $chunk;
@@ -186,6 +190,36 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
                 $context->handleError($exception, $node->lineNumber);
             } catch (\Throwable $exception) {
                 $context->resourceLimits->append($output, $context->handleError($exception, $node->lineNumber));
+            }
+
+            if ($context->hasInterrupt()) {
+                break;
+            }
+        }
+
+        return $output;
+    }
+
+    private function renderUnbounded(RenderContext $context): string
+    {
+        $output = '';
+        foreach ($this->children as $node) {
+            if ($node instanceof Text) {
+                $output .= $node->value;
+
+                continue;
+            }
+
+            try {
+                if ($node instanceof Disableable && $node instanceof Tag) {
+                    $node->ensureTagIsEnabled($context);
+                }
+
+                $output .= $node->render($context);
+            } catch (UndefinedVariableException|UndefinedDropMethodException|UndefinedFilterException $exception) {
+                $context->handleError($exception, $node->lineNumber);
+            } catch (\Throwable $exception) {
+                $output .= $context->handleError($exception, $node->lineNumber);
             }
 
             if ($context->hasInterrupt()) {

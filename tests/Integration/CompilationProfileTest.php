@@ -72,8 +72,12 @@ test('legacy compiled artifacts cannot claim bounded execution support', functio
         }
     };
     $environment = EnvironmentFactory::forUntrustedTemplates()->build();
-    expect(fn () => $legacy->render($environment->newRenderContext()))->toThrow(TemplateSecurityException::class);
-    expect(fn () => iterator_to_array($legacy->stream($environment->newRenderContext())))->toThrow(TemplateSecurityException::class);
+    // Old serialized instances have no constructor-initialized capability field.
+    $uninitialized = (new ReflectionClass($legacy))->newInstanceWithoutConstructor();
+    foreach ([$legacy, $uninitialized] as $artifact) {
+        expect(fn () => $artifact->render($environment->newRenderContext()))->toThrow(TemplateSecurityException::class);
+        expect(fn () => iterator_to_array($artifact->stream($environment->newRenderContext())))->toThrow(TemplateSecurityException::class);
+    }
 });
 
 test('unspecified and legacy template states retain guarded compilation', function (bool $legacy) {

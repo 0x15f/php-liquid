@@ -22,14 +22,17 @@ abstract class CompiledTemplate extends AbstractTemplate
 {
     protected const SUPPORTS_BOUNDED_EXECUTION = false;
 
+    private readonly ?bool $supportsBoundedExecution;
+
     public function __construct(TemplateSharedState $state = new TemplateSharedState)
     {
+        $this->supportsBoundedExecution = static::SUPPORTS_BOUNDED_EXECUTION;
         parent::__construct($state);
     }
 
     final public function render(RenderContext $context): string
     {
-        if (! static::SUPPORTS_BOUNDED_EXECUTION && $context->requiresBoundedExecution) {
+        if ($context->requiresBoundedExecution && ! ($this->supportsBoundedExecution ?? false)) {
             throw new \Keepsuit\Liquid\Exceptions\TemplateSecurityException('Compile templates in a restricted or bounded environment before using bounded contexts.');
         }
         $root = ! $context->isPartial();
@@ -40,7 +43,7 @@ abstract class CompiledTemplate extends AbstractTemplate
             $this->prepareContext($context);
             $output = $this->renderCompiledString($context);
 
-            if (! $context->isPartial()) {
+            if ($root) {
                 $context->resourceLimits->incrementWriteScore($output);
             }
 
@@ -61,7 +64,7 @@ abstract class CompiledTemplate extends AbstractTemplate
      */
     final public function stream(RenderContext $context): \Generator
     {
-        if (! static::SUPPORTS_BOUNDED_EXECUTION && $context->requiresBoundedExecution) {
+        if ($context->requiresBoundedExecution && ! ($this->supportsBoundedExecution ?? false)) {
             throw new \Keepsuit\Liquid\Exceptions\TemplateSecurityException('Compile templates in a restricted or bounded environment before using bounded contexts.');
         }
         $root = ! $context->isPartial();
@@ -72,7 +75,7 @@ abstract class CompiledTemplate extends AbstractTemplate
             $this->prepareContext($context);
 
             // The root template's loop below casts and renumbers every chunk.
-            if ($context->isPartial()) {
+            if (! $root) {
                 yield from $this->renderCompiled($context);
 
                 return;
