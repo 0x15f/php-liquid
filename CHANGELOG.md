@@ -1,5 +1,19 @@
 # Open-source release
 
+## v0.1.0 — PHP Liquid for PHP and Laravel - 2026-10-17
+
+First public release of PHP Liquid, derived from Keepsuit PHP Liquid with MIT attribution preserved.
+
+- Compiled PHP rendering and Shopify reference compatibility fixes.
+- Optional Laravel 12/13 package discovery, .liquid views, facade and scoped services.
+- Redis/Laravel store-backed parsed templates with local OPcache-compatible compiled artifacts.
+- Revision/namespace isolation and deployment cache warming/clearing commands.
+- AST dependency hints, bounded collection providers and reproducible loading experiments.
+
+Validation: 3,872 tests / 10,330 assertions, PHPStan and Pint pass. Laravel 12/13 integration is tested with a real Redis service, and a production consumer installation renders without Laravel. CI covers PHP 8.2–8.5.
+
+Install from the public VCS repository as documented in README.md. Packagist registration is not required for that installation path. Read LARAVEL.md, ADOPTION.md and SECURITY.md for cache lifecycle, compatibility and trust boundaries. Benchmark reports describe synthetic local ARM64 measurements, not production capacity guarantees.
+
 ## 0.1.0
 
 - Standalone compiled Liquid rendering with Shopify reference fixes and request isolation.
@@ -32,26 +46,31 @@ All notable changes to `liquid` will be documented in this file.
   - `$template->root` is only available on `ParsedTemplate`; type hints on `Template` keep working.
   - Stale serialized entries are reparsed and overwritten on first use; clear the cache on deploy
     to avoid the reparse.
+  
 - Remove the protected `renderOutput` method from `Nodes\Variable` and the protected
   `undefined` and `walkLookups` methods from `Nodes\VariableLookup`.
   - Replace `$this->renderOutput($output)` with `Variable::renderEvaluated($context, $output)`.
   - Subclasses of `VariableLookup` should override `evaluate()` or call
     `VariableLookup::evaluateParts($context, $name, $lookups)`, which resolves the lookup chain
     and returns `UndefinedVariable` under `strictVariables`.
+  
 - Native nodes and tags now implement `CanBeCompiled` or `CanBeExported`, adding public
   `compile()` and `export()` methods. `Condition` adds the public `compileExpression()` and
   static `compare()` methods. Subclasses that already declare these methods with a different
   signature must be updated.
   - Rename unrelated `compile()`/`export()` methods, or match the signatures
     `compile(CompilerContext $context): void` and `export(CompilerContext $context): ?string`.
+  
 - Interpreted `BodyNode::stream()` now yields chunks of custom `CanBeStreamed` nodes without
   buffering, so stream chunk boundaries may change. The concatenated output is unchanged.
   - Code that inspects individual chunks should concatenate them instead.
+  
 - Align float output and string conversions with Shopify Liquid 5.13: integral floats
   retain `.0`, full float precision is preserved, and scientific notation follows Ruby.
   Prices and output snapshots may change.
   - `{{ 3.0 }}` and `{{ 2 | times: 1.0 }}` now render `3.0` and `2.0` instead of `3` and `2`.
     Apply `round` or a money filter where an integral output is expected.
+  
 - `plus`, `minus`, `times`, `divided_by`, `modulo` and `sum` compute with decimal arithmetic like
   Shopify (`{{ 0.1 | plus: 0.2 }}` renders `0.3`). Adds the `brick/math` dependency.
 - Align `tablerow` HTML whitespace with Shopify: adjacent cells, newlines between rows,
@@ -64,6 +83,7 @@ All notable changes to `liquid` will be documented in this file.
   independently of render options; existing strict2-aligned syntax restrictions are unchanged.
 - `ParseContext::parse()` and `Environment::parseString()` now return `ParsedTemplate` instead of `Template`.
   - Custom overrides of these methods must declare a compatible `ParsedTemplate` return type.
+  
 
 ### Fixed
 
