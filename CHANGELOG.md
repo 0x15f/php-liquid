@@ -11,7 +11,7 @@
 
 Use the restricted APIs described in SECURITY.md for user-authored templates. General view APIs retain their compatibility behavior. Streaming chunk boundaries are not an API guarantee; failures can follow already-emitted output. Restart long-lived application workers when upgrading.
 
-Validation: 3,991 tests / 24,110 assertions with real Redis, PHPStan and Pint. Restricted streaming matches all 64 personalized Shopify reference fixtures across parsed/compiled execution. Worker tests cover heap exhaustion, deadlines, cancellation, recovery and bounded private-cache retention.
+Validation: 3,996 tests / 24,115 assertions with real Redis, PHPStan and Pint. Restricted streaming matches all 64 personalized Shopify reference fixtures across parsed/compiled execution. Worker tests cover heap exhaustion, deadlines, cancellation, recovery and bounded private-cache retention.
 
 See [security and streaming measurements](performance/comparison/SECURITY_REPORT.md) for validation and the measured cost of the restrictions.
 

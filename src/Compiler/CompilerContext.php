@@ -372,20 +372,21 @@ final class CompilerContext
     {
         if ($length === null) {
             $chunk = $this->temporaryVariable();
-            $this->write($chunk.' = '.$expression.';');
+            $source = $chunk.' = '.$expression.";\n";
             $bytes = 'strlen('.$chunk.')';
         } else {
             $chunk = $expression;
+            $source = '';
             $bytes = (string) $length;
         }
         $limit = '$context->resourceLimits->intermediateBytesLimit';
-        $this->write('if ('.$limit.' !== null && '.$bytes.' > '.$limit.' - strlen('.$buffer.')) {')->indent();
-        $this->write('$context->resourceLimits->throwLimitReachedException();');
-        $this->outdent()->write('}');
-        $this->write($buffer.' .= '.$chunk.';');
+        $source .= 'if ('.$limit.' !== null && '.$bytes.' > '.$limit.' - strlen('.$buffer.")) {\n"
+            .'    $context->resourceLimits->throwLimitReachedException();'."\n}\n"
+            .$buffer.' .= '.$chunk.";\n";
         if ($length === null) {
-            $this->write('unset('.$chunk.');');
+            $source .= 'unset('.$chunk.");\n";
         }
+        $this->writeSource($source);
     }
 
     public function flushStreamBufferIfFull(): void

@@ -63,9 +63,11 @@ class CodeBuilder
     public function writeLines(string $source, bool $skipEmptyLines = false): static
     {
         $source = rtrim($source, "\n")."\n";
-        if ($skipEmptyLines) {
+        $hasEmptyLines = str_starts_with($source, "\n") || str_contains($source, "\n\n");
+        if ($skipEmptyLines && $hasEmptyLines) {
             $source = preg_replace('/^\n/m', '', $source);
             assert($source !== null);
+            $hasEmptyLines = false;
         }
 
         if ($source === '') {
@@ -78,8 +80,14 @@ class CodeBuilder
 
         if ($this->indentLevel > 0) {
             $indentation = $this->indentation[$this->indentLevel] ??= str_repeat('    ', $this->indentLevel);
-            $source = preg_replace('/^(?=.)/m', $indentation, $source);
-            assert($source !== null);
+            if (! $hasEmptyLines) {
+                // Every remaining line is nonempty and the source has exactly
+                // one trailing newline, so indentation needs no regex scan.
+                $source = $indentation.str_replace("\n", "\n".$indentation, substr($source, 0, -1))."\n";
+            } else {
+                $source = preg_replace('/^(?=.)/m', $indentation, $source);
+                assert($source !== null);
+            }
         }
 
         $this->source .= $source;

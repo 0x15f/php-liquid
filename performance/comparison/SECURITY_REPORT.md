@@ -8,7 +8,7 @@ These are local synthetic measurements, not production capacity estimates. The w
 - Three fresh processes per cohort; 51 measured rounds after 15 warm-up rounds. Core modes alternate in balanced/reversed batches in the same process. Timing uses process CPU time, with no profilers loaded. The default cohort has JIT disabled; a separate cohort enables tracing JIT.
 - Warm parsed/compiled caches, fresh render contexts and complete prepared PHP input arrays for every request. Authorization, Laravel/HTTP bootstrap, database work, source retrieval, Redis/network misses and compilation are outside this core timing.
 - Baseline commit `9d2aa0a` has the same `src/` tree as public v0.1.0. It is loaded under a separate namespace for paired timing.
-- All nine core/isolated timing result files use engine source SHA-256 `b5a824b4fa67441f9f989821b63d884b7424cc8edc6b9ffeb36022968fff90e2`.
+- All nine core/isolated timing result files were captured at revision `3fd1ac5` with engine source SHA-256 `b5a824b4fa67441f9f989821b63d884b7424cc8edc6b9ffeb36022968fff90e2`.
 
 ## Core rendering
 
@@ -52,7 +52,7 @@ Raw JIT results: [run 1](results/security-jit-1.json), [run 2](results/security-
 
 At PR revision `3fd1ac5`, all PHP 8.2–8.5 correctness jobs (including hot JIT), Laravel 12/13 Redis integration, static analysis, formatting and production-only installation pass. The separate non-JIT PHPBench compatibility canary still fails its existing 5% throughput-regression threshold. Across those four PHP builds, compilation loses 21–23% throughput, compiled rendering loses 10–15%, and streaming loses 12–16%. Parsing/tokenization are within 3% after removing redundant token-budget calls. These are a different storefront workload and x86 CI machines, not the ARM64 grid measurements above.
 
-The performance gate is not green and has not been weakened. Compilation now emits allocation guards, and compatibility rendering retains runtime checks because compiled artifacts can receive bounded contexts. Further optimization must preserve those guards and the regression tests. See the [PR's benchmark comments](https://github.com/0x15f/php-liquid/pull/1) for complete paired results.
+The performance gate is not green and has not been weakened. Subsequent compiler-emission optimization preserves byte-identical generated PHP for the storefront fixtures; its CI performance result is pending. Compilation now emits allocation guards, and compatibility rendering retains runtime checks because compiled artifacts can receive bounded contexts. Further optimization must preserve those guards and the regression tests. See the [PR's benchmark comments](https://github.com/0x15f/php-liquid/pull/1) for complete paired results.
 
 
 
@@ -85,7 +85,7 @@ That is a 99.5% reduction for this deliberately large response, not a general me
 
 ## Verification and reproduction
 
-The release gate passes 3,991 tests / 24,110 assertions with real Redis, PHPStan and Pint. Streaming is checked against all 64 personalized Shopify reference cases across interpreted/compiled and restricted/compatibility execution. Adversarial tests cover range/string/collection growth, parser depth and token limits, PHP capabilities, cache authorization, global callback isolation, data-provider budgets, parent transport expansion, worker heap exhaustion, deadlines, cancellation, recovery and bounded private-cache disk retention.
+The release gate passes 3,996 tests / 24,115 assertions with real Redis, PHPStan and Pint. Streaming is checked against all 64 personalized Shopify reference cases across interpreted/compiled and restricted/compatibility execution. Adversarial tests cover range/string/collection growth, parser depth and token limits, PHP capabilities, cache authorization, global callback isolation, data-provider budgets, parent transport expansion, worker heap exhaustion, deadlines, cancellation, recovery and bounded private-cache disk retention.
 
 Prepare the baseline with Python and Git on the host (or in a container with both installed):
 
