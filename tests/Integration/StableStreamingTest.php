@@ -5,6 +5,20 @@ use Keepsuit\Liquid\Exceptions\ResourceLimitException;
 use Keepsuit\Liquid\FileSystems\ArrayFileSystem;
 use Keepsuit\Liquid\Render\ResourceLimits;
 
+test('hot integer output paths preserve string chunks and allocation limits', function (bool $compiled) {
+    $environment = EnvironmentFactory::forUntrustedTemplates()
+        ->setTemplatesCache($compiled ? testCompiledTemplatesCache() : new Keepsuit\Liquid\TemplatesCache\MemoryTemplatesCache)->build();
+    $template = testParseString($environment, '{{ value }}');
+    $context = fn (int $value) => $environment->newRenderContext(data: ['value' => $value], resourceLimits: new ResourceLimits(intermediateBytesLimit: 1));
+    for ($i = 0; $i < 300; $i++) {
+        if ($template->render($context(1)) !== '1' || iterator_to_array($template->stream($context(1))) !== ['1']) {
+            throw new RuntimeException('Integer output must remain a string.');
+        }
+    }
+    expect(fn () => $template->render($context(PHP_INT_MIN)))->toThrow(ResourceLimitException::class);
+    expect(fn () => iterator_to_array($template->stream($context(PHP_INT_MAX))))->toThrow(ResourceLimitException::class);
+})->with([false, true]);
+
 test('stable streams match Shopify reference bytes for personalized grids and nested snippets', function (bool $compiled, bool $restricted) {
     require_once dirname(__DIR__, 2).'/performance/comparison/fixtures.php';
     $fixtures = comparisonFixtures();

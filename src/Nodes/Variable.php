@@ -33,6 +33,10 @@ class Variable extends Node implements CanBeCompiled, CanBeEvaluated, CanBeStrea
             return $output;
         }
 
+        if (is_int($output)) {
+            return (string) $output;
+        }
+
         if ($output instanceof CanBeRendered) {
             return $output->render($context);
         }
@@ -62,7 +66,7 @@ class Variable extends Node implements CanBeCompiled, CanBeEvaluated, CanBeStrea
                 .' : (is_int('.$value.') ? (string) '.$value.' : '.$context->writeClassName(self::class).'::renderValue($context, '.$value.')))');
         } else {
             $context->write('if (is_string($value = '.$context->writeVariableExpression($this->name).')'
-                .' || is_string($value = '.$context->writeClassName(self::class).'::streamValue($context, $value))) {')
+                .' || is_string($value = is_int($value) ? (string) $value : '.$context->writeClassName(self::class).'::streamValue($context, $value))) {')
                 ->indent();
             $context->writeOutput('$value');
             $context->outdent()->write('} else {')->indent();
@@ -179,6 +183,10 @@ class Variable extends Node implements CanBeCompiled, CanBeEvaluated, CanBeStrea
     {
         if (is_string($output)) {
             return $output;
+        }
+
+        if (is_int($output)) {
+            return (string) $output;
         }
 
         if ($output instanceof CanBeEvaluated) {
