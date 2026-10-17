@@ -66,6 +66,8 @@ final class RenderContext
 
     private readonly MissingValue $missingValue;
 
+    private readonly bool $boundedDataAccess;
+
     public function __construct(
         /**
          * Environment variables only available in the current context
@@ -98,6 +100,7 @@ final class RenderContext
     ) {
         $this->environment = $environment ?? Environment::default();
         $this->resourceLimits = $resourceLimits ?? ResourceLimits::clone($this->environment->defaultResourceLimits);
+        $this->boundedDataAccess = $this->environment->templatePolicy !== null || $this->resourceLimits->bounded;
         $this->errorHandler = $this->options->rethrowErrors ? new RethrowErrorHandler : $this->environment->errorHandler;
 
         if ($sharedState === null && $this->environment->templatePolicy !== null) {
@@ -318,11 +321,9 @@ final class RenderContext
             return is_object($value) ? $this->normalizeValue($value) : $value;
         }
 
-        if (is_object($scope)) {
+        if ($this->boundedDataAccess && is_object($scope)) {
             $this->environment->templatePolicy?->assertObject($scope);
-            if ($this->environment->templatePolicy !== null || $this->resourceLimits->bounded) {
-                $this->resourceLimits->incrementRenderScore();
-            }
+            $this->resourceLimits->incrementRenderScore();
         }
         try {
             $value = match (true) {
@@ -372,9 +373,11 @@ final class RenderContext
 
     public function normalizeValue(mixed $value): mixed
     {
-        $this->environment->templatePolicy?->assertData($value);
-        if (is_object($value) && ($this->environment->templatePolicy !== null || $this->resourceLimits->bounded)) {
-            $this->resourceLimits->incrementRenderScore();
+        if ($this->boundedDataAccess) {
+            $this->environment->templatePolicy?->assertData($value);
+            if (is_object($value)) {
+                $this->resourceLimits->incrementRenderScore();
+            }
         }
         // Only closures and MapsToLiquid values are normalized or cached.
         if (! $value instanceof Closure && ! $value instanceof MapsToLiquid) {

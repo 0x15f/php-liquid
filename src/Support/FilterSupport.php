@@ -118,11 +118,9 @@ class FilterSupport
 
     public function property(mixed $item, mixed $property): mixed
     {
-        if (is_object($item)) {
+        if ($this->bounded && is_object($item)) {
             $this->context->environment->templatePolicy?->assertObject($item);
-            if ($this->bounded) {
-                $this->context->resourceLimits->incrementRenderScore();
-            }
+            $this->context->resourceLimits->incrementRenderScore();
         }
         if ($property !== null && ! is_string($property) && ! is_int($property)) {
             throw $property instanceof UndefinedVariable
