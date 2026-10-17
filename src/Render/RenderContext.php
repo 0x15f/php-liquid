@@ -100,6 +100,10 @@ final class RenderContext
         $this->resourceLimits = $resourceLimits ?? ResourceLimits::clone($this->environment->defaultResourceLimits);
         $this->errorHandler = $this->options->rethrowErrors ? new RethrowErrorHandler : $this->environment->errorHandler;
 
+        if ($sharedState === null && $this->environment->templatePolicy !== null) {
+            $this->environment->templatePolicy->assertData($data);
+            $this->environment->templatePolicy->assertData($staticData);
+        }
         $this->scopes = [[]];
 
         $this->sharedState = $sharedState ?? new ContextSharedState(
@@ -314,6 +318,9 @@ final class RenderContext
             return is_object($value) ? $this->normalizeValue($value) : $value;
         }
 
+        if (is_object($scope)) {
+            $this->environment->templatePolicy?->assertObject($scope);
+        }
         try {
             $value = match (true) {
                 $scope instanceof Drop => $scope->{$key},
@@ -360,6 +367,7 @@ final class RenderContext
 
     public function normalizeValue(mixed $value): mixed
     {
+        $this->environment->templatePolicy?->assertData($value);
         // Only closures and MapsToLiquid values are normalized or cached.
         if (! $value instanceof Closure && ! $value instanceof MapsToLiquid) {
             return $value;
@@ -437,7 +445,7 @@ final class RenderContext
     public function handleError(Throwable $error, ?int $lineNumber = null): string
     {
         $error = match (true) {
-            $error instanceof ResourceLimitException => throw $error,
+            $error instanceof ResourceLimitException, $error instanceof \Keepsuit\Liquid\Exceptions\TemplateSecurityException => throw $error,
             $error instanceof DivisionByZeroError => new ArithmeticException('divided by 0', previous: $error),
             $error instanceof ArithmeticError => new ArithmeticException($error->getMessage(), previous: $error),
             $error instanceof LiquidException => $error,

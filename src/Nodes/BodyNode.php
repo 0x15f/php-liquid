@@ -163,7 +163,7 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
         foreach ($this->children as $node) {
             // Text is the majority of children and cannot fail or interrupt.
             if ($node instanceof Text) {
-                $output .= $node->value;
+                $context->resourceLimits->append($output, $node->value);
 
                 continue;
             }
@@ -173,11 +173,11 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
                     $node->ensureTagIsEnabled($context);
                 }
 
-                $output .= $node->render($context);
+                $context->resourceLimits->append($output, $node->render($context));
             } catch (UndefinedVariableException|UndefinedDropMethodException|UndefinedFilterException $exception) {
                 $context->handleError($exception, $node->lineNumber);
             } catch (\Throwable $exception) {
-                $output .= $context->handleError($exception, $node->lineNumber);
+                $context->resourceLimits->append($output, $context->handleError($exception, $node->lineNumber));
             }
 
             if ($context->hasInterrupt()) {
@@ -202,7 +202,7 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
         foreach ($this->children as $node) {
             // Text is the majority of children and cannot fail or interrupt.
             if ($node instanceof Text) {
-                $buffer .= $node->value;
+                $context->resourceLimits->append($buffer, $node->value);
 
                 continue;
             }
@@ -235,7 +235,7 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
                         : $node->stream($context);
 
                     if (is_string($value)) {
-                        $buffer .= $value;
+                        $context->resourceLimits->append($buffer, $value);
 
                         if (strlen($buffer) >= self::MAX_BUFFERED_BYTES) {
                             yield $buffer;
@@ -243,7 +243,7 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
                         }
                     } else {
                         foreach ($value as $output) {
-                            $buffer .= $output;
+                            $context->resourceLimits->append($buffer, $output);
 
                             if (strlen($buffer) >= self::MAX_BUFFERED_BYTES) {
                                 yield $buffer;
@@ -252,7 +252,7 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
                         }
                     }
                 } else {
-                    $buffer .= $node->render($context);
+                    $context->resourceLimits->append($buffer, $node->render($context));
                 }
             } catch (UndefinedVariableException|UndefinedDropMethodException|UndefinedFilterException $exception) {
                 if ($buffer !== '') {
@@ -267,7 +267,7 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
                     $buffer = '';
                 }
 
-                $buffer .= $context->handleError($exception, $node->lineNumber);
+                $context->resourceLimits->append($buffer, $context->handleError($exception, $node->lineNumber));
             }
 
             if ($context->hasInterrupt()) {

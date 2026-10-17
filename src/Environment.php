@@ -51,14 +51,23 @@ class Environment
         ?RenderContextOptions $defaultRenderContextOptions = null,
         /** @var LiquidExtension[] $extensions */
         array $extensions = [],
+        public readonly ?\Keepsuit\Liquid\Security\TemplatePolicy $templatePolicy = null,
     ) {
         $this->tagRegistry = new TagRegistry;
         $this->filterRegistry = new FilterRegistry;
         $this->fileSystem = $fileSystem ?? new BlankFileSystem;
+        if ($templatePolicy !== null) {
+            if (! $this->fileSystem instanceof BlankFileSystem && ! $this->fileSystem instanceof \Keepsuit\Liquid\FileSystems\ArrayFileSystem) {
+                throw new \Keepsuit\Liquid\Exceptions\TemplateSecurityException('Restricted templates require an authorized ArrayFileSystem snapshot.');
+            }
+            if ($this->fileSystem instanceof \Keepsuit\Liquid\FileSystems\ArrayFileSystem) {
+                $this->fileSystem->assertPolicy($templatePolicy);
+            }
+        }
         $this->errorHandler = $errorHandler ?? new DefaultErrorHandler;
         $this->templatesCache = $templatesCache ?? new MemoryTemplatesCache;
-        $this->defaultResourceLimits = $defaultResourceLimits ?? new ResourceLimits;
-        $this->defaultRenderContextOptions = $defaultRenderContextOptions ?? new RenderContextOptions;
+        $this->defaultResourceLimits = $defaultResourceLimits ?? ($templatePolicy === null ? new ResourceLimits : ResourceLimits::forUntrustedTemplates());
+        $this->defaultRenderContextOptions = $defaultRenderContextOptions ?? ($templatePolicy === null ? new RenderContextOptions : new RenderContextOptions(strictFilters: true, rethrowErrors: true));
 
         foreach ($extensions as $extension) {
             $this->addExtension($extension);

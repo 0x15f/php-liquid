@@ -58,7 +58,13 @@ class StandardFilters extends FiltersProvider
      */
     public function append(mixed $input, mixed $append): string
     {
-        return FilterCoercion::toString($input).FilterCoercion::toString($append);
+        $input = FilterCoercion::toString($input);
+        $append = FilterCoercion::toString($append);
+        if ($this->context->resourceLimits->intermediateBytesLimit !== null) {
+            $this->context->resourceLimits->checkStringSize((float) strlen($input) + strlen($append));
+        }
+
+        return $input.$append;
     }
 
     /**
@@ -82,7 +88,12 @@ class StandardFilters extends FiltersProvider
      */
     public function base64Encode(mixed $input): string
     {
-        return base64_encode(FilterCoercion::toString($input));
+        $input = FilterCoercion::toString($input);
+        if ($this->context->resourceLimits->intermediateBytesLimit !== null) {
+            $this->context->resourceLimits->checkStringSize(4.0 * ceil(strlen($input) / 3));
+        }
+
+        return base64_encode($input);
     }
 
     /**
@@ -134,6 +145,9 @@ class StandardFilters extends FiltersProvider
     public function capitalize(mixed $input): string
     {
         $input = FilterCoercion::toString($input);
+        if ($this->context->resourceLimits->intermediateBytesLimit !== null) {
+            $this->context->resourceLimits->checkStringSize(3.0 * strlen($input));
+        }
 
         return Str::upper(Str::substr($input, 0, 1)).Str::lower(Str::substr($input, 1));
     }
@@ -185,7 +199,15 @@ class StandardFilters extends FiltersProvider
 
         $support = $this->filterSupport();
 
-        return [...$support->iterate($input), ...$support->normalizeCollection($join)];
+        $result = [];
+        foreach ([$support->iterate($input), $support->normalizeCollection($join)] as $values) {
+            foreach ($values as $value) {
+                $this->context->resourceLimits->checkCollectionSize(count($result) + 1);
+                $result[] = $value;
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -291,7 +313,12 @@ class StandardFilters extends FiltersProvider
      */
     public function downcase(mixed $input): string
     {
-        return Str::lower(FilterCoercion::toString($input));
+        $input = FilterCoercion::toString($input);
+        if ($this->context->resourceLimits->intermediateBytesLimit !== null) {
+            $this->context->resourceLimits->checkStringSize(3.0 * strlen($input));
+        }
+
+        return Str::lower($input);
     }
 
     /**
@@ -304,7 +331,12 @@ class StandardFilters extends FiltersProvider
             return null;
         }
 
-        return strtr(FilterCoercion::toString($input), self::HTML_ESCAPE);
+        $input = FilterCoercion::toString($input);
+        if ($this->context->resourceLimits->intermediateBytesLimit !== null) {
+            $this->context->resourceLimits->checkStringSize(6.0 * strlen($input));
+        }
+
+        return strtr($input, self::HTML_ESCAPE);
     }
 
     /**
@@ -321,6 +353,9 @@ class StandardFilters extends FiltersProvider
     public function escapeOnce(mixed $input): string
     {
         $input = FilterCoercion::toString($input);
+        if ($this->context->resourceLimits->intermediateBytesLimit !== null) {
+            $this->context->resourceLimits->checkStringSize(6.0 * strlen($input));
+        }
 
         return preg_replace_callback('/[><"\']|&(?!([a-zA-Z]+|#\d+);)/', fn (array $match) => self::HTML_ESCAPE[$match[0]], $input) ?? $input;
     }
@@ -330,6 +365,10 @@ class StandardFilters extends FiltersProvider
      */
     public function first(mixed $input): mixed
     {
+        if ($input instanceof \Keepsuit\Liquid\Nodes\Range && $input::class === \Keepsuit\Liquid\Nodes\Range::class) {
+            return $input->length() === 0 ? null : $input->start;
+        }
+
         if ($input instanceof UndefinedVariable) {
             throw $input->toException();
         }
@@ -379,7 +418,10 @@ class StandardFilters extends FiltersProvider
         $first = true;
 
         foreach ($support->iterate($input) as $value) {
-            $output .= ($first ? '' : $glue).$support->stringify($value);
+            if (! $first) {
+                $this->context->resourceLimits->append($output, $glue);
+            }
+            $this->context->resourceLimits->append($output, $support->stringify($value));
             $first = false;
         }
 
@@ -391,6 +433,10 @@ class StandardFilters extends FiltersProvider
      */
     public function last(mixed $input): mixed
     {
+        if ($input instanceof \Keepsuit\Liquid\Nodes\Range && $input::class === \Keepsuit\Liquid\Nodes\Range::class) {
+            return $input->length() === 0 ? null : $input->end;
+        }
+
         if ($input instanceof UndefinedVariable) {
             throw $input->toException();
         }
@@ -465,6 +511,9 @@ class StandardFilters extends FiltersProvider
     public function newlineToBr(mixed $input): string
     {
         $input = FilterCoercion::toString($input);
+        if ($this->context->resourceLimits->intermediateBytesLimit !== null) {
+            $this->context->resourceLimits->checkStringSize(7.0 * strlen($input));
+        }
 
         return preg_replace('/\r?\n/', "<br />\n", $input) ?? $input;
     }
@@ -482,7 +531,7 @@ class StandardFilters extends FiltersProvider
      */
     public function prepend(mixed $input, mixed $prepend): string
     {
-        return FilterCoercion::toString($prepend).FilterCoercion::toString($input);
+        return $this->append($prepend, $input);
     }
 
     /**
@@ -518,7 +567,13 @@ class StandardFilters extends FiltersProvider
         $search = FilterCoercion::toString($search);
         $replace = FilterCoercion::toString($replace);
 
+        $occurrences = $search === '' ? mb_strlen($input) + 1 : substr_count($input, $search);
+        if ($this->context->resourceLimits->intermediateBytesLimit !== null) {
+            $this->context->resourceLimits->checkStringSize(strlen($input) + (float) $occurrences * (strlen($replace) - strlen($search)));
+        }
         if ($search === '') {
+            $this->context->resourceLimits->checkCollectionSize(mb_strlen($input));
+
             return $input === '' ? $replace : $replace.implode($replace, mb_str_split($input)).$replace;
         }
 
@@ -534,6 +589,10 @@ class StandardFilters extends FiltersProvider
         $search = FilterCoercion::toString($search);
         $replace = FilterCoercion::toString($replace);
 
+        if ($this->context->resourceLimits->intermediateBytesLimit !== null) {
+            $this->context->resourceLimits->checkStringSize((float) strlen($input) + strlen($replace));
+        }
+
         return $search === '' ? $replace.$input : Str::replaceFirst($search, $replace, $input);
     }
 
@@ -545,6 +604,10 @@ class StandardFilters extends FiltersProvider
         $input = FilterCoercion::toString($input);
         $search = FilterCoercion::toString($search);
         $replace = FilterCoercion::toString($replace);
+
+        if ($this->context->resourceLimits->intermediateBytesLimit !== null) {
+            $this->context->resourceLimits->checkStringSize((float) strlen($input) + strlen($replace));
+        }
 
         return $search === '' ? $input.$replace : Str::replaceLast($search, $replace, $input);
     }
@@ -581,6 +644,10 @@ class StandardFilters extends FiltersProvider
      */
     public function size(mixed $input): int
     {
+        if ($input instanceof \Keepsuit\Liquid\Nodes\Range && $input::class === \Keepsuit\Liquid\Nodes\Range::class) {
+            return $input->length();
+        }
+
         if ($input instanceof UndefinedVariable) {
             throw $input->toException();
         }
@@ -590,7 +657,7 @@ class StandardFilters extends FiltersProvider
         }
 
         if ($input instanceof Traversable) {
-            $input = iterator_to_array($input);
+            $input = $this->context->resourceLimits->collect($input);
         }
 
         return match (true) {
@@ -608,8 +675,12 @@ class StandardFilters extends FiltersProvider
         $start = FilterCoercion::toInteger($start);
         $length = $length === null || $length === false ? 1 : FilterCoercion::toInteger($length);
 
+        if ($input instanceof \Keepsuit\Liquid\Nodes\Range && $input::class === \Keepsuit\Liquid\Nodes\Range::class) {
+            return $length <= 0 ? [] : $input->slice($start, $length, $this->context->resourceLimits);
+        }
+
         if (is_iterable($input) && ! is_array($input)) {
-            $input = iterator_to_array($input);
+            $input = $this->context->resourceLimits->collect($input);
         }
 
         if (! is_array($input)) {
@@ -658,13 +729,19 @@ class StandardFilters extends FiltersProvider
         }
 
         if ($delimiter === '') {
+            $this->context->resourceLimits->checkCollectionSize(mb_strlen($input));
+
             return mb_str_split($input);
         }
 
         if ($delimiter === ' ') {
-            return preg_split('/[\x09-\x0d ]+/', $input, flags: PREG_SPLIT_NO_EMPTY) ?: [];
+            $parts = preg_split('/[\x09-\x0d ]+/', $input, ($this->context->resourceLimits->collectionSizeLimit ?? PHP_INT_MAX) + (int) ($this->context->resourceLimits->collectionSizeLimit !== null), PREG_SPLIT_NO_EMPTY) ?: [];
+            $this->context->resourceLimits->checkCollectionSize(count($parts));
+
+            return $parts;
         }
 
+        $this->context->resourceLimits->checkCollectionSize(substr_count($input, $delimiter) + 1);
         $parts = explode($delimiter, $input);
 
         while ($parts !== [] && end($parts) === '') {
@@ -751,6 +828,9 @@ class StandardFilters extends FiltersProvider
 
         foreach ($support->iterate($values) as $value) {
             $value = $value instanceof AsLiquidValue ? $value->toLiquidValue() : $value;
+            if ($this->context->environment->templatePolicy !== null && is_string($value) && strlen($value) > 256) {
+                $this->context->resourceLimits->throwLimitReachedException();
+            }
             $numbers[] = FilterCoercion::toDecimalNumber($value);
         }
 
@@ -787,6 +867,10 @@ class StandardFilters extends FiltersProvider
             return $input;
         }
 
+        if ($this->context->resourceLimits->intermediateBytesLimit !== null) {
+            $this->context->resourceLimits->checkStringSize((float) strlen($input) + strlen($ellipsis));
+        }
+
         return Str::substr($input, 0, max(0, ($length - Str::length($ellipsis)))).$ellipsis;
     }
 
@@ -813,6 +897,10 @@ class StandardFilters extends FiltersProvider
             return $input;
         }
 
+        $this->context->resourceLimits->checkCollectionSize(min((float) strlen($input) + 1, (float) $words + 1));
+        if ($this->context->resourceLimits->intermediateBytesLimit !== null) {
+            $this->context->resourceLimits->checkStringSize((float) strlen($input) + strlen($ellipsis));
+        }
         $wordlist = preg_split('/[\x09-\x0d ]+/', ltrim($input, " \t\n\r\v\f"), $words + 1);
 
         if ($wordlist === false) {
@@ -871,7 +959,12 @@ class StandardFilters extends FiltersProvider
      */
     public function upcase(mixed $input): string
     {
-        return Str::upper(FilterCoercion::toString($input));
+        $input = FilterCoercion::toString($input);
+        if ($this->context->resourceLimits->intermediateBytesLimit !== null) {
+            $this->context->resourceLimits->checkStringSize(3.0 * strlen($input));
+        }
+
+        return Str::upper($input);
     }
 
     /**
@@ -888,7 +981,12 @@ class StandardFilters extends FiltersProvider
      */
     public function urlEncode(mixed $input): string
     {
-        return urlencode(FilterCoercion::toString($input));
+        $input = FilterCoercion::toString($input);
+        if ($this->context->resourceLimits->intermediateBytesLimit !== null) {
+            $this->context->resourceLimits->checkStringSize(3.0 * strlen($input));
+        }
+
+        return urlencode($input);
     }
 
     /**

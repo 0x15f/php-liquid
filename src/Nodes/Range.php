@@ -32,7 +32,7 @@ class Range extends Node implements \IteratorAggregate
      *
      * @return list<int>
      */
-    public function slice(int $offset, ?int $length = null): array
+    public function slice(int $offset, ?int $length = null, ?\Keepsuit\Liquid\Render\ResourceLimits $limits = null): array
     {
         if ($this->start > $this->end || $length === 0) {
             return [];
@@ -65,7 +65,12 @@ class Range extends Node implements \IteratorAggregate
             $last = $last - $distance - 1;
         }
 
-        return $first > $last ? [] : range($first, $last);
+        if ($first > $last) {
+            return [];
+        }
+        $limits?->checkCollectionSize((new self($first, $last))->length());
+
+        return range($first, $last);
     }
 
     /**
@@ -87,9 +92,17 @@ class Range extends Node implements \IteratorAggregate
     /**
      * @return \ArrayIterator<int, int>
      */
-    public function getIterator(): \ArrayIterator
+    public function getIterator(): \Traversable
     {
-        return new \ArrayIterator($this->toArray());
+        if ($this->start > $this->end) {
+            return;
+        }
+        for ($value = $this->start; ; $value++) {
+            yield $value;
+            if ($value === $this->end) {
+                return;
+            }
+        }
     }
 
     public function debugLabel(): string

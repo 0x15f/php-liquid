@@ -36,15 +36,27 @@ class ParseContext
 
     public readonly Environment $environment;
 
+    private ParseBudget $budget;
+
     public function __construct(
         ?Environment $environment = null,
+        ?ParseBudget $budget = null,
     ) {
         $this->environment = $environment ?? Environment::default();
 
+        $this->budget = $budget ?? new ParseBudget;
         $this->lineNumber = 1;
         $this->outputs = new OutputsBag;
         $this->lexer = new Lexer($this);
         $this->parser = new Parser($this);
+    }
+
+    public function chargeToken(): void
+    {
+        $limit = $this->environment->templatePolicy?->maxTokens;
+        if ($limit !== null && ++$this->budget->tokens > $limit) {
+            throw new \Keepsuit\Liquid\Exceptions\ResourceLimitException('Template token budget exceeded.');
+        }
     }
 
     public function isPartial(): bool
@@ -57,6 +69,14 @@ class ParseContext
      */
     public function tokenize(string $markup): TokenStream
     {
+        $policy = $this->environment->templatePolicy;
+        if ($policy !== null) {
+            $this->budget->bytes += strlen($markup);
+            if (strlen($markup) > $policy->maxSourceBytes || $this->budget->bytes > $policy->maxParseBytes) {
+                throw new \Keepsuit\Liquid\Exceptions\ResourceLimitException('Template source budget exceeded.');
+            }
+        }
+
         return $this->lexer->tokenize($markup);
     }
 
@@ -118,7 +138,7 @@ class ParseContext
             $template = $this->environment->templatesCache->get($templateName);
 
             if ($template === null) {
-                $partialParseContext = new ParseContext(environment: $this->environment);
+                $partialParseContext = new ParseContext(environment: $this->environment, budget: $this->budget);
                 $partialParseContext->partial = true;
                 $partialParseContext->depth = $this->depth;
 

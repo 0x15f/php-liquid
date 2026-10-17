@@ -12,7 +12,21 @@ use Keepsuit\Liquid\Render\RenderContext;
  */
 class FilterSupport
 {
-    public function __construct(protected RenderContext $context) {}
+    public readonly bool $bounded;
+
+    public function __construct(protected RenderContext $context)
+    {
+        $this->bounded = $context->resourceLimits->bounded || $context->environment->templatePolicy !== null;
+    }
+
+    public function visit(int $count, int $depth = 0): void
+    {
+        $this->context->resourceLimits->checkCollectionSize($count);
+        $this->context->resourceLimits->incrementRenderScore();
+        if ($depth > ($this->context->environment->templatePolicy === null ? 100 : $this->context->environment->templatePolicy->maxDataDepth)) {
+            $this->context->resourceLimits->throwLimitReachedException();
+        }
+    }
 
     public function normalize(mixed $value): mixed
     {
@@ -27,7 +41,7 @@ class FilterSupport
 
     public function normalizeCollection(iterable $input): array
     {
-        return Arr::map(Arr::from($input), $this->normalize(...));
+        return Arr::map($this->context->resourceLimits->collect($input), $this->normalize(...));
     }
 
     public function iterate(mixed $input): FilterInputIterator
@@ -44,9 +58,14 @@ class FilterSupport
         return FilterCoercion::toString($value);
     }
 
-    protected function inspectArrayValue(mixed $value): string
+    protected function inspectArrayValue(mixed $value, int $depth = 0): string
     {
+        if ($depth > ($this->context->environment->templatePolicy === null ? 100 : $this->context->environment->templatePolicy->maxDataDepth)) {
+            $this->context->resourceLimits->throwLimitReachedException();
+        }
         if (is_string($value)) {
+            $this->context->resourceLimits->checkStringSize(6.0 * strlen($value) + 2);
+
             return (string) json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);
         }
 
@@ -56,13 +75,23 @@ class FilterSupport
 
         if (is_array($value)) {
             $list = array_is_list($value);
-            $items = [];
-
+            $this->context->resourceLimits->checkCollectionSize(count($value));
+            $output = $list ? '[' : '{';
+            $first = true;
             foreach ($value as $key => $item) {
-                $items[] = ($list ? '' : $this->inspectArrayValue($key).'=>').$this->inspectArrayValue($item);
+                $this->context->resourceLimits->incrementRenderScore();
+                if (! $first) {
+                    $this->context->resourceLimits->append($output, ', ');
+                }
+                if (! $list) {
+                    $this->context->resourceLimits->append($output, $this->inspectArrayValue($key, $depth + 1).'=>');
+                }
+                $this->context->resourceLimits->append($output, $this->inspectArrayValue($item, $depth + 1));
+                $first = false;
             }
+            $this->context->resourceLimits->append($output, $list ? ']' : '}');
 
-            return ($list ? '[' : '{').implode(', ', $items).($list ? ']' : '}');
+            return $output;
         }
 
         return $this->stringify($value);
@@ -89,6 +118,9 @@ class FilterSupport
 
     public function property(mixed $item, mixed $property): mixed
     {
+        if (is_object($item)) {
+            $this->context->environment->templatePolicy?->assertObject($item);
+        }
         if ($property !== null && ! is_string($property) && ! is_int($property)) {
             throw $property instanceof UndefinedVariable
                 ? $property->toException()

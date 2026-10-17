@@ -217,7 +217,7 @@ class VariableLookup implements CanBeEvaluated, CanBeExported, HasParseTreeVisit
         }
 
         if ($object instanceof \Generator) {
-            $object = iterator_to_array($object, preserve_keys: false);
+            $object = $context->resourceLimits->collect($object, preserveKeys: false);
         }
 
         foreach ($lookups as $lookup) {

@@ -342,9 +342,12 @@ final class CompilerContext
             ? $this->builder->streamBufferState()['maxLength']
             : null;
         if ($this->rendering) {
-            $this->write('$output .= '.$expression.$suffix);
+            if ($suffix !== ';') {
+                throw new \LogicException('Rendered output requires a complete expression.');
+            }
+            $this->write('$context->resourceLimits->append($output, '.$expression.');');
         } elseif ($this->buffering) {
-            $this->write('$buffer .= '.$expression.$suffix);
+            $this->write('$context->resourceLimits->append($buffer, '.$expression.');');
             $this->builder->setStreamBufferState(['checked' => false, 'empty' => false, 'maxLength' => null]);
         } else {
             $this->writeYield($expression, $suffix);
@@ -649,7 +652,7 @@ final class CompilerContext
         if ($lazy) {
             if ($this->rendering) {
                 $this->outdent()->write('}) as $chunk) {');
-                $this->indent()->write('$output .= $chunk;');
+                $this->indent()->write('$context->resourceLimits->append($output, $chunk);');
                 $this->outdent()->write('}');
             } else {
                 $this->outdent()->write('});');
@@ -663,7 +666,7 @@ final class CompilerContext
         $error = '$this->compiledErrorOutput($exception, $context->handleError($exception, '.$line.'))';
         if ($this->rendering) {
             $this->builder->dedent()->writeLines('} catch (\\Throwable $exception) {'
-                ."\n    \$output .= (".$error.' ?? "");'
+                ."\n    \$context->resourceLimits->append(\$output, (".$error.' ?? ""));'
                 ."\n}");
             $this->builder->setStreamBufferState([
                 'checked' => $successBufferState['checked'],

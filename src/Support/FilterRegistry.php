@@ -83,7 +83,41 @@ class FilterRegistry
                     $instance->setContext($context);
                 }
 
-                return $instance->{$method}($value, ...$args);
+                if ($context->environment->templatePolicy !== null) {
+                    $context->environment->templatePolicy->assertData($value);
+                    if ($args !== []) {
+                        $context->environment->templatePolicy->assertData($args);
+                    }
+                    // Decimal arithmetic is arbitrary precision. Cap operand digits before Brick allocates.
+                    if (in_array($filterName, ['plus', 'minus', 'times', 'divided_by', 'modulo', 'sum'], true)) {
+                        foreach ([$value, ...$args] as $operand) {
+                            if (is_string($operand) && strlen($operand) > 256) {
+                                throw new \Keepsuit\Liquid\Exceptions\ResourceLimitException('Numeric operand budget exceeded.');
+                            }
+                        }
+                    }
+                }
+                $bounded = $context->resourceLimits->bounded || $context->environment->templatePolicy !== null;
+                if ($bounded) {
+                    $context->resourceLimits->incrementRenderScore();
+                    if (is_string($value)) {
+                        $context->resourceLimits->checkStringSize(strlen($value));
+                    }
+                    foreach ($args as $operand) {
+                        if (is_string($operand)) {
+                            $context->resourceLimits->checkStringSize(strlen($operand));
+                        }
+                    }
+                }
+                $result = $instance->{$method}($value, ...$args);
+                $context->environment->templatePolicy?->assertData($result);
+                if ($bounded && is_string($result)) {
+                    $context->resourceLimits->checkStringSize(strlen($result));
+                } elseif ($bounded && is_array($result)) {
+                    $context->resourceLimits->checkCollectionSize(count($result));
+                }
+
+                return $result;
             } catch (\TypeError $e) {
                 if ($value instanceof UndefinedVariable) {
                     throw new UndefinedVariableException($value->variableName);

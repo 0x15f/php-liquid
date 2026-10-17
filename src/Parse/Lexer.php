@@ -160,6 +160,7 @@ class Lexer
 
         $terminator = $this->terminatorLength(self::VARIABLE_END);
         if ($terminator !== null) {
+            $this->checkTokenBudget();
             $this->tokens[] = new Token(TokenType::VariableEnd, '', $lineNumber);
             $this->skip($terminator);
             $this->state = LexerState::Data;
@@ -446,6 +447,7 @@ class Lexer
             return;
         }
 
+        $this->checkTokenBudget();
         $this->tokens[] = new Token($type, $value, $this->lineNumber);
     }
 
@@ -459,6 +461,7 @@ class Lexer
     protected function pushPunctuation(TokenType $type): void
     {
         $cursor = $this->cursor;
+        $this->checkTokenBudget();
         $this->tokens[] = new Token($type, $this->source[$cursor], $this->lineNumber);
 
         $cursor++;
@@ -655,6 +658,7 @@ class Lexer
         // Identifiers are the most common token and can never span a newline, so
         // advance directly rather than paying for pushToken() + skip() and the
         // newline scan skip() would run.
+        $this->checkTokenBudget();
         $this->tokens[] = new Token($type, $value, $this->lineNumber);
         $this->cursor = $offset;
         $this->current = $offset < $this->end ? $this->source[$offset] : null;
@@ -717,5 +721,10 @@ class Lexer
     protected function isWhitespace(?string $character): bool
     {
         return $character !== null && str_contains(self::WHITESPACE, $character);
+    }
+
+    private function checkTokenBudget(): void
+    {
+        $this->parseContext->chargeToken();
     }
 }

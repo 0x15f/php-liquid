@@ -260,7 +260,7 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
 
         $collection = $context->evaluate($expression);
         if (! $collection instanceof ProvidesCollectionSlice && (! $collection instanceof Range || $collection::class !== Range::class)) {
-            $collection = Arr::fromCollection($collection);
+            $collection = Arr::fromCollection($collection, $context->resourceLimits);
         }
 
         if ($from === 'continue') {
@@ -282,11 +282,12 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
             default => throw new InvalidArgumentException('Invalid integer'),
         };
         $segment = match (true) {
-            $collection instanceof ProvidesCollectionSlice => $collection->liquidSlice($offset, $length),
-            $collection instanceof Range => $collection->slice($offset, $length),
+            $collection instanceof ProvidesCollectionSlice => $context->resourceLimits->sliceProvider($collection, $offset, $length),
+            $collection instanceof Range => $collection->slice($offset, $length, $context->resourceLimits),
             $offset === 0 && $length === null => $collection,
             default => array_slice($collection, $offset, $length)
         };
+        $context->resourceLimits->checkCollectionSize(count($segment));
         $segment = $reversed ? array_reverse($segment) : $segment;
 
         $offsets[$name] = $offset + count($segment);
@@ -309,7 +310,7 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
 
         $collection = VariableLookup::evaluateDescriptor($context, $expression);
         if (! $collection instanceof ProvidesCollectionSlice && (! $collection instanceof Range || $collection::class !== Range::class)) {
-            $collection = Arr::fromCollection($collection);
+            $collection = Arr::fromCollection($collection, $context->resourceLimits);
         }
 
         if ($from === 'continue') {
@@ -331,11 +332,12 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
             default => throw new InvalidArgumentException('Invalid integer'),
         };
         $segment = match (true) {
-            $collection instanceof ProvidesCollectionSlice => $collection->liquidSlice($offset, $length),
-            $collection instanceof Range => $collection->slice($offset, $length),
+            $collection instanceof ProvidesCollectionSlice => $context->resourceLimits->sliceProvider($collection, $offset, $length),
+            $collection instanceof Range => $collection->slice($offset, $length, $context->resourceLimits),
             $offset === 0 && $length === null => $collection,
             default => array_slice($collection, $offset, $length)
         };
+        $context->resourceLimits->checkCollectionSize(count($segment));
         $segment = $reversed ? array_reverse($segment) : $segment;
 
         $offsets[$name] = $offset + count($segment);
@@ -352,7 +354,7 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
             $output = '';
             foreach ($segment as $value) {
                 $context->set($this->variableName, $value);
-                $output .= $this->forBlock->render($context);
+                $context->resourceLimits->append($output, $this->forBlock->render($context));
                 $loopVars->increment();
 
                 if ($context->popInterrupt() instanceof BreakInterrupt) {

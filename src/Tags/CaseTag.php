@@ -63,14 +63,14 @@ class CaseTag extends TagBlock implements CanBeCompiled, CanBeStreamed
         foreach ($this->conditions as $condition) {
             if ($condition->else()) {
                 if (! $matched) {
-                    $output .= $condition->body?->render($context) ?? '';
+                    $context->resourceLimits->append($output, $condition->body?->render($context) ?? '');
                 }
                 break;
             }
 
             if ($condition->evaluate($context)) {
                 $matched = true;
-                $output .= $condition->body?->render($context) ?? '';
+                $context->resourceLimits->append($output, $condition->body?->render($context) ?? '');
                 if ($context->hasInterrupt()) {
                     break;
                 }

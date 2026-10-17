@@ -25,7 +25,100 @@ class ResourceLimits
         public readonly ?int $assignScoreLimit = null,
         public readonly ?int $cumulativeRenderScoreLimit = null,
         public readonly ?int $cumulativeAssignScoreLimit = null,
-    ) {}
+        public readonly ?int $intermediateBytesLimit = null,
+        public readonly ?int $collectionSizeLimit = null,
+        public readonly ?int $renderTimeLimitMilliseconds = null,
+    ) {
+        foreach ([$renderLengthLimit, $renderScoreLimit, $assignScoreLimit, $cumulativeRenderScoreLimit,
+            $cumulativeAssignScoreLimit, $intermediateBytesLimit, $collectionSizeLimit, $renderTimeLimitMilliseconds] as $limit) {
+            if ($limit !== null && $limit < 0) {
+                throw new \InvalidArgumentException('Resource limits cannot be negative.');
+            }
+        }
+        $this->startedAt = $renderTimeLimitMilliseconds === null ? 0 : hrtime(true);
+        $this->bounded = $intermediateBytesLimit !== null || $collectionSizeLimit !== null || $renderTimeLimitMilliseconds !== null;
+    }
+
+    private int|float $startedAt;
+
+    public readonly bool $bounded;
+
+    public static function forUntrustedTemplates(): self
+    {
+        return new self(10_000_000, 100_000, 10_000_000, 1_000_000, 20_000_000,
+            intermediateBytesLimit: 10_000_000, collectionSizeLimit: 10000, renderTimeLimitMilliseconds: 1000);
+    }
+
+    /** @return list<mixed> */
+    public function sliceProvider(\Keepsuit\Liquid\Contracts\ProvidesCollectionSlice $provider, int $offset, ?int $length): array
+    {
+        if ($this->collectionSizeLimit !== null) {
+            if ($length !== null && $length < 0) {
+                throw new ResourceLimitException('Bounded providers require a nonnegative limit.');
+            }
+            $probe = $this->collectionSizeLimit < PHP_INT_MAX ? $this->collectionSizeLimit + 1 : PHP_INT_MAX;
+            $length = $length === null ? $probe : min($length, $probe);
+        }
+        $result = $provider->liquidSlice($offset, $length);
+        $this->checkCollectionSize(count($result));
+
+        return $result;
+    }
+
+    public function checkTime(): void
+    {
+        if ($this->renderTimeLimitMilliseconds !== null
+            && (hrtime(true) - $this->startedAt) / 1_000_000 > $this->renderTimeLimitMilliseconds) {
+            $this->throwLimitReachedException();
+        }
+    }
+
+    public function checkStringSize(int|float $bytes): void
+    {
+        if ($bytes < 0 || ($this->intermediateBytesLimit !== null && $bytes > $this->intermediateBytesLimit)) {
+            $this->throwLimitReachedException();
+        }
+    }
+
+    public function checkCollectionSize(int|float $items): void
+    {
+        if ($items < 0 || ($this->collectionSizeLimit !== null && $items > $this->collectionSizeLimit)) {
+            $this->throwLimitReachedException();
+        }
+    }
+
+    /** Check before concatenation. Passing the target by reference avoids a copy on append. */
+    public function append(string &$buffer, string $chunk): void
+    {
+        if ($this->intermediateBytesLimit !== null
+            && strlen($chunk) > $this->intermediateBytesLimit - strlen($buffer)) {
+            $this->throwLimitReachedException();
+        }
+        $buffer .= $chunk;
+    }
+
+    /** @return array<mixed> */
+    public function collect(iterable $values, bool $preserveKeys = true): array
+    {
+        if (is_array($values)) {
+            $this->checkCollectionSize(count($values));
+
+            return $preserveKeys ? $values : array_values($values);
+        }
+        $result = [];
+        $count = 0;
+        foreach ($values as $key => $value) {
+            $this->checkCollectionSize(++$count);
+            $this->incrementRenderScore();
+            if ($preserveKeys) {
+                $result[$key] = $value;
+            } else {
+                $result[] = $value;
+            }
+        }
+
+        return $result;
+    }
 
     public static function clone(ResourceLimits $limits): ResourceLimits
     {
@@ -35,6 +128,9 @@ class ResourceLimits
             assignScoreLimit: $limits->assignScoreLimit,
             cumulativeRenderScoreLimit: $limits->cumulativeRenderScoreLimit,
             cumulativeAssignScoreLimit: $limits->cumulativeAssignScoreLimit,
+            intermediateBytesLimit: $limits->intermediateBytesLimit,
+            collectionSizeLimit: $limits->collectionSizeLimit,
+            renderTimeLimitMilliseconds: $limits->renderTimeLimitMilliseconds,
         );
     }
 
@@ -43,6 +139,12 @@ class ResourceLimits
      */
     public function incrementRenderScore(int $amount = 1): ResourceLimits
     {
+        if ($amount < 0 || $amount > PHP_INT_MAX - $this->renderScore || $amount > PHP_INT_MAX - $this->cumulativeRenderScore) {
+            $this->throwLimitReachedException();
+        }
+        if ($this->renderTimeLimitMilliseconds !== null) {
+            $this->checkTime();
+        }
         $this->renderScore += $amount;
         $this->cumulativeRenderScore += $amount;
 
@@ -62,7 +164,7 @@ class ResourceLimits
      */
     public function incrementAssignScore(int $amount = 1): ResourceLimits
     {
-        if ($amount > PHP_INT_MAX - $this->assignScore || $amount > PHP_INT_MAX - $this->cumulativeAssignScore) {
+        if ($amount < 0 || $amount > PHP_INT_MAX - $this->assignScore || $amount > PHP_INT_MAX - $this->cumulativeAssignScore) {
             $this->throwLimitReachedException();
         }
 

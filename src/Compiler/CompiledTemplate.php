@@ -161,7 +161,7 @@ abstract class CompiledTemplate extends AbstractTemplate
         $name = $partial->name() ?? '';
         $alias = $aliasName ?? RenderTag::defaultVariableName($name);
         $variable = $variable ? VariableLookup::evaluateDescriptor($context, $variable) : null;
-        $values = RenderTag::loopValues($variable, true);
+        $values = RenderTag::loopValues($variable, true, $context->resourceLimits);
 
         if ($values === null) {
             yield from $partial->stream($this->partialLoopContext($context, $name, $alias, $variable, $attributes));
@@ -191,7 +191,7 @@ abstract class CompiledTemplate extends AbstractTemplate
         $name = $partial->name() ?? '';
         $alias = $aliasName ?? RenderTag::defaultVariableName($name);
         $variable = $variable ? VariableLookup::evaluateDescriptor($context, $variable) : null;
-        $values = RenderTag::loopValues($variable, true);
+        $values = RenderTag::loopValues($variable, true, $context->resourceLimits);
 
         if ($values === null) {
             return $partial->render($this->partialLoopContext($context, $name, $alias, $variable, $attributes));
@@ -200,7 +200,7 @@ abstract class CompiledTemplate extends AbstractTemplate
         $loop = new ForLoopDrop($name, count($values));
         $output = '';
         foreach ($values as $value) {
-            $output .= $partial->render($this->partialLoopContext($context, $name, $alias, $value, $attributes, $loop));
+            $context->resourceLimits->append($output, $partial->render($this->partialLoopContext($context, $name, $alias, $value, $attributes, $loop)));
             $loop->increment();
         }
 

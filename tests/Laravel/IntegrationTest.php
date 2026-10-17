@@ -7,6 +7,27 @@ use Keepsuit\Liquid\Laravel\LiquidManager;
 
 uses(Keepsuit\Liquid\Tests\Laravel\TestCase::class);
 
+test('untrusted snapshots isolate tenants, revisions and capabilities across cache drivers', function (string $driver) {
+    config()->set('liquid.cache.driver', $driver);
+    config()->set('liquid.cache.store', 'array');
+    $manager = $this->app->make(LiquidManager::class);
+    $a = $manager->untrustedEnvironment(['page' => 'A {{ name }}{% render "card" %}', 'card' => 'a'], 'tenant-a');
+    $b = $manager->untrustedEnvironment(['page' => 'B {{ name }}{% render "card" %}', 'card' => 'b'], 'tenant-b');
+    expect($a->parseTemplate('page')->render($a->newRenderContext(data: ['name' => 'Alice'])))->toBe('A Alicea');
+    expect($b->parseTemplate('page')->render($b->newRenderContext(data: ['name' => 'Bob'])))->toBe('B Bobb');
+    expect($a->parseTemplate('page')->render($a->newRenderContext(data: ['name' => 'Carol'])))->toBe('A Carola');
+    // Reusing a caller's revision label cannot retrieve the old content or a wider snippet set.
+    $changed = $manager->untrustedEnvironment(['page' => 'new'], 'tenant-a');
+    expect($changed->parseTemplate('page')->render($changed->newRenderContext()))->toBe('new');
+    $narrow = $manager->untrustedEnvironment(['page' => '{% render "card" %}'], 'tenant-a');
+    expect(fn () => $narrow->parseTemplate('page'))->toThrow(Keepsuit\Liquid\Exceptions\FileSystemException::class);
+    expect(fn () => $a->parseTemplate('hello'))->toThrow(Keepsuit\Liquid\Exceptions\FileSystemException::class);
+    expect(fn () => $a->newRenderContext(data: ['container' => $this->app]))->toThrow(Keepsuit\Liquid\Exceptions\TemplateSecurityException::class);
+    $this->app->forgetScopedInstances();
+    $newRequest = $this->app->make(LiquidManager::class)->untrustedEnvironment(['page' => 'A {{ name }}{% render "card" %}', 'card' => 'a'], 'tenant-a');
+    expect($newRequest->parseTemplate('page')->render($newRequest->newRenderContext(data: ['name' => 'Dave'])))->toBe('A Davea');
+})->with(['memory', 'compiled', 'cache']);
+
 test('Laravel views facade dependency injection and nested snippets render', function () {
     expect(view('hello', ['name' => 'Alice & Bob'])->render())->toBe('Hello Alice & Bob!<small>Alice &amp; Bob</small>');
     expect(Liquid::render('hello', ['name' => 'Jane']))->toBe('Hello Jane!<small>Jane</small>');
@@ -76,4 +97,27 @@ test('warm command compiles roots and static snippets without requiring render d
     $env = $this->app->make(LiquidManager::class)->environment('release');
     expect($env->templatesCache->has('hello'))->toBeTrue();
     expect($env->templatesCache->has('footer'))->toBeTrue();
+});
+
+test('restricted snapshots reuse Redis parsed templates on a fresh compiled host', function () {
+    if (! getenv('LIQUID_REDIS_HOST')) {
+        $this->markTestSkipped('Set LIQUID_REDIS_HOST to exercise real Redis.');
+    }
+    config()->set('liquid.cache.driver', 'compiled');
+    config()->set('liquid.cache.store', 'redis');
+    $snapshot = ['page' => '{{ name }}{% render "card" %}', 'card' => ' card'];
+    $first = $this->app->make(LiquidManager::class)->untrustedEnvironment($snapshot, 'tenant-a');
+    expect($first->parseTemplate('page')->render($first->newRenderContext(data: ['name' => 'Alice'])))->toBe('Alice card');
+    $first->templatesCache->clear();
+    expect($first->parseTemplate('page')->render($first->newRenderContext(data: ['name' => 'Bob'])))->toBe('Bob card');
+    $this->app->forgetScopedInstances();
+    // Keep Redis, but use a completely different local compilation directory.
+    config()->set('liquid.cache.path', testTemporaryDirectory()->path('other-host'));
+    $second = $this->app->make(LiquidManager::class)->untrustedEnvironment($snapshot, 'tenant-a');
+    expect($second->parseTemplate('page'))->toBeInstanceOf(CompiledTemplate::class);
+    expect($second->parseTemplate('page')->render($second->newRenderContext(data: ['name' => 'Carol'])))->toBe('Carol card');
+    $otherTenant = $this->app->make(LiquidManager::class)->untrustedEnvironment(['page' => 'private'], 'tenant-b');
+    expect($otherTenant->parseTemplate('page')->render($otherTenant->newRenderContext()))->toBe('private');
+    $first->templatesCache->clear();
+    expect($otherTenant->parseTemplate('page')->render($otherTenant->newRenderContext()))->toBe('private');
 });

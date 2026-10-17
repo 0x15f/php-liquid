@@ -13,6 +13,8 @@ use Keepsuit\Liquid\Nodes\VariableLookup;
  */
 class ExpressionParser
 {
+    private int $depth = 0;
+
     protected const LITERALS = [
         'nil' => null,
         'null' => null,
@@ -40,14 +42,21 @@ class ExpressionParser
             return null;
         }
 
-        return match ($token->type) {
-            TokenType::OpenRound => $this->parseRange(),
-            TokenType::String => $this->parseString(),
-            TokenType::Number => $this->parseNumber(),
-            TokenType::Identifier => array_key_exists($token->data, self::LITERALS) ? $this->parseLiteral() : $this->parseVariable(),
-            TokenType::VariableEnd => null,
-            default => throw SyntaxException::invalidExpression($token->data),
-        };
+        if (++$this->depth > ParseContext::MAX_DEPTH) {
+            throw \Keepsuit\Liquid\Exceptions\StackLevelException::nestingTooDeep();
+        }
+        try {
+            return match ($token->type) {
+                TokenType::OpenRound => $this->parseRange(),
+                TokenType::String => $this->parseString(),
+                TokenType::Number => $this->parseNumber(),
+                TokenType::Identifier => array_key_exists($token->data, self::LITERALS) ? $this->parseLiteral() : $this->parseVariable(),
+                TokenType::VariableEnd => null,
+                default => throw SyntaxException::invalidExpression($token->data),
+            };
+        } finally {
+            $this->depth--;
+        }
     }
 
     protected function parseVariable(): VariableLookup

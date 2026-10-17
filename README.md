@@ -26,6 +26,8 @@ composer require 0x15f/liquid:^0.1
 
 ## Laravel quick start
 
+For user-authored templates, use the [restricted execution APIs](SECURITY.md#user-authored-templates) instead of the general view API. They retain compiled/Redis template caching while limiting PHP capabilities, source size, allocations and work.
+
 Package discovery registers the provider automatically. Create `resources/views/greeting.liquid`:
 
 ```liquid

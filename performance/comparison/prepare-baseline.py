@@ -1,10 +1,13 @@
 """Load a frozen PHP engine beside the candidate for paired, same-process timing."""
+import argparse
 import io
 import pathlib
 import subprocess
 import tarfile
 
-revision = "988a739c20e5e52adbf450f864ce5b4e17e4aa6e"
+parser = argparse.ArgumentParser()
+parser.add_argument("--revision", default="988a739c20e5e52adbf450f864ce5b4e17e4aa6e")
+revision = parser.parse_args().revision
 root = pathlib.Path(__file__).resolve().parents[2]
 destination = root / "build" / "comparison-baseline"
 archive = subprocess.check_output(["git", "archive", revision, "src"], cwd=root)
