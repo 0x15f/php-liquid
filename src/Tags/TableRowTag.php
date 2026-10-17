@@ -121,7 +121,7 @@ class TableRowTag extends TagBlock
             return null;
         }
 
-        if (! $collection instanceof Range || $collection::class !== Range::class) {
+        if (! is_array($collection) && (! $collection instanceof Range || $collection::class !== Range::class)) {
             $collection = Arr::fromCollection($collection, $context->resourceLimits);
         }
 
@@ -136,8 +136,7 @@ class TableRowTag extends TagBlock
 
         $collection = match (true) {
             $collection instanceof Range => $collection->slice($offset, $length, $context->resourceLimits),
-            $offset === 0 && $length === null => $collection,
-            default => array_slice($collection, $offset, $length)
+            default => $context->resourceLimits->sliceArray($collection, $offset, $length)
         };
         $cols = Arr::has($attributes, 'cols') ? ($context->evaluate($attributes['cols']) ?? 0) : count($collection);
         if (! is_int($cols)) {

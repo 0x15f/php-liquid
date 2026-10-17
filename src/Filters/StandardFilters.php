@@ -251,6 +251,11 @@ class StandardFilters extends FiltersProvider
             return $input;
         }
 
+        if ($this->context->resourceLimits->intermediateBytesLimit !== null) {
+            // Composite date directives expand a short format into many output bytes.
+            $this->context->resourceLimits->checkStringSize(64.0 * strlen($format));
+        }
+
         try {
             $date = match (true) {
                 $input instanceof DateTime => $input,
@@ -694,7 +699,7 @@ class StandardFilters extends FiltersProvider
         }
 
         if (is_array($input)) {
-            return array_slice($input, $start, $length);
+            return $this->context->resourceLimits->sliceArray($input, $start, $length);
         }
 
         return Str::substr($input, $start, $length);

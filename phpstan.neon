@@ -5,6 +5,7 @@ parameters:
     level: 9
     paths:
         - src
+        - resources/isolated-worker.php
         - performance
         - tests/Stubs
     tmpDir: build/phpstan

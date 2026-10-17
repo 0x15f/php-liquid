@@ -259,7 +259,7 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
         assert(is_array($offsets));
 
         $collection = $context->evaluate($expression);
-        if (! $collection instanceof ProvidesCollectionSlice && (! $collection instanceof Range || $collection::class !== Range::class)) {
+        if (! is_array($collection) && ! $collection instanceof ProvidesCollectionSlice && (! $collection instanceof Range || $collection::class !== Range::class)) {
             $collection = Arr::fromCollection($collection, $context->resourceLimits);
         }
 
@@ -284,10 +284,8 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
         $segment = match (true) {
             $collection instanceof ProvidesCollectionSlice => $context->resourceLimits->sliceProvider($collection, $offset, $length),
             $collection instanceof Range => $collection->slice($offset, $length, $context->resourceLimits),
-            $offset === 0 && $length === null => $collection,
-            default => array_slice($collection, $offset, $length)
+            default => $context->resourceLimits->sliceArray($collection, $offset, $length)
         };
-        $context->resourceLimits->checkCollectionSize(count($segment));
         $segment = $reversed ? array_reverse($segment) : $segment;
 
         $offsets[$name] = $offset + count($segment);
@@ -309,7 +307,7 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
         assert(is_array($offsets));
 
         $collection = VariableLookup::evaluateDescriptor($context, $expression);
-        if (! $collection instanceof ProvidesCollectionSlice && (! $collection instanceof Range || $collection::class !== Range::class)) {
+        if (! is_array($collection) && ! $collection instanceof ProvidesCollectionSlice && (! $collection instanceof Range || $collection::class !== Range::class)) {
             $collection = Arr::fromCollection($collection, $context->resourceLimits);
         }
 
@@ -334,10 +332,8 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
         $segment = match (true) {
             $collection instanceof ProvidesCollectionSlice => $context->resourceLimits->sliceProvider($collection, $offset, $length),
             $collection instanceof Range => $collection->slice($offset, $length, $context->resourceLimits),
-            $offset === 0 && $length === null => $collection,
-            default => array_slice($collection, $offset, $length)
+            default => $context->resourceLimits->sliceArray($collection, $offset, $length)
         };
-        $context->resourceLimits->checkCollectionSize(count($segment));
         $segment = $reversed ? array_reverse($segment) : $segment;
 
         $offsets[$name] = $offset + count($segment);

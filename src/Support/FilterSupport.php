@@ -120,6 +120,9 @@ class FilterSupport
     {
         if (is_object($item)) {
             $this->context->environment->templatePolicy?->assertObject($item);
+            if ($this->bounded) {
+                $this->context->resourceLimits->incrementRenderScore();
+            }
         }
         if ($property !== null && ! is_string($property) && ! is_int($property)) {
             throw $property instanceof UndefinedVariable

@@ -27,6 +27,10 @@ abstract class CompiledTemplate extends AbstractTemplate
 
     final public function render(RenderContext $context): string
     {
+        $root = ! $context->isPartial();
+        if ($root) {
+            $context->resourceLimits->beginExecution();
+        }
         try {
             $this->prepareContext($context);
             $output = $this->renderCompiledString($context);
@@ -40,6 +44,9 @@ abstract class CompiledTemplate extends AbstractTemplate
             $this->attachTemplateName($e);
             throw $e;
         } finally {
+            if ($root) {
+                $context->resourceLimits->endExecution();
+            }
             $this->persistContext($context);
         }
     }
@@ -49,6 +56,10 @@ abstract class CompiledTemplate extends AbstractTemplate
      */
     final public function stream(RenderContext $context): \Generator
     {
+        $root = ! $context->isPartial();
+        if ($root) {
+            $context->resourceLimits->beginExecution();
+        }
         try {
             $this->prepareContext($context);
 
@@ -70,6 +81,9 @@ abstract class CompiledTemplate extends AbstractTemplate
             $this->attachTemplateName($e);
             throw $e;
         } finally {
+            if ($root) {
+                $context->resourceLimits->endExecution();
+            }
             $this->persistContext($context);
         }
     }

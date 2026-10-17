@@ -27,7 +27,7 @@ final class TemplatePolicy
         public readonly int $maxDataBytes = 10000000,
     ) {
         $this->approved = array_fill_keys([ForLoopDrop::class, TableRowLoopDrop::class, SelfDrop::class,
-            Range::class, MissingValue::class, UndefinedVariable::class, ...$allowedClasses], true);
+            Range::class, \Keepsuit\Liquid\Nodes\Literal::class, MissingValue::class, UndefinedVariable::class, ...$allowedClasses], true);
         foreach ([$maxSourceBytes, $maxTokens, $maxParseBytes, $maxDataDepth, $maxDataValues, $maxDataBytes] as $limit) {
             if ($limit < 1) {
                 throw new \InvalidArgumentException('Template policy limits must be positive.');
@@ -50,6 +50,9 @@ final class TemplatePolicy
         }
         $bytes = 0;
         foreach ($templates as $name => $source) {
+            if (! is_string($source)) {
+                throw new TemplateSecurityException('Template sources must be strings.');
+            }
             $bytes += strlen($source);
             if (strlen((string) $name) > 256 || strlen($source) > $this->maxSourceBytes || $bytes > $this->maxParseBytes) {
                 throw new \Keepsuit\Liquid\Exceptions\ResourceLimitException('Template snapshot exceeds its source budget.');

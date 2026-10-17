@@ -345,9 +345,9 @@ final class CompilerContext
             if ($suffix !== ';') {
                 throw new \LogicException('Rendered output requires a complete expression.');
             }
-            $this->write('$context->resourceLimits->append($output, '.$expression.');');
+            $this->writeBoundedAppend('$output', $expression, $length);
         } elseif ($this->buffering) {
-            $this->write('$context->resourceLimits->append($buffer, '.$expression.');');
+            $this->writeBoundedAppend('$buffer', $expression, $length);
             $this->builder->setStreamBufferState(['checked' => false, 'empty' => false, 'maxLength' => null]);
         } else {
             $this->writeYield($expression, $suffix);
@@ -365,6 +365,27 @@ final class CompilerContext
         }
 
         return $this;
+    }
+
+    /** Emit allocation checks directly so the render hot path needs no helper call per node. */
+    private function writeBoundedAppend(string $buffer, string $expression, ?int $length): void
+    {
+        if ($length === null) {
+            $chunk = $this->temporaryVariable();
+            $this->write($chunk.' = '.$expression.';');
+            $bytes = 'strlen('.$chunk.')';
+        } else {
+            $chunk = $expression;
+            $bytes = (string) $length;
+        }
+        $limit = '$context->resourceLimits->intermediateBytesLimit';
+        $this->write('if ('.$limit.' !== null && '.$bytes.' > '.$limit.' - strlen('.$buffer.')) {')->indent();
+        $this->write('$context->resourceLimits->throwLimitReachedException();');
+        $this->outdent()->write('}');
+        $this->write($buffer.' .= '.$chunk.';');
+        if ($length === null) {
+            $this->write('unset('.$chunk.');');
+        }
     }
 
     public function flushStreamBufferIfFull(): void

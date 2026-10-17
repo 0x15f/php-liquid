@@ -121,3 +121,47 @@ test('restricted snapshots reuse Redis parsed templates on a fresh compiled host
     $first->templatesCache->clear();
     expect($otherTenant->parseTemplate('page')->render($otherTenant->newRenderContext()))->toBe('private');
 });
+
+test('Laravel streaming resolves fresh contexts and reuses scoped compiled templates', function () {
+    config()->set('liquid.cache.driver', 'compiled');
+    config()->set('liquid.cache.store', 'array');
+    $manager = $this->app->make(LiquidManager::class);
+    expect(implode('', iterator_to_array($manager->stream('hello', ['name' => 'Alice']))))->toBe('Hello Alice!<small>Alice</small>');
+    expect(implode('', iterator_to_array($manager->streamString('{{ name | escape }}', ['name' => 'A&B']))))->toBe('A&amp;B');
+    expect($manager->environment()->parseTemplate('hello'))->toBe($manager->environment()->parseTemplate('hello'));
+    $this->app->forgetScopedInstances();
+    expect(implode('', iterator_to_array(Liquid::stream('hello', ['name' => 'Bob']))))->toBe('Hello Bob!<small>Bob</small>');
+});
+
+test('restricted Laravel rendering keeps stricter configured limits and cannot disable preset ceilings', function () {
+    config()->set('liquid.limits.render_length', 8);
+    config()->set('liquid.limits.render_score', null);
+    $environment = $this->app->make(LiquidManager::class)->untrustedEnvironment(['page' => '123456789'], 'tenant-a');
+    expect($environment->defaultResourceLimits->renderScoreLimit)->toBe(100000);
+    expect(fn () => $environment->parseTemplate('page')->render($environment->newRenderContext()))->toThrow(Keepsuit\Liquid\Exceptions\ResourceLimitException::class);
+    expect(fn () => iterator_to_array($environment->parseTemplate('page')->stream($environment->newRenderContext())))->toThrow(Keepsuit\Liquid\Exceptions\ResourceLimitException::class);
+});
+
+test('lazy restricted manifests stream from Redis without fetching sources on cache hits', function () {
+    if (! getenv('LIQUID_REDIS_HOST')) {
+        $this->markTestSkipped('Set LIQUID_REDIS_HOST to exercise real Redis.');
+    }
+    config()->set('liquid.cache.driver', 'compiled');
+    config()->set('liquid.cache.store', 'redis');
+    $sources = ['page' => '{{ name }}{% render "card" %}', 'card' => ' card', 'unused' => 'unused'];
+    $manifest = array_map(fn (string $source) => hash('sha256', $source), $sources);
+    $loads = [];
+    $snapshot = new Keepsuit\Liquid\FileSystems\TemplateSnapshot($manifest, function (string $name, int $maxBytes) use ($sources, &$loads): string {
+        $loads[] = $name;
+
+        return $sources[$name];
+    });
+    $first = $this->app->make(LiquidManager::class)->untrustedEnvironment($snapshot, 'tenant-a');
+    expect(implode('', iterator_to_array($first->parseTemplate('page')->stream($first->newRenderContext(data: ['name' => 'Alice'])))))->toBe('Alice card');
+    expect($loads)->toBe(['page', 'card']);
+    $this->app->forgetScopedInstances();
+    config()->set('liquid.cache.path', testTemporaryDirectory()->path('another-host'));
+    $second = $this->app->make(LiquidManager::class)->untrustedEnvironment($snapshot, 'tenant-a');
+    expect(implode('', iterator_to_array($second->parseTemplate('page')->stream($second->newRenderContext(data: ['name' => 'Bob'])))))->toBe('Bob card');
+    expect($loads)->toBe(['page', 'card']);
+});

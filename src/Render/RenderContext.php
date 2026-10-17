@@ -320,6 +320,9 @@ final class RenderContext
 
         if (is_object($scope)) {
             $this->environment->templatePolicy?->assertObject($scope);
+            if ($this->environment->templatePolicy !== null || $this->resourceLimits->bounded) {
+                $this->resourceLimits->incrementRenderScore();
+            }
         }
         try {
             $value = match (true) {
@@ -352,6 +355,8 @@ final class RenderContext
             }
 
             return false;
+        } catch (ResourceLimitException|\Keepsuit\Liquid\Exceptions\TemplateSecurityException $error) {
+            throw $error;
         } catch (Throwable) {
             return false;
         }
@@ -368,6 +373,9 @@ final class RenderContext
     public function normalizeValue(mixed $value): mixed
     {
         $this->environment->templatePolicy?->assertData($value);
+        if (is_object($value) && ($this->environment->templatePolicy !== null || $this->resourceLimits->bounded)) {
+            $this->resourceLimits->incrementRenderScore();
+        }
         // Only closures and MapsToLiquid values are normalized or cached.
         if (! $value instanceof Closure && ! $value instanceof MapsToLiquid) {
             return $value;
@@ -472,7 +480,8 @@ final class RenderContext
 
     public function loadPartial(string $templateName): Template
     {
-        if ($partial = $this->environment->templatesCache->get($templateName)) {
+        $cacheKey = $this->environment->templatePolicy === null ? $templateName : $this->environment->templateCacheKey($templateName);
+        if ($partial = $this->environment->templatesCache->get($cacheKey)) {
             return $partial;
         }
 

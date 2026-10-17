@@ -42,10 +42,44 @@ final class IsolatedRenderer
      */
     public function render(array $templates, string $name, array $data = [], string $namespace = 'default'): string
     {
+        $output = '';
+        foreach ($this->request($templates, $name, $data, $namespace, false) as $chunk) {
+            $output = $chunk;
+        }
+
+        return $output;
+    }
+
+    /**
+     * @param  array<string, string>  $templates
+     * @param  array<string, mixed>  $data
+     * @return \Generator<int, string>
+     */
+    public function stream(array $templates, string $name, array $data = [], string $namespace = 'default'): \Generator
+    {
+        return $this->request($templates, $name, $data, $namespace, true);
+    }
+
+    private bool $busy = false;
+
+    /**
+     * @param  array<string, string>  $templates
+     * @param  array<string, mixed>  $data
+     * @return \Generator<int, string>
+     */
+    private function request(array $templates, string $name, array $data, string $namespace, bool $stream): \Generator
+    {
+        if ($this->busy) {
+            throw new IsolatedRenderException('A renderer cannot execute overlapping requests.');
+        }
         $policy = new TemplatePolicy;
         $policy->assertData($data);
         $policy->assertTemplates($templates);
-        $payload = json_encode(compact('templates', 'name', 'data', 'namespace'), JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n";
+        $timezone = date_default_timezone_get();
+        $request = compact('templates', 'name', 'data', 'namespace', 'stream', 'timezone');
+        $remaining = 4_194_303;
+        $this->checkTransportBudget($request, $remaining);
+        $payload = json_encode($request, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n";
         if (strlen($payload) > 4_194_304) {
             throw new ResourceLimitException('Worker request exceeds 4 MiB.');
         }
@@ -54,35 +88,81 @@ final class IsolatedRenderer
         }
         $this->start();
         $this->requests++;
+        $this->busy = true;
+        $completed = false;
         try {
-            $response = $this->exchange($payload);
-        } catch (\Throwable $error) {
-            $this->close();
-            throw $error;
-        }
-        $message = json_decode($response, true, 64, JSON_THROW_ON_ERROR);
-        if (! is_array($message) || ! isset($message['ok']) || ! is_bool($message['ok'])) {
-            $this->close();
-            throw new IsolatedRenderException('Invalid worker response.');
-        }
-        if (! $message['ok']) {
-            if (($message['resource_limit'] ?? false) === true) {
-                throw new ResourceLimitException('Isolated template exceeded a resource limit.');
-            }
-            throw new IsolatedRenderException('Isolated template was rejected.');
-        }
-        if (! isset($message['output_base64']) || ! is_string($message['output_base64'])) {
-            $this->close();
-            throw new IsolatedRenderException('Invalid worker output.');
-        }
+            foreach ($this->exchange($payload) as $message) {
+                if (isset($message['chunk_base64']) && is_string($message['chunk_base64'])) {
+                    yield $this->decodeOutput($message['chunk_base64']);
 
-        $output = base64_decode($message['output_base64'], true);
+                    continue;
+                }
+                if (! isset($message['ok']) || ! is_bool($message['ok'])) {
+                    throw new IsolatedRenderException('Invalid worker response.');
+                }
+                if (! $message['ok']) {
+                    if (($message['resource_limit'] ?? false) === true) {
+                        throw new ResourceLimitException('Isolated template exceeded a resource limit.');
+                    }
+                    throw new IsolatedRenderException('Isolated template was rejected.');
+                }
+                if (! $stream) {
+                    if (! isset($message['output_base64']) || ! is_string($message['output_base64'])) {
+                        throw new IsolatedRenderException('Invalid worker output.');
+                    }
+                    yield $this->decodeOutput($message['output_base64']);
+                }
+                $completed = true;
+
+                return;
+            }
+            throw new IsolatedRenderException('Worker response was incomplete.');
+        } finally {
+            // Cancellation and every failure discard unread frames and release the worker.
+            if (! $completed) {
+                $this->close();
+            }
+            $this->busy = false;
+        }
+    }
+
+    private function decodeOutput(string $encoded): string
+    {
+        $output = base64_decode($encoded, true);
         if ($output === false) {
-            $this->close();
             throw new IsolatedRenderException('Invalid worker output encoding.');
         }
 
         return $output;
+    }
+
+    /** Bound worst-case JSON expansion before allocating the encoded request in the parent. */
+    private function checkTransportBudget(mixed $value, int &$remaining, int $depth = 0): void
+    {
+        if ($depth > 60) {
+            throw new ResourceLimitException('Worker request nesting exceeds the transport budget.');
+        }
+        if (is_array($value)) {
+            $remaining -= count($value) + 2;
+            $list = array_is_list($value);
+            foreach ($value as $key => $item) {
+                if (! $list) {
+                    $remaining -= 6 * strlen((string) $key) + 3;
+                }
+                $this->checkTransportBudget($item, $remaining, $depth + 1);
+            }
+        } elseif (is_string($value)) {
+            $remaining -= 6 * strlen($value) + 2;
+        } elseif (is_float($value)) {
+            $remaining -= 2048;
+        } elseif ($value === null || is_int($value) || is_bool($value)) {
+            $remaining -= 32;
+        } else {
+            throw new \Keepsuit\Liquid\Exceptions\TemplateSecurityException('Isolated inputs must contain only JSON values.');
+        }
+        if ($remaining < 0) {
+            throw new ResourceLimitException('Worker request exceeds its conservative JSON expansion budget.');
+        }
     }
 
     private function start(): void
@@ -113,7 +193,7 @@ final class IsolatedRenderer
         }
         $process = proc_open([$binary, '-d', 'memory_limit='.$this->memoryMegabytes.'M', '-d', 'max_execution_time=0',
             '-d', 'display_errors=stderr', '-d', 'log_errors=0', '-d', 'opcache.enable_cli=0',
-            __DIR__.'/worker.php', $autoload, $this->directory], [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
+            dirname(__DIR__, 2).'/resources/isolated-worker.php', $autoload, $this->directory], [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
         if (! is_resource($process)) {
             $this->close();
             throw new \RuntimeException('Unable to start isolated PHP worker.');
@@ -125,13 +205,19 @@ final class IsolatedRenderer
         }
     }
 
-    private function exchange(string $payload): string
+    /** @return \Generator<int, array<string, mixed>> */
+    private function exchange(string $payload): \Generator
     {
         $deadline = hrtime(true) + $this->timeoutMilliseconds * 1_000_000;
         $sent = 0;
         $response = '';
         $diagnostic = '';
+        $received = 0;
+        $scanFrom = 0;
         while (true) {
+            if ($this->process === null) {
+                throw new IsolatedRenderException('Renderer was closed during the request.');
+            }
             $remaining = $deadline - hrtime(true);
             if ($remaining <= 0) {
                 throw new ResourceLimitException('Isolated render exceeded its wall-clock deadline.');
@@ -167,13 +253,28 @@ final class IsolatedRenderer
                     throw new IsolatedRenderException('Worker exited before completing the render.');
                 }
                 if ($pipe === $this->pipes[1]) {
-                    if (strlen($response) + strlen($chunk) > 61_000_000) {
+                    $received += strlen($chunk);
+                    if ($received > 61_000_000) {
                         throw new ResourceLimitException('Worker response exceeds its transport budget.');
                     }
                     $response .= $chunk;
-                    if (str_ends_with($response, "\n")) {
-                        return $response;
+                    while (($end = strpos($response, "\n", $scanFrom)) !== false) {
+                        $message = json_decode(substr($response, 0, $end), true, 64, JSON_THROW_ON_ERROR);
+                        if (! is_array($message)) {
+                            throw new IsolatedRenderException('Invalid worker frame.');
+                        }
+                        /** @var array<string, mixed> $message */
+                        $response = substr($response, $end + 1);
+                        $scanFrom = 0;
+                        if (hrtime(true) >= $deadline) {
+                            throw new ResourceLimitException('Isolated render exceeded its wall-clock deadline.');
+                        }
+                        yield $message;
+                        if (array_key_exists('ok', $message)) {
+                            return;
+                        }
                     }
+                    $scanFrom = strlen($response);
                 }
                 // Drain stderr so warnings cannot block the child or leak application details.
             }

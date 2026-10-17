@@ -7,6 +7,24 @@ use Keepsuit\Liquid\TagBlock;
 
 class TagRegistry
 {
+    private bool $sealed = false;
+
+    public function seal(): string
+    {
+        $this->sealed = true;
+        $declarations = $this->tags;
+        ksort($declarations);
+
+        return hash('sha256', serialize($declarations));
+    }
+
+    private function assertMutable(): void
+    {
+        if ($this->sealed) {
+            throw new \Keepsuit\Liquid\Exceptions\TemplateSecurityException('Restricted template capabilities are sealed.');
+        }
+    }
+
     /**
      * @var array<string, class-string<Tag>>
      */
@@ -26,6 +44,7 @@ class TagRegistry
      */
     public function register(string $tag): static
     {
+        $this->assertMutable();
         $this->tags[$tag::tagName()] = $tag;
         $this->rawBodyTags = null;
 
@@ -34,6 +53,7 @@ class TagRegistry
 
     public function delete(string $name): static
     {
+        $this->assertMutable();
         unset($this->tags[$name]);
         $this->rawBodyTags = null;
 

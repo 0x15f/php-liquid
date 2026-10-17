@@ -43,6 +43,7 @@ class ParseContext
         ?ParseBudget $budget = null,
     ) {
         $this->environment = $environment ?? Environment::default();
+        $this->environment->sealTemplateCapabilities();
 
         $this->budget = $budget ?? new ParseBudget;
         $this->lineNumber = 1;
@@ -85,8 +86,9 @@ class ParseContext
      */
     public function parseTemplate(string $templateName, bool $force = false): Template
     {
+        $cacheKey = $this->environment->templatePolicy === null ? $templateName : $this->environment->templateCacheKey($templateName);
         if (! $force) {
-            $cachedTemplate = $this->environment->templatesCache->get($templateName);
+            $cachedTemplate = $this->environment->templatesCache->get($cacheKey);
 
             if ($cachedTemplate !== null) {
                 return $cachedTemplate;
@@ -97,13 +99,16 @@ class ParseContext
 
         $template = $this->parse($source, name: $templateName);
 
-        $this->environment->templatesCache->set($templateName, $template);
+        $this->environment->templatesCache->set($cacheKey, $template);
 
-        return $this->environment->templatesCache->get($templateName) ?? $template;
+        return $this->environment->templatesCache->get($cacheKey) ?? $template;
     }
 
     public function parse(TokenStream|string $source, ?string $name = null): ParsedTemplate
     {
+        if ($this->environment->templatePolicy !== null && $name !== null && strlen($name) > 256) {
+            throw new \Keepsuit\Liquid\Exceptions\ResourceLimitException('Template name budget exceeded.');
+        }
         $this->partials = [];
         $this->outputs = new OutputsBag;
 
@@ -135,7 +140,8 @@ class ParseContext
     {
         try {
             // Check if template is already available in the cache
-            $template = $this->environment->templatesCache->get($templateName);
+            $cacheKey = $this->environment->templatePolicy === null ? $templateName : $this->environment->templateCacheKey($templateName);
+            $template = $this->environment->templatesCache->get($cacheKey);
 
             if ($template === null) {
                 $partialParseContext = new ParseContext(environment: $this->environment, budget: $this->budget);

@@ -62,6 +62,22 @@ if (isset($options['security'])) {
     }
     $backends['php_compiled_restricted'] = fn (array $r) => $restricted->parseTemplate($r['template'])
         ->render($restricted->newRenderContext(data: $r['data']));
+    $restrictedParsed = EnvironmentFactory::forUntrustedTemplates()
+        ->setFilesystem(new \Keepsuit\Liquid\FileSystems\ArrayFileSystem($fixtures['templates']))->build();
+    foreach (array_keys($fixtures['templates']) as $name) {
+        $restrictedParsed->parseTemplate($name);
+    }
+    $backends['php_parsed_restricted'] = fn (array $r) => $restrictedParsed->parseTemplate($r['template'])
+        ->render($restrictedParsed->newRenderContext(data: $r['data']));
+    $backends['php_compiled_restricted_stream'] = static function (array $r) use ($restricted): string {
+        $output = '';
+        foreach ($restricted->parseTemplate($r['template'])->stream($restricted->newRenderContext(data: $r['data'])) as $chunk) {
+            $output .= $chunk;
+        }
+
+        return $output;
+    };
+
 }
 $baselineDirectory = null;
 if (isset($options['paired-baseline'])) {

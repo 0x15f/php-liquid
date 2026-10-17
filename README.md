@@ -8,6 +8,8 @@ Derived from [Keepsuit PHP Liquid](https://github.com/keepsuit/php-liquid), pres
 - Laravel package discovery, `.liquid` views, facade and deployment commands.
 - Local compiled PHP artifacts for OPcache, optionally backed by Redis or another Laravel cache store.
 - Request-scoped Laravel services and revision/tenant cache namespaces.
+- Restricted user-authored templates with capability and resource budgets, plus optional isolated PHP workers.
+- Stable streaming through the same parsed/compiled caches, with cancellation and output-limit handling.
 - AST dependency hints and bounded collection providers for lazy batched data access.
 
 ## Requirements and compatibility
@@ -21,7 +23,7 @@ The reference fixtures use Shopify Ruby Liquid 5.13. This library is not Shopify
 Install from [Packagist](https://packagist.org/packages/0x15f/liquid):
 
 ```bash
-composer require 0x15f/liquid:^0.1
+composer require 0x15f/liquid:^0.2
 ```
 
 ## Laravel quick start
@@ -135,7 +137,7 @@ $view = $template->render($context);
 // $view = 'Hello John!';
 ```
 
-For advanced use cases, you can also stream the rendering output (still experimental):
+Streaming is stable for parsed and compiled templates:
 
 ```php
 /** @var \Keepsuit\Liquid\Template $template */
@@ -144,6 +146,8 @@ For advanced use cases, you can also stream the rendering output (still experime
 $stream = $template->stream($context);
 // $stream is a Generator<string>
 ```
+
+Concatenating its chunks produces the same bytes as `render()` for the same data. Chunk boundaries may change. Captures and collection filters can buffer internally; output budgets are checked before a chunk is yielded. Use a fresh context for each response, and release the generator when cancelling a response so loop scopes are restored. See the [streaming contract and Laravel responses](LARAVEL.md#streaming).
 
 ### Compiled templates
 

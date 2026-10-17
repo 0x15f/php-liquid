@@ -12,6 +12,27 @@ use Keepsuit\Liquid\Render\RenderContext;
 
 class FilterRegistry
 {
+    private bool $sealed = false;
+
+    public function seal(): string
+    {
+        $this->sealed = true;
+        $declarations = [];
+        foreach ($this->filters as $name => [$instance, $method]) {
+            $declarations[$name] = [$instance::class, $method];
+        }
+        ksort($declarations);
+
+        return hash('sha256', serialize($declarations));
+    }
+
+    private function assertMutable(): void
+    {
+        if ($this->sealed) {
+            throw new \Keepsuit\Liquid\Exceptions\TemplateSecurityException('Restricted template capabilities are sealed.');
+        }
+    }
+
     /**
      * @var array<string,array{0:FiltersProvider,1:string}>
      */
@@ -22,6 +43,7 @@ class FilterRegistry
      */
     public function register(string $filtersClass): static
     {
+        $this->assertMutable();
         if (! class_exists($filtersClass)) {
             throw new InvalidArgumentException("Filter class $filtersClass does not exist.");
         }
@@ -41,6 +63,7 @@ class FilterRegistry
      */
     public function delete(string $filtersClass): static
     {
+        $this->assertMutable();
         if (! class_exists($filtersClass)) {
             return $this;
         }

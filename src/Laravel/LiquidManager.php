@@ -42,17 +42,24 @@ final class LiquidManager
      * The caller must authorize the complete snapshot before passing it here.
      * Cache identity includes its content and access policy; names never fall back to Laravel views.
      *
-     * @param  array<string, string>  $templates
+     * @param  array<string, string>|\Keepsuit\Liquid\FileSystems\TemplateSnapshot  $templates
      */
-    public function untrustedEnvironment(array $templates, string $namespace, ?\Keepsuit\Liquid\Security\TemplatePolicy $policy = null): Environment
+    public function untrustedEnvironment(array|\Keepsuit\Liquid\FileSystems\TemplateSnapshot $templates, string $namespace, ?\Keepsuit\Liquid\Security\TemplatePolicy $policy = null): Environment
     {
         $policy ??= new \Keepsuit\Liquid\Security\TemplatePolicy;
-        $policy->assertTemplates($templates);
-        ksort($templates);
-        $identity = 'untrusted:'.hash('sha256', serialize([$namespace, $templates, $policy]));
+        if (is_array($templates)) {
+            $policy->assertTemplates($templates);
+            ksort($templates);
+            $fingerprint = hash('sha256', serialize($templates));
+            $filesystem = new \Keepsuit\Liquid\FileSystems\ArrayFileSystem($templates);
+        } else {
+            $fingerprint = $templates->fingerprint();
+            $filesystem = $templates;
+        }
+        $identity = 'untrusted:'.hash('sha256', serialize([$namespace, $fingerprint, $policy]));
 
         return $this->environments[$identity] ?? $this->createEnvironment($identity,
-            new \Keepsuit\Liquid\FileSystems\ArrayFileSystem($templates), $policy);
+            $filesystem, $policy);
     }
 
     private function createEnvironment(string $namespace, \Keepsuit\Liquid\Contracts\LiquidFileSystem $filesystem, ?\Keepsuit\Liquid\Security\TemplatePolicy $policy = null): Environment
@@ -63,7 +70,7 @@ final class LiquidManager
         $path = $config['path'].'/'.hash('sha256', $identity);
         $templatesCache = match ($config['driver']) {
             'memory' => new MemoryTemplatesCache,
-            'compiled' => $shared === null ? new CompiledTemplatesCache($path, keepInMemory: false) : new LaravelCompiledTemplatesCache($shared, $path),
+            'compiled' => $shared === null ? new CompiledTemplatesCache($path) : new LaravelCompiledTemplatesCache($shared, $path),
             'cache' => $shared ?? throw new \InvalidArgumentException('Set liquid.cache.store for shared template caching.'),
             default => throw new \InvalidArgumentException('Unknown Liquid cache driver.'),
         };
@@ -72,9 +79,8 @@ final class LiquidManager
             ->setFilesystem($filesystem)->setTemplatesCache($templatesCache)
             ->setStrictVariables($this->config['strict_variables'])->setStrictFilters($policy !== null || $this->config['strict_filters'])
             ->setRethrowErrors($policy !== null || $this->config['rethrow_errors']);
-        if ($policy === null) {
-            $factory->setResourceLimits(new ResourceLimits($limits['render_length'], $limits['render_score'], $limits['assign_score'], $limits['cumulative_render_score'], $limits['cumulative_assign_score']));
-        }
+        $configuredLimits = new ResourceLimits($limits['render_length'], $limits['render_score'], $limits['assign_score'], $limits['cumulative_render_score'], $limits['cumulative_assign_score']);
+        $factory->setResourceLimits($policy === null ? $configuredLimits : ResourceLimits::forUntrustedTemplates()->withLowerLimits($configuredLimits));
         foreach ($policy === null ? $this->config['extensions'] : [] as $extension) {
             $factory->addExtension(new $extension);
         }
@@ -108,6 +114,22 @@ final class LiquidManager
         $environment = $this->environment($namespace);
 
         return $environment->parseString($source)->render($environment->newRenderContext(data: $data));
+    }
+
+    /** @param array<string, mixed> $data @return \Generator<int, string> */
+    public function stream(string $name, array $data = [], ?string $namespace = null): \Generator
+    {
+        $environment = $this->environment($namespace);
+
+        return $environment->parseTemplate($name)->stream($environment->newRenderContext(data: $data));
+    }
+
+    /** @param array<string, mixed> $data @return \Generator<int, string> */
+    public function streamString(string $source, array $data = [], ?string $namespace = null): \Generator
+    {
+        $environment = $this->environment($namespace);
+
+        return $environment->parseString($source)->stream($environment->newRenderContext(data: $data));
     }
 
     public function clear(?string $namespace = null): void

@@ -41,7 +41,7 @@ jobs:
       - run: vendor/bin/pest tests/Laravel
         env:
           LIQUID_REDIS_HOST: 127.0.0.1
-      - run: vendor/bin/phpstan analyse --no-progress
+      - run: vendor/bin/phpstan analyse --memory-limit=512M --no-progress
 
   standalone:
     runs-on: ubuntu-latest

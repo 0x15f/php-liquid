@@ -20,6 +20,10 @@ class ParsedTemplate extends AbstractTemplate
      */
     public function render(RenderContext $context): string
     {
+        $root = ! $context->isPartial();
+        if ($root) {
+            $context->resourceLimits->beginExecution();
+        }
         try {
             $this->prepareContext($context);
 
@@ -35,6 +39,9 @@ class ParsedTemplate extends AbstractTemplate
             $this->attachTemplateName($e);
             throw $e;
         } finally {
+            if ($root) {
+                $context->resourceLimits->endExecution();
+            }
             $this->persistContext($context);
         }
     }
@@ -44,6 +51,10 @@ class ParsedTemplate extends AbstractTemplate
      */
     public function stream(RenderContext $context): \Generator
     {
+        $root = ! $context->isPartial();
+        if ($root) {
+            $context->resourceLimits->beginExecution();
+        }
         try {
             $this->prepareContext($context);
 
@@ -70,6 +81,9 @@ class ParsedTemplate extends AbstractTemplate
             $this->attachTemplateName($e);
             throw $e;
         } finally {
+            if ($root) {
+                $context->resourceLimits->endExecution();
+            }
             $this->persistContext($context);
         }
     }

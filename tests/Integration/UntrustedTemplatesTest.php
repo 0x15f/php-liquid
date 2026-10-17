@@ -40,6 +40,14 @@ final class ApprovedProductDrop extends Drop
     {
         return new UntrustedSecretObject;
     }
+
+    public function recursive(): array
+    {
+        $data = [];
+        $data['cycle'] = &$data;
+
+        return $data;
+    }
 }
 
 final class ApprovedEndlessCollection implements IteratorAggregate
@@ -64,6 +72,27 @@ final class ApprovedBoundedProducts implements ProvidesCollectionSlice
         $this->requested = $length;
 
         return array_fill(0, $length ?? 1000000, ['title' => 'Bag']);
+    }
+}
+
+final class ApprovedSlowRecordDrop extends Drop
+{
+    public int $calls = 0;
+
+    public function nextRecord(): self
+    {
+        $this->calls++;
+        usleep(20000);
+
+        return $this;
+    }
+}
+
+final class ApprovedBudgetedObject
+{
+    public function __isset(string $name): bool
+    {
+        throw new Keepsuit\Liquid\Exceptions\DataLoadingLimitException('Query budget exceeded.');
     }
 }
 
@@ -185,3 +214,82 @@ test('a template cannot enable PHP functions or invent executable tags', functio
     expect(fn () => testParseString($environment, $source)->render($environment->newRenderContext()))
         ->toThrow(Keepsuit\Liquid\Exceptions\LiquidException::class);
 })->with([false, true])->with(['{{ "id" | system }}', '{% php %}echo 1;{% endphp %}', '{% include "secret.php" %}']);
+
+test('hostile Drop property names cannot grow process-wide lookup caches indefinitely', function () {
+    $environment = EnvironmentFactory::forUntrustedTemplates(new TemplatePolicy(allowedClasses: [ApprovedProductDrop::class]))->build();
+    $context = $environment->newRenderContext(data: ['product' => new ApprovedProductDrop]);
+    for ($i = 0; $i < 1500; $i++) {
+        $context->get('product.unknown_property_'.$i);
+    }
+    $before = memory_get_usage();
+    for ($i = 1500; $i < 12000; $i++) {
+        $context->get('product.unknown_property_'.$i);
+    }
+    expect(memory_get_usage() - $before)->toBeLessThan(1_000_000);
+    expect($context->get('product.title'))->toBe('Bag');
+});
+
+test('recursive values returned by approved adapters cannot enter assignment or comparison', function (bool $compiled, string $source) {
+    $environment = EnvironmentFactory::forUntrustedTemplates(new TemplatePolicy(allowedClasses: [ApprovedProductDrop::class]))
+        ->setTemplatesCache($compiled ? testCompiledTemplatesCache() : new Keepsuit\Liquid\TemplatesCache\MemoryTemplatesCache)->build();
+    expect(fn () => testParseString($environment, $source)->render($environment->newRenderContext(data: ['product' => new ApprovedProductDrop])))
+        ->toThrow(TemplateSecurityException::class);
+})->with([false, true])->with(['{% assign value = product.recursive %}', '{% if product.recursive contains product.recursive %}x{% endif %}']);
+
+test('hostile expression and conditional nesting is rejected before compiling PHP', function (string $source) {
+    expect(fn () => EnvironmentFactory::forUntrustedTemplates()->build()->parseString($source))
+        ->toThrow(Keepsuit\Liquid\Exceptions\LiquidException::class);
+})->with([
+    '{{ '.str_repeat('a[', 101).'"x"'.str_repeat(']', 101).' }}',
+    '{% if '.implode(' or ', array_fill(0, 101, 'false')).' %}x{% endif %}',
+]);
+
+test('restricted conditions never inherit application-wide operator callbacks', function (bool $compiled) {
+    $property = new ReflectionProperty(Keepsuit\Liquid\Condition\Condition::class, 'customOperators');
+    $previous = $property->getValue();
+    Keepsuit\Liquid\Condition\Condition::registerOperator('==', fn () => throw new RuntimeException('privileged callback'));
+    try {
+        $environment = EnvironmentFactory::forUntrustedTemplates()
+            ->setTemplatesCache($compiled ? testCompiledTemplatesCache() : new Keepsuit\Liquid\TemplatesCache\MemoryTemplatesCache)->build();
+        expect(testParseString($environment, '{% if 1 == 1 %}safe{% endif %}')->render($environment->newRenderContext()))->toBe('safe');
+    } finally {
+        $property->setValue(null, $previous);
+    }
+})->with([false, true]);
+
+test('date formats are bounded before native formatting allocates the expanded string', function (bool $compiled) {
+    $environment = EnvironmentFactory::forUntrustedTemplates()
+        ->setTemplatesCache($compiled ? testCompiledTemplatesCache() : new Keepsuit\Liquid\TemplatesCache\MemoryTemplatesCache)->build();
+    $template = testParseString($environment, '{{ "2026-01-01" | date: format }}');
+    $context = $environment->newRenderContext(data: ['format' => str_repeat('%c', 1_000_000)]);
+    $before = memory_get_usage();
+    memory_reset_peak_usage();
+    expect(fn () => $template->render($context))->toThrow(ResourceLimitException::class);
+    expect(memory_get_peak_usage() - $before)->toBeLessThan(5_000_000);
+})->with([false, true]);
+
+test('bounded array slices do not reject the unsliced input or allocate an oversized result', function (bool $compiled) {
+    $environment = EnvironmentFactory::forUntrustedTemplates()->setResourceLimits(new ResourceLimits(collectionSizeLimit: 10))
+        ->setTemplatesCache($compiled ? testCompiledTemplatesCache() : new Keepsuit\Liquid\TemplatesCache\MemoryTemplatesCache)->build();
+    $data = ['items' => array_fill(0, 20, 'x')];
+    expect(testParseString($environment, '{% for x in items limit: 3 %}{{ x }}{% endfor %}')->render($environment->newRenderContext(data: $data)))->toBe('xxx');
+    expect(testParseString($environment, '{{ items | slice: 0, 3 | join: "" }}')->render($environment->newRenderContext(data: $data)))->toBe('xxx');
+    expect(fn () => testParseString($environment, '{{ items | slice: 0, 20 }}')->render($environment->newRenderContext(data: $data)))->toThrow(ResourceLimitException::class);
+})->with([false, true]);
+
+test('long adapter lookup chains check deadlines between PHP data accesses', function (bool $compiled) {
+    $record = new ApprovedSlowRecordDrop;
+    $environment = EnvironmentFactory::forUntrustedTemplates(new TemplatePolicy(allowedClasses: [ApprovedSlowRecordDrop::class]))
+        ->setResourceLimits(new ResourceLimits(renderTimeLimitMilliseconds: 30))
+        ->setTemplatesCache($compiled ? testCompiledTemplatesCache() : new Keepsuit\Liquid\TemplatesCache\MemoryTemplatesCache)->build();
+    $template = testParseString($environment, '{{ record'.str_repeat('.next_record', 20).' }}');
+    expect(fn () => $template->render($environment->newRenderContext(data: ['record' => $record])))->toThrow(ResourceLimitException::class);
+    expect($record->calls)->toBeLessThanOrEqual(3);
+})->with([false, true]);
+
+test('magic property probes cannot swallow provider loading-budget failures', function (bool $compiled) {
+    $environment = EnvironmentFactory::forUntrustedTemplates(new TemplatePolicy(allowedClasses: [ApprovedBudgetedObject::class]))
+        ->setTemplatesCache($compiled ? testCompiledTemplatesCache() : new Keepsuit\Liquid\TemplatesCache\MemoryTemplatesCache)->build();
+    expect(fn () => testParseString($environment, '{{ record.field }}')->render($environment->newRenderContext(data: ['record' => new ApprovedBudgetedObject])))
+        ->toThrow(Keepsuit\Liquid\Exceptions\DataLoadingLimitException::class, 'Query budget');
+})->with([false, true]);

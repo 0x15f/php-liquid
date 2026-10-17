@@ -19,6 +19,21 @@ class ResourceLimits
 
     protected bool $reachedLimit = false;
 
+    private bool $executing = false;
+
+    public function beginExecution(): void
+    {
+        if ($this->executing) {
+            throw new ResourceLimitException('A render context cannot execute overlapping root templates.');
+        }
+        $this->executing = true;
+    }
+
+    public function endExecution(): void
+    {
+        $this->executing = false;
+    }
+
     public function __construct(
         public readonly ?int $renderLengthLimit = null,
         public readonly ?int $renderScoreLimit = null,
@@ -49,6 +64,23 @@ class ResourceLimits
             intermediateBytesLimit: 10_000_000, collectionSizeLimit: 10000, renderTimeLimitMilliseconds: 1000);
     }
 
+    /** Apply application limits without disabling or raising this preset's ceilings. */
+    public function withLowerLimits(self $other): self
+    {
+        $lower = static fn (?int $a, ?int $b): ?int => $a === null ? $b : ($b === null ? $a : min($a, $b));
+
+        return new self(
+            $lower($this->renderLengthLimit, $other->renderLengthLimit),
+            $lower($this->renderScoreLimit, $other->renderScoreLimit),
+            $lower($this->assignScoreLimit, $other->assignScoreLimit),
+            $lower($this->cumulativeRenderScoreLimit, $other->cumulativeRenderScoreLimit),
+            $lower($this->cumulativeAssignScoreLimit, $other->cumulativeAssignScoreLimit),
+            $lower($this->intermediateBytesLimit, $other->intermediateBytesLimit),
+            $lower($this->collectionSizeLimit, $other->collectionSizeLimit),
+            $lower($this->renderTimeLimitMilliseconds, $other->renderTimeLimitMilliseconds),
+        );
+    }
+
     /** @return list<mixed> */
     public function sliceProvider(\Keepsuit\Liquid\Contracts\ProvidesCollectionSlice $provider, int $offset, ?int $length): array
     {
@@ -63,6 +95,18 @@ class ResourceLimits
         $this->checkCollectionSize(count($result));
 
         return $result;
+    }
+
+    /** @param array<mixed> $values @return array<mixed> */
+    public function sliceArray(array $values, int $offset, ?int $length): array
+    {
+        $count = count($values);
+        $start = $offset >= 0 ? min($offset, $count) : max(0, $count + $offset);
+        $available = $count - $start;
+        $selected = $length === null ? $available : ($length >= 0 ? min($length, $available) : max(0, $available + $length));
+        $this->checkCollectionSize($selected);
+
+        return $offset === 0 && $length === null ? $values : array_slice($values, $offset, $length);
     }
 
     public function checkTime(): void

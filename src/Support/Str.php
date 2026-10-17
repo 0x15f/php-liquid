@@ -7,6 +7,8 @@ namespace Keepsuit\Liquid\Support;
  */
 class Str
 {
+    private const CACHE_LIMIT = 512;
+
     protected static array $snakeCache = [];
 
     protected static array $camelCache = [];
@@ -36,7 +38,11 @@ class Str
             $value = static::lower($value);
         }
 
-        return static::$snakeCache[$key][$delimiter] = $value;
+        if (strlen($key) <= 256 && strlen($delimiter) <= 8 && count(static::$snakeCache) < self::CACHE_LIMIT && count(static::$snakeCache[$key] ?? []) < 8) {
+            static::$snakeCache[$key][$delimiter] = $value;
+        }
+
+        return $value;
     }
 
     /**
@@ -48,7 +54,12 @@ class Str
             return static::$camelCache[$value];
         }
 
-        return static::$camelCache[$value] = lcfirst(static::studly($value));
+        $result = lcfirst(static::studly($value));
+        if (strlen($value) <= 256 && count(static::$camelCache) < self::CACHE_LIMIT) {
+            static::$camelCache[$value] = $result;
+        }
+
+        return $result;
     }
 
     /**
@@ -66,7 +77,12 @@ class Str
 
         $studlyWords = array_map(fn ($word) => ucfirst($word), $words);
 
-        return static::$studlyCache[$key] = implode($studlyWords);
+        $result = implode($studlyWords);
+        if (strlen($key) <= 256 && count(static::$studlyCache) < self::CACHE_LIMIT) {
+            static::$studlyCache[$key] = $result;
+        }
+
+        return $result;
     }
 
     /**

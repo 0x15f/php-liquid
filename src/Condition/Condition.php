@@ -69,7 +69,7 @@ class Condition implements HasParseTreeVisitorChildren
                     : '$this->conditionValue('.$right.')';
                 $parent = $context->writeClassName(self::class).'::compare('
                     .$left.', '.$right.', '
-                    .$context->writeValue($condition->operator).', '.$context->writeValue($operator).')';
+                    .$context->writeValue($condition->operator).', '.$context->writeValue($operator).', $context)';
             }
 
             $source = match (true) {
@@ -84,9 +84,11 @@ class Condition implements HasParseTreeVisitorChildren
     }
 
     /** @internal */
-    public static function compare(mixed $left, mixed $right, string $operator, ?ConditionOperator $parsedOperator): bool
+    public static function compare(mixed $left, mixed $right, string $operator, ?ConditionOperator $parsedOperator, ?RenderContext $context = null): bool
     {
-        if (array_key_exists($operator, self::$customOperators)) {
+        $context?->environment->templatePolicy?->assertData($left);
+        $context?->environment->templatePolicy?->assertData($right);
+        if ($context?->environment->templatePolicy === null && array_key_exists($operator, self::$customOperators)) {
             return (bool) self::$customOperators[$operator]($left, $right);
         }
 
@@ -171,8 +173,10 @@ class Condition implements HasParseTreeVisitorChildren
 
         $left = $this->toLiquidValue($context->evaluate($left));
         $right = $this->toLiquidValue($context->evaluate($right));
+        $context->environment->templatePolicy?->assertData($left);
+        $context->environment->templatePolicy?->assertData($right);
 
-        if (array_key_exists($operator, static::$customOperators)) {
+        if ($context->environment->templatePolicy === null && array_key_exists($operator, static::$customOperators)) {
             return (bool) static::$customOperators[$operator]($left, $right);
         }
 
