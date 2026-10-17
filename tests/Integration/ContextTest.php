@@ -66,17 +66,20 @@ test('add item in outer scope', function (bool $strict) {
     'strict' => true,
 ]);
 
-test('lookup falls back to outer scope when the inner value has no such key', function (bool $strict) {
+test('an inner root shadows outer roots even when a nested key is missing', function (bool $strict) {
     $context = new RenderContext(options: new RenderContextOptions(strictVariables: $strict));
     $context->set('product', ['title' => 'outer']);
 
     $context->stack(function () use ($context, $strict) {
-        // The inner `product` shadows the outer one but cannot resolve `.title`,
-        // so resolution has to continue into the outer scope.
+        // Shopify resolves the root once; a missing inner key cannot reveal outer data.
         $context->set('product', ['handle' => 'inner']);
 
         expect($context->get('product.handle'))->toBe('inner');
-        expect($context->get('product.title'))->toBe('outer');
+        if ($strict) {
+            expect($context->get('product.title'))->toBeInstanceOf(UndefinedVariable::class);
+        } else {
+            expect($context->get('product.title'))->toBeNull();
+        }
 
         if ($strict) {
             expect($context->get('product.missing'))->toBeInstanceOf(UndefinedVariable::class);
@@ -105,7 +108,7 @@ test('null values shadow outer values at every lookup level', function () {
 
     $context->stack(function (RenderContext $context) {
         $context->set('product', ['other' => true]);
-        expect($context->get('product.title'))->toBeNull();
+        expect($context->get('product.title'))->toBeInstanceOf(UndefinedVariable::class);
     });
 });
 
@@ -579,15 +582,19 @@ test('lazy variable resolution distinguishes defined-null from undefined', funct
     'strict' => true,
 ]);
 
-test('lazy variable resolution falls back when a lookup path misses', function (bool $strict) {
+test('lazy variable resolution preserves root shadowing when a lookup path misses', function (bool $strict) {
     $context = new RenderContext(options: new RenderContextOptions(strictVariables: $strict));
     $context->set('test', ['b' => 'outer']);
 
-    $context->stack(function () use ($context) {
+    $context->stack(function () use ($context, $strict) {
         $context->set('test', ['c' => 'inner']);
 
         expect($context->get('test.c'))->toBe('inner');
-        expect($context->get('test.b'))->toBe('outer');
+        if ($strict) {
+            expect($context->get('test.b'))->toBeInstanceOf(UndefinedVariable::class);
+        } else {
+            expect($context->get('test.b'))->toBeNull();
+        }
     });
 })->with([
     'default' => false,
@@ -754,7 +761,12 @@ describe('rendering with template backends', function () {
         assertTemplateResult('true', '{% if value.size > 2 %}true{% else %}false{% endif %}', ['value' => $string], strictVariables: $strict, compiled: $compiled);
         assertTemplateResult('H', '{{ value.first }}', ['value' => $string], strictVariables: $strict, compiled: $compiled);
         assertTemplateResult('d', '{{ value.last }}', ['value' => $string], strictVariables: $strict, compiled: $compiled);
-        assertTemplateResult('11|H|d', '{{ value["size"] }}|{{ value["first"] }}|{{ value["last"] }}', ['value' => $string], strictVariables: $strict, compiled: $compiled);
+        if ($strict) {
+            expect(fn () => renderTemplate('{{ value["size"] }}', ['value' => $string], strictVariables: true, compiled: $compiled))
+                ->toThrow(\Keepsuit\Liquid\Exceptions\UndefinedVariableException::class);
+        } else {
+            assertTemplateResult('||', '{{ value["size"] }}|{{ value["first"] }}|{{ value["last"] }}', ['value' => $string], compiled: $compiled);
+        }
 
         $unicode = 'éclair';
         assertTemplateResult('6', '{{ value.size }}', ['value' => $unicode], strictVariables: $strict, compiled: $compiled);
@@ -797,10 +809,20 @@ describe('rendering with template backends', function () {
 
     test('hash notation for lookup filters', function (bool $compiled, bool $strict) {
         assertTemplateResult('1', '{{ value.first }}', ['value' => [1, 2, 3, 4, 5]], strictVariables: $strict, compiled: $compiled);
-        assertTemplateResult('1', '{{ value["first"] }}', ['value' => [1, 2, 3, 4, 5]], strictVariables: $strict, compiled: $compiled);
+        if ($strict) {
+            expect(fn () => renderTemplate('{{ value["first"] }}', ['value' => [1, 2, 3, 4, 5]], strictVariables: true, compiled: $compiled))
+                ->toThrow(\Keepsuit\Liquid\Exceptions\UndefinedVariableException::class);
+        } else {
+            assertTemplateResult('', '{{ value["first"] }}', ['value' => [1, 2, 3, 4, 5]], compiled: $compiled);
+        }
 
         assertTemplateResult('Hello', '{{ value["first"] }}', ['value' => ['first' => 'Hello']], strictVariables: $strict, compiled: $compiled);
-        assertTemplateResult('', '{{ value["first"] }}', ['value' => ['key' => 'value']], strictVariables: $strict, compiled: $compiled);
+        if ($strict) {
+            expect(fn () => renderTemplate('{{ value["first"] }}', ['value' => ['key' => 'value']], strictVariables: true, compiled: $compiled))
+                ->toThrow(\Keepsuit\Liquid\Exceptions\UndefinedVariableException::class);
+        } else {
+            assertTemplateResult('', '{{ value["first"] }}', ['value' => ['key' => 'value']], compiled: $compiled);
+        }
         assertTemplateResult('|keyvalue', '{{ value.first }}|{{ value | first }}', ['value' => ['key' => 'value']], strictVariables: $strict, compiled: $compiled);
         assertTemplateResult('', '{{ value.first }}', ['value' => new ArrayIterator(['key' => 'value'])], strictVariables: $strict, compiled: $compiled);
     })->with([

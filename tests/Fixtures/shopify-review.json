@@ -1,0 +1,193 @@
+[
+  {
+    "name": "truthiness",
+    "template": "{% if zero %}T{% else %}F{% endif %}{% if text %}T{% else %}F{% endif %}{% if list %}T{% else %}F{% endif %}",
+    "data": {
+      "zero": 0,
+      "text": "",
+      "list": []
+    },
+    "expected": "TTT"
+  },
+  {
+    "name": "nil shadows outer property",
+    "template": "{% assign product = nil %}{{ product.title }}",
+    "data": {
+      "product": {
+        "title": "outer"
+      }
+    },
+    "expected": ""
+  },
+  {
+    "name": "missing property shadows outer property",
+    "template": "{% assign product = other %}{{ product.title }}",
+    "data": {
+      "product": {
+        "title": "outer"
+      },
+      "other": {
+        "id": 1
+      }
+    },
+    "expected": ""
+  },
+  {
+    "name": "duplicate case matches",
+    "template": "{% case value %}{% when \"x\" %}A{% when \"x\" %}B{% endcase %}",
+    "data": {
+      "value": "x"
+    },
+    "expected": "AB"
+  },
+  {
+    "name": "array bracket pseudo properties",
+    "template": "{{ items[\"size\"] }}|{{ items[\"first\"] }}|{{ items[\"last\"] }}",
+    "data": {
+      "items": [
+        "a",
+        "b"
+      ]
+    },
+    "expected": "||"
+  },
+  {
+    "name": "array dot pseudo properties",
+    "template": "{{ items.size }}|{{ items.first }}|{{ items.last }}",
+    "data": {
+      "items": [
+        "a",
+        "b"
+      ]
+    },
+    "expected": "2|a|b"
+  },
+  {
+    "name": "default false",
+    "template": "{{ value | default: \"fallback\", allow_false: true }}",
+    "data": {
+      "value": false
+    },
+    "expected": "false"
+  },
+  {
+    "name": "empty blank",
+    "template": "{% if text == blank %}B{% endif %}{% if list == empty %}E{% endif %}",
+    "data": {
+      "text": "  ",
+      "list": []
+    },
+    "expected": "BE"
+  },
+  {
+    "name": "decimal arithmetic",
+    "template": "{{ 0.0725 | times: 100 }}|{{ 0.1 | plus: 0.2 }}",
+    "data": {},
+    "expected": "7.25|0.3"
+  },
+  {
+    "name": "negative integer division",
+    "template": "{{ -5 | divided_by: 2 }}|{{ -5 | modulo: 2 }}",
+    "data": {},
+    "expected": "-3|1"
+  },
+  {
+    "name": "unicode truncate",
+    "template": "{{ text | truncate: 4 }}",
+    "data": {
+      "text": "éééééé"
+    },
+    "expected": "é..."
+  },
+  {
+    "name": "negative slice",
+    "template": "{{ text | slice: -3, 2 }}",
+    "data": {
+      "text": "abcdef"
+    },
+    "expected": "de"
+  },
+  {
+    "name": "loop continue offset",
+    "template": "{% for x in items limit: 2 %}{{x}}{% endfor %}|{% for x in items offset: continue %}{{x}}{% endfor %}",
+    "data": {
+      "items": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "expected": "12|34"
+  },
+  {
+    "name": "loop break",
+    "template": "{% for x in items %}{{x}}{% if x == 2 %}{% break %}{% endif %}{% endfor %}",
+    "data": {
+      "items": [
+        1,
+        2,
+        3
+      ]
+    },
+    "expected": "12"
+  },
+  {
+    "name": "loop continue",
+    "template": "{% for x in items %}{% if x == 2 %}{% continue %}{% endif %}{{x}}{% endfor %}",
+    "data": {
+      "items": [
+        1,
+        2,
+        3
+      ]
+    },
+    "expected": "13"
+  },
+  {
+    "name": "whitespace control",
+    "template": " a {%- assign x = 1 -%} b {{- x -}} c ",
+    "data": {},
+    "expected": " ab1c "
+  },
+  {
+    "name": "escape apostrophe",
+    "template": "{{ text | escape }}",
+    "data": {
+      "text": "<a x=\"1\">'&"
+    },
+    "expected": "&lt;a x=&quot;1&quot;&gt;&#39;&amp;"
+  },
+  {
+    "name": "filter boolean conversion",
+    "template": "{{ value | append: \"!\" }}",
+    "data": {
+      "value": false
+    },
+    "expected": "false!"
+  },
+  {
+    "name": "numeric coercion",
+    "template": "{{ value | plus: 1 }}",
+    "data": {
+      "value": "12abc"
+    },
+    "expected": "13"
+  },
+  {
+    "name": "contains string",
+    "template": "{% if text contains \"bc\" %}Y{% endif %}",
+    "data": {
+      "text": "abcd"
+    },
+    "expected": "Y"
+  },
+  {
+    "name": "capture",
+    "template": "{% capture x %}Hi {{ name }}{% endcapture %}{{x}}",
+    "data": {
+      "name": "Alice"
+    },
+    "expected": "Hi Alice"
+  }
+]

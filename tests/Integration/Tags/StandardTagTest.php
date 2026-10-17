@@ -133,14 +133,14 @@ describe('rendering with template backends', function () {
             staticData: ['condition' => 'bad string here'], compiled: $compiled);
     });
 
-    test('case comparisons use Shopify value types and keep first-match semantics', function (bool $compiled) {
+    test('case comparisons use Shopify value types and render all matching branches', function (bool $compiled) {
         assertTemplateResult('float match', '{% case 5 %}{% when 5.0 %}float match{% else %}no match{% endcase %}', compiled: $compiled);
         assertTemplateResult('no match', '{% case 5 %}{% when "5" %}string match{% else %}no match{% endcase %}', compiled: $compiled);
         assertTemplateResult('no match', '{% case "5" %}{% when 5 %}number match{% else %}no match{% endcase %}', compiled: $compiled);
 
         $template = '{% case 1 %}{% when 1 %}first{% when 1 %}second{% endcase %}';
-        assertTemplateResult('first', $template, compiled: $compiled);
-        expect(implode('', iterator_to_array(streamTemplate($template, compiled: $compiled))))->toBe('first');
+        assertTemplateResult('firstsecond', $template, compiled: $compiled);
+        expect(implode('', iterator_to_array(streamTemplate($template, compiled: $compiled))))->toBe('firstsecond');
     });
 
     test('case with else', function (bool $compiled) {

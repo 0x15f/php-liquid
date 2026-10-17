@@ -46,11 +46,11 @@ describe('rendering with template backends', function () {
         ], factory: $templateFactory, compiled: $compiled);
     });
 
-    test('variable nested override', function (bool $compiled) {
+    test('variable nested override shadows its root', function (bool $compiled) {
         $templateFactory = new \Keepsuit\Liquid\EnvironmentFactory;
         $templateFactory->registerTag(\Keepsuit\Liquid\Tests\Stubs\VariableOverrideTag::class);
 
-        assertTemplateResult('old_a,old_b|old_a,new_b|old_a,old_b', <<<'LIQUID'
+        assertTemplateResult('old_a,old_b|,new_b|old_a,old_b', <<<'LIQUID'
         {{ test.a }},{{ test.b }}|
         {%- override test.b "new_b" -%}
         {{ test.a }},{{ test.b }}|

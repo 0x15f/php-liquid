@@ -1,4 +1,21 @@
-# PHP implementation of Liquid markup language
+# PHP Liquid for PHP and Laravel
+
+Experimental derivative of [Keepsuit PHP Liquid](https://github.com/keepsuit/php-liquid),
+based on upstream commit `95508eb821e8375ac1992bf9c00470fccc120e64`.
+Original MIT license and history are preserved. The PHP namespace remains
+`Keepsuit\Liquid`; the Composer package is `0x15f/liquid` and cannot be installed
+alongside `keepsuit/liquid`.
+
+This repository adds request output isolation, bounded work accounting for empty
+bodies, and Shopify reference fixes for variable shadowing, duplicate case matches,
+and bracket pseudo-property access. It is an evaluation package, not a claim of
+complete Shopify theme compatibility or production capacity.
+
+Read [the audit and adoption notes](ADOPTION.md) before integrating. Compilation is
+inherited from upstream development work; no performance speedup is claimed for
+this derivative without representative measurements.
+
+## Upstream documentation
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/keepsuit/liquid.svg?style=flat-square)](https://packagist.org/packages/keepsuit/liquid)
 [![Tests](https://img.shields.io/github/actions/workflow/status/keepsuit/php-liquid/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/keepsuit/liquid/actions/workflows/run-tests.yml)
@@ -32,11 +49,10 @@ Liquid is a template engine with interesting advantages:
   `strictFilters`, and `rethrowErrors`. These options control rendering errors.
   `lazyParsing` permits loading uncached partials during rendering; their syntax is still
   parsed strictly, and errors then follow the rendering error handler or `rethrowErrors`.
-- `case` deliberately renders only the first matching `when`. A `case` block
+- `case` renders all matching `when` branches, as Shopify does. A `case` block
   can contain at most one `else`, after its `when` sections; `else` before a
   `when` or a `when` after `else` is a syntax error.
-- `size`, `first` and `last` work with both dot and bracket notation (`a.first` and `a["first"]`);
-  Shopify Liquid supports them only with dot notation.
+- `size`, `first` and `last` pseudo-properties use dot notation. Bracket notation resolves actual keys.
 - `include` tag is not implemented because it is deprecated and can be replaced with `render`.
 
 ## Installation
@@ -44,7 +60,7 @@ Liquid is a template engine with interesting advantages:
 You can install the package via composer:
 
 ```bash
-composer require keepsuit/liquid
+composer require 0x15f/liquid:dev-main
 ```
 
 ## Usage

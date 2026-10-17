@@ -1,11 +1,11 @@
 {
-    "name": "keepsuit/liquid",
-    "description": "PHP implementation of liquid markup language",
+    "name": "0x15f/liquid",
+    "description": "Experimental compiled PHP Liquid renderer for PHP and Laravel, derived from keepsuit/liquid",
     "keywords": [
         "keepsuit",
         "liquid"
     ],
-    "homepage": "https://github.com/keepsuit/php-liquid",
+    "homepage": "https://github.com/0x15f/php-liquid",
     "license": "MIT",
     "authors": [
         {
@@ -64,5 +64,8 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "conflict": {
+        "keepsuit/liquid": "*"
+    }
 }

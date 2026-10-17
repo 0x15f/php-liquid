@@ -29,7 +29,8 @@ abstract class AbstractTemplate implements Template
     protected function persistContext(RenderContext $context): void
     {
         $this->state->errors = $context->getErrors();
-        $this->state->outputs = $context->getOutputs();
+        // Only parse-time outputs belong to a reusable template. Render-time
+        // outputs live in this request's context and must never seed another.
     }
 
     protected function attachTemplateName(LiquidException $exception): void

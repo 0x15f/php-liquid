@@ -58,17 +58,26 @@ class CaseTag extends TagBlock implements CanBeCompiled, CanBeStreamed
 
     public function render(RenderContext $context): string
     {
+        $matched = false;
+        $output = '';
         foreach ($this->conditions as $condition) {
             if ($condition->else()) {
-                return $condition->body?->render($context) ?? '';
+                if (! $matched) {
+                    $output .= $condition->body?->render($context) ?? '';
+                }
+                break;
             }
 
             if ($condition->evaluate($context)) {
-                return $condition->body?->render($context) ?? '';
+                $matched = true;
+                $output .= $condition->body?->render($context) ?? '';
+                if ($context->hasInterrupt()) {
+                    break;
+                }
             }
         }
 
-        return '';
+        return $output;
     }
 
     /**
@@ -76,55 +85,47 @@ class CaseTag extends TagBlock implements CanBeCompiled, CanBeStreamed
      */
     public function stream(RenderContext $context): \Generator
     {
+        $matched = false;
         foreach ($this->conditions as $condition) {
-            if (! $condition->else() && ! $condition->evaluate($context)) {
+            if ($condition->else() ? $matched : ! $condition->evaluate($context)) {
                 continue;
             }
 
+            $matched = true;
             if ($condition->body !== null) {
                 yield from $condition->body->stream($context);
             }
 
-            return;
+            if ($context->hasInterrupt() || $condition->else()) {
+                return;
+            }
         }
     }
 
     public function compile(CompilerContext $context): void
     {
-        $first = true;
-
+        $matched = $context->temporaryVariable();
+        $context->write($matched.' = false;');
+        $context->write('do {')->indent();
         foreach ($this->conditions as $condition) {
             $isElse = $condition->else();
-
-            if ($isElse && $first) {
-                if ($condition->body !== null) {
-                    $context->compileBody($condition->body);
-                }
-
-                break;
-            }
-
-            if ($isElse) {
-                $context->write('else {');
-            } else {
-                $keyword = $first ? 'if' : 'elseif';
-                $context->write($keyword.' ('.$context->writeConditionExpression($condition).') {');
-            }
-
+            $expression = $isElse ? '! '.$matched : $context->writeConditionExpression($condition);
+            $context->write('if ('.$expression.') {');
             $context->indent();
+            $context->write($matched.' = true;');
 
             if ($condition->body !== null) {
                 $context->compileBody($condition->body);
             }
 
             $context->outdent()->write('}');
+            $context->write('if ($context->hasInterrupt()) { break; }');
 
             if ($isElse) {
                 break;
             }
-
-            $first = false;
         }
+        $context->outdent()->write('} while (false);');
     }
 
     public function children(): array

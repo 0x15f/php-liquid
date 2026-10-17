@@ -3,6 +3,7 @@
 namespace Keepsuit\Liquid\Parse;
 
 use Keepsuit\Liquid\Exceptions\SyntaxException;
+use Keepsuit\Liquid\Nodes\BracketKey;
 use Keepsuit\Liquid\Nodes\Literal;
 use Keepsuit\Liquid\Nodes\RangeLookup;
 use Keepsuit\Liquid\Nodes\VariableLookup;
@@ -76,6 +77,7 @@ class ExpressionParser
             if ($this->tokenStream->consumeOrFalse(TokenType::OpenSquare)) {
                 $expression = $this->tokenStream->expression();
                 $lookups[] = match (true) {
+                    is_string($expression) && in_array($expression, VariableLookup::FILTER_METHODS, true) => new BracketKey($expression),
                     is_string($expression), is_int($expression), $expression instanceof VariableLookup => $expression,
                     default => throw new SyntaxException(sprintf('Invalid variable lookup: %s[%s]', $variableName, match (true) {
                         $expression instanceof Literal => $expression->value,

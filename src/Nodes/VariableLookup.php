@@ -21,7 +21,7 @@ class VariableLookup implements CanBeEvaluated, CanBeExported, HasParseTreeVisit
 
     public function __construct(
         public readonly string $name,
-        /** @var array<string|int|VariableLookup> */
+        /** @var array<string|int|VariableLookup|BracketKey> */
         public readonly array $lookups = [],
     ) {}
 
@@ -53,6 +53,10 @@ class VariableLookup implements CanBeEvaluated, CanBeExported, HasParseTreeVisit
 
             if ($matches[4][$i] !== null && str_starts_with($lookup, '-')) {
                 $lookup = (int) $lookup;
+            }
+
+            if (($matches[2][$i] !== null || $matches[3][$i] !== null) && in_array($lookup, self::FILTER_METHODS, true)) {
+                $lookup = new BracketKey($lookup);
             }
 
             $lookups[] = $lookup;
@@ -144,7 +148,7 @@ class VariableLookup implements CanBeEvaluated, CanBeExported, HasParseTreeVisit
     /**
      * Evaluate a parsed lookup without requiring a VariableLookup instance.
      *
-     * @param  array<string|int|VariableLookup>  $lookups
+     * @param  array<string|int|VariableLookup|BracketKey>  $lookups
      */
     public static function evaluateParts(RenderContext $context, string $name, array $lookups): mixed
     {
@@ -164,27 +168,12 @@ class VariableLookup implements CanBeEvaluated, CanBeExported, HasParseTreeVisit
             return $result;
         }
 
-        // The name resolved but the lookup chain broke on the innermost value: an
-        // outer scope may still hold one the chain resolves against.
-        foreach ($context->findVariables($name) as $candidate) {
-            // Skip the value already walked above: re-walking it would repeat any
-            // side effects the broken chain triggered on the way.
-            if ($candidate === $variable) {
-                continue;
-            }
-
-            $result = self::walkLookupParts($context, $candidate, $lookups);
-
-            if (! $result instanceof MissingValue) {
-                return $result;
-            }
-        }
-
+        // A resolved root shadows outer roots, even when a nested key is absent.
         return self::undefinedValue($context, $name, $lookups);
     }
 
     /**
-     * @param  array<string|int|VariableLookup>  $lookups
+     * @param  array<string|int|VariableLookup|BracketKey>  $lookups
      */
     private static function undefinedValue(RenderContext $context, string $name, array $lookups): ?UndefinedVariable
     {
@@ -194,7 +183,7 @@ class VariableLookup implements CanBeEvaluated, CanBeExported, HasParseTreeVisit
     }
 
     /**
-     * @param  array<string|int|VariableLookup>  $lookups
+     * @param  array<string|int|VariableLookup|BracketKey>  $lookups
      */
     private static function walkLookupParts(RenderContext $context, mixed $object, array $lookups): mixed
     {
@@ -207,7 +196,11 @@ class VariableLookup implements CanBeEvaluated, CanBeExported, HasParseTreeVisit
         }
 
         foreach ($lookups as $lookup) {
-            $key = $lookup instanceof VariableLookup ? $context->evaluate($lookup) : $lookup;
+            $key = match (true) {
+                $lookup instanceof VariableLookup => $context->evaluate($lookup),
+                $lookup instanceof BracketKey => $lookup->value,
+                default => $lookup,
+            };
 
             if (! (is_string($key) || is_int($key))) {
                 return new MissingValue;

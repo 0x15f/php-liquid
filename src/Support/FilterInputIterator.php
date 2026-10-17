@@ -35,6 +35,8 @@ class FilterInputIterator implements IteratorAggregate
             default => [$this->input],
         };
 
+        assert(is_iterable($input));
+
         return $this->normalize($input);
     }
 
