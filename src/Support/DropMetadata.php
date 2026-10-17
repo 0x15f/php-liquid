@@ -16,6 +16,8 @@ use Traversable;
  */
 final class DropMetadata
 {
+    private const CACHE_LIMIT = 512;
+
     /**
      * @var array<string,mixed>
      */
@@ -46,11 +48,19 @@ final class DropMetadata
      */
     public function possibleNames(string $name): array
     {
-        return $this->possibleNames[$name] ??= array_values(array_unique([
+        if (isset($this->possibleNames[$name])) {
+            return $this->possibleNames[$name];
+        }
+        $result = array_values(array_unique([
             $name,
             Str::camel($name),
             Str::snake($name),
         ]));
+        if (strlen($name) <= 256 && count($this->possibleNames) < self::CACHE_LIMIT) {
+            $this->possibleNames[$name] = $result;
+        }
+
+        return $result;
     }
 
     public function resolveStaticMember(string $name): ?DropMemberResolution
@@ -63,22 +73,29 @@ final class DropMetadata
 
         foreach ($possibleNames as $propertyName) {
             if (in_array($propertyName, $this->properties, true)) {
-                return $this->staticResolution[$name] = DropMemberResolution::property($propertyName);
+                return $this->remember($name, DropMemberResolution::property($propertyName));
             }
         }
 
         foreach ($possibleNames as $methodName) {
             if (in_array($methodName, $this->invokableMethods, true)) {
-                return $this->staticResolution[$name] = DropMemberResolution::method(
+                return $this->remember($name, DropMemberResolution::method(
                     $methodName,
                     in_array($methodName, $this->cacheableMethods, true)
-                );
+                ));
             }
         }
 
-        $this->staticResolution[$name] = null;
+        return $this->remember($name, null);
+    }
 
-        return null;
+    private function remember(string $name, ?DropMemberResolution $resolution): ?DropMemberResolution
+    {
+        if (strlen($name) <= 256 && count($this->staticResolution) < self::CACHE_LIMIT) {
+            $this->staticResolution[$name] = $resolution;
+        }
+
+        return $resolution;
     }
 
     public static function init(Drop $drop): DropMetadata

@@ -187,8 +187,12 @@ class IfTag extends TagBlock implements CanBeCompiled, CanBeStreamed
     {
         $condition = $this->parseComparison($bodySection);
         $firstCondition = $condition;
+        $terms = 1;
 
         while ($operator = $bodySection->params->idOrFalse('and') ?: $bodySection->params->idOrFalse('or')) {
+            if ($bodySection->getParseContext()->environment->templatePolicy !== null && ++$terms > 100) {
+                throw new \Keepsuit\Liquid\Exceptions\ResourceLimitException('Conditional chain is too deep.');
+            }
             $childCondition = $this->parseComparison($bodySection);
             $condition->{$operator->data}($childCondition);
             $condition = $childCondition;

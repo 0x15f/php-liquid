@@ -86,9 +86,9 @@ class TableRowTag extends TagBlock
             foreach ($collection as $item) {
                 $context->set($this->variableName, $item);
 
-                $output .= sprintf('<td class="col%s">', $tableRowLoop->col);
-                $output .= $this->body->render($context);
-                $output .= '</td>';
+                $context->resourceLimits->append($output, sprintf('<td class="col%s">', $tableRowLoop->col));
+                $context->resourceLimits->append($output, $this->body->render($context));
+                $context->resourceLimits->append($output, '</td>');
 
                 $interrupt = $context->popInterrupt();
                 if ($interrupt instanceof BreakInterrupt) {
@@ -96,14 +96,14 @@ class TableRowTag extends TagBlock
                 }
 
                 if ($tableRowLoop->col_last && ! $tableRowLoop->last) {
-                    $output .= sprintf("</tr>\n<tr class=\"row%s\">", $tableRowLoop->row + 1);
+                    $context->resourceLimits->append($output, sprintf("</tr>\n<tr class=\"row%s\">", $tableRowLoop->row + 1));
                 }
 
                 $tableRowLoop->increment();
             }
         });
 
-        $output .= "</tr>\n";
+        $context->resourceLimits->append($output, "</tr>\n");
 
         return $output;
     }
@@ -121,8 +121,8 @@ class TableRowTag extends TagBlock
             return null;
         }
 
-        if (! $collection instanceof Range || $collection::class !== Range::class) {
-            $collection = Arr::fromCollection($collection);
+        if (! is_array($collection) && (! $collection instanceof Range || $collection::class !== Range::class)) {
+            $collection = Arr::fromCollection($collection, $context->resourceLimits);
         }
 
         $offset = Arr::has($attributes, 'offset') ? ($context->evaluate($attributes['offset']) ?? 0) : 0;
@@ -135,9 +135,8 @@ class TableRowTag extends TagBlock
         }
 
         $collection = match (true) {
-            $collection instanceof Range => $collection->slice($offset, $length),
-            $offset === 0 && $length === null => $collection,
-            default => array_slice($collection, $offset, $length)
+            $collection instanceof Range => $collection->slice($offset, $length, $context->resourceLimits),
+            default => $context->resourceLimits->sliceArray($collection, $offset, $length)
         };
         $cols = Arr::has($attributes, 'cols') ? ($context->evaluate($attributes['cols']) ?? 0) : count($collection);
         if (! is_int($cols)) {
@@ -181,13 +180,13 @@ class TableRowTag extends TagBlock
         $context->write('$context->set("tablerowloop", '.$loop.');');
         $context->write('foreach ('.$prepared.'[0] as '.$item.') {')->indent();
         $context->write('$context->set('.$context->writeValue($this->variableName).', '.$item.');');
-        $context->write($output.' .= sprintf('.$context->writeValue('<td class="col%s">').', '.$loop.'->col);');
+        $context->write('$context->resourceLimits->append('.$output.', sprintf('.$context->writeValue('<td class="col%s">').', '.$loop.'->col));');
         $context->writeRenderedBody($this->body, $cell);
-        $context->write($output.' .= '.$cell.' . '.$context->writeValue('</td>').';');
+        $context->write('$context->resourceLimits->append('.$output.', '.$cell.' . '.$context->writeValue('</td>').');');
         $context->write('if ($context->popInterrupt() instanceof '.$context->writeClassName(BreakInterrupt::class).') {')->indent();
         $context->write('break;')->outdent()->write('}');
         $context->write('if ('.$loop.'->col_last && ! '.$loop.'->last) {')->indent();
-        $context->write($output.' .= sprintf('.$context->writeValue("</tr>\n<tr class=\"row%s\">").', '.$loop.'->row + 1);');
+        $context->write('$context->resourceLimits->append('.$output.', sprintf('.$context->writeValue("</tr>\n<tr class=\"row%s\">").', '.$loop.'->row + 1));');
         $context->outdent()->write('}');
         $context->write($loop.'->increment();');
         $context->outdent()->write('}');

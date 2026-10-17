@@ -24,6 +24,10 @@ class Environment
 {
     protected static Environment $defaultEnvironment;
 
+    private readonly ?string $templateCacheScope;
+
+    private ?string $sealedCacheScope = null;
+
     public readonly TagRegistry $tagRegistry;
 
     public readonly FilterRegistry $filterRegistry;
@@ -35,6 +39,8 @@ class Environment
     public readonly LiquidTemplatesCache $templatesCache;
 
     public readonly ResourceLimits $defaultResourceLimits;
+
+    public readonly bool $boundedCompilation;
 
     public readonly RenderContextOptions $defaultRenderContextOptions;
 
@@ -51,14 +57,29 @@ class Environment
         ?RenderContextOptions $defaultRenderContextOptions = null,
         /** @var LiquidExtension[] $extensions */
         array $extensions = [],
+        public readonly ?\Keepsuit\Liquid\Security\TemplatePolicy $templatePolicy = null,
     ) {
         $this->tagRegistry = new TagRegistry;
         $this->filterRegistry = new FilterRegistry;
-        $this->fileSystem = $fileSystem ?? new BlankFileSystem;
+        $this->fileSystem = $templatePolicy !== null && $fileSystem instanceof \Keepsuit\Liquid\FileSystems\TemplateSnapshot
+            ? $fileSystem->withSourceLimit($templatePolicy->maxSourceBytes)
+            : ($fileSystem ?? new BlankFileSystem);
+        if ($templatePolicy !== null) {
+            if (! $this->fileSystem instanceof BlankFileSystem && ! $this->fileSystem instanceof \Keepsuit\Liquid\FileSystems\ArrayFileSystem && ! $this->fileSystem instanceof \Keepsuit\Liquid\FileSystems\TemplateSnapshot) {
+                throw new \Keepsuit\Liquid\Exceptions\TemplateSecurityException('Restricted templates require an authorized template snapshot.');
+            }
+            if ($this->fileSystem instanceof \Keepsuit\Liquid\FileSystems\ArrayFileSystem) {
+                $this->fileSystem->assertPolicy($templatePolicy);
+            }
+        }
+        $fingerprint = $this->fileSystem instanceof \Keepsuit\Liquid\FileSystems\ArrayFileSystem || $this->fileSystem instanceof \Keepsuit\Liquid\FileSystems\TemplateSnapshot
+            ? $this->fileSystem->fingerprint() : 'blank';
+        $this->templateCacheScope = $templatePolicy === null ? null : hash('sha256', serialize(['restricted-format-2', $fingerprint, $templatePolicy]));
         $this->errorHandler = $errorHandler ?? new DefaultErrorHandler;
         $this->templatesCache = $templatesCache ?? new MemoryTemplatesCache;
-        $this->defaultResourceLimits = $defaultResourceLimits ?? new ResourceLimits;
-        $this->defaultRenderContextOptions = $defaultRenderContextOptions ?? new RenderContextOptions;
+        $this->defaultResourceLimits = $defaultResourceLimits ?? ($templatePolicy === null ? new ResourceLimits : ResourceLimits::forUntrustedTemplates());
+        $this->boundedCompilation = $templatePolicy !== null || $this->defaultResourceLimits->bounded;
+        $this->defaultRenderContextOptions = $defaultRenderContextOptions ?? ($templatePolicy === null ? new RenderContextOptions : new RenderContextOptions(strictFilters: true, rethrowErrors: true));
 
         foreach ($extensions as $extension) {
             $this->addExtension($extension);
@@ -74,6 +95,38 @@ class Environment
         }
 
         return self::$defaultEnvironment;
+    }
+
+    /** @internal Freeze PHP capabilities before any restricted AST can be parsed or reused. */
+    public function sealTemplateCapabilities(): void
+    {
+        if ($this->templateCacheScope !== null && $this->sealedCacheScope === null) {
+            $this->sealedCacheScope = hash('sha256', $this->templateCacheScope.':'.$this->tagRegistry->seal().':'.$this->filterRegistry->seal().':'.serialize(array_keys($this->extensions)));
+        }
+    }
+
+    private function assertMutableCapabilities(): void
+    {
+        if ($this->sealedCacheScope !== null) {
+            throw new \Keepsuit\Liquid\Exceptions\TemplateSecurityException('Restricted template capabilities are sealed.');
+        }
+    }
+
+    /** @internal Authorization is checked even when a parsed/compiled entry is already cached. */
+    public function templateCacheKey(string $name): string
+    {
+        if ($this->templateCacheScope === null) {
+            return $this->boundedCompilation ? 'bounded-format-1:'.hash('sha256', $name) : $name;
+        }
+        if ($this->fileSystem instanceof \Keepsuit\Liquid\FileSystems\ArrayFileSystem || $this->fileSystem instanceof \Keepsuit\Liquid\FileSystems\TemplateSnapshot) {
+            $this->fileSystem->assertAuthorized($name);
+        } else {
+            throw new \Keepsuit\Liquid\Exceptions\FileSystemException('No template snapshot is configured.');
+        }
+
+        $this->sealTemplateCapabilities();
+
+        return $this->sealedCacheScope.':'.$name;
     }
 
     public function newParseContext(): ParseContext
@@ -143,6 +196,7 @@ class Environment
 
     public function addExtension(LiquidExtension $extension): static
     {
+        $this->assertMutableCapabilities();
         $this->extensions[$extension::class] = $extension;
 
         foreach ($extension->getTags() as $tag) {
@@ -161,6 +215,7 @@ class Environment
      */
     public function removeExtension(string $extensionClass): static
     {
+        $this->assertMutableCapabilities();
         $extension = $this->extensions[$extensionClass] ?? null;
 
         if ($extension === null) {

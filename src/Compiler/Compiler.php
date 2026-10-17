@@ -58,14 +58,19 @@ class Compiler
 
     public function compile(ParsedTemplate $template): string
     {
-        $bodyContext = new CompilerContext;
+        $state = $template->getState();
+        // Old serialized ASTs and manually constructed templates default to guards.
+        $bounded = $state->boundedCompilation ?? true;
+        $bodyContext = new CompilerContext(bounded: $bounded);
         $bodyContext->subcompile($template->root);
 
         $body = $bodyContext->getSource();
         $renderBody = $bodyContext->compileRender($template->root);
         $name = $bodyContext->writeValue($template->root->name);
-        $state = $template->getState();
         $stateArguments = [];
+        if (! $bounded) {
+            $stateArguments[] = 'boundedCompilation: false';
+        }
         if ($state->partials !== []) {
             $stateArguments[] = 'partials: '.$bodyContext->writeValue($state->partials);
         }
@@ -105,7 +110,7 @@ class Compiler
 
         $className = 'Template_'.substr(hash(
             'xxh128',
-            $name.$body.$renderBody.implode('', $fallbackValueSource).implode('', $renderedBodies)
+            ($bounded ? 'bounded:' : 'unrestricted:').$name.$body.$renderBody.implode('', $fallbackValueSource).implode('', $renderedBodies)
                 .implode('', $bodyContext->getImportedClasses()),
         ), 0, 32);
 
@@ -128,6 +133,8 @@ class Compiler
             ->writeLine('final class '.$className.' extends CompiledTemplate')
             ->writeLine('{')
             ->indent();
+
+        $builder->writeLine('protected const SUPPORTS_BOUNDED_EXECUTION = '.($bounded ? 'true' : 'false').';')->writeLine();
 
         foreach ($fallbackValues as $property => $value) {
             $description = $value instanceof VariableLookup && $value::class === VariableLookup::class

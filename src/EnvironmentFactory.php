@@ -16,6 +16,8 @@ use Keepsuit\Liquid\TemplatesCache\MemoryTemplatesCache;
 
 final class EnvironmentFactory
 {
+    protected ?\Keepsuit\Liquid\Security\TemplatePolicy $templatePolicy = null;
+
     protected LiquidFileSystem $fileSystem;
 
     protected LiquidErrorHandler $errorHandler;
@@ -50,6 +52,15 @@ final class EnvironmentFactory
         $this->defaultRenderContextOptions = new RenderContextOptions;
 
         $this->addExtension(new StandardExtension);
+    }
+
+    public static function forUntrustedTemplates(?\Keepsuit\Liquid\Security\TemplatePolicy $policy = null): EnvironmentFactory
+    {
+        $factory = new self;
+        $factory->templatePolicy = $policy ?? new \Keepsuit\Liquid\Security\TemplatePolicy;
+
+        return $factory->setResourceLimits(ResourceLimits::forUntrustedTemplates())
+            ->setStrictFilters(true)->setRethrowErrors(true);
     }
 
     public static function new(): EnvironmentFactory
@@ -161,6 +172,7 @@ final class EnvironmentFactory
             defaultResourceLimits: $this->resourceLimits,
             defaultRenderContextOptions: $this->defaultRenderContextOptions,
             extensions: array_values($this->extensions),
+            templatePolicy: $this->templatePolicy,
         );
 
         foreach ($this->tags as $tag) {

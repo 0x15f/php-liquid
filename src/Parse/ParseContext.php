@@ -36,15 +36,28 @@ class ParseContext
 
     public readonly Environment $environment;
 
+    private ParseBudget $budget;
+
     public function __construct(
         ?Environment $environment = null,
+        ?ParseBudget $budget = null,
     ) {
         $this->environment = $environment ?? Environment::default();
+        $this->environment->sealTemplateCapabilities();
 
+        $this->budget = $budget ?? new ParseBudget;
         $this->lineNumber = 1;
         $this->outputs = new OutputsBag;
         $this->lexer = new Lexer($this);
         $this->parser = new Parser($this);
+    }
+
+    public function chargeToken(): void
+    {
+        $limit = $this->environment->templatePolicy?->maxTokens;
+        if ($limit !== null && ++$this->budget->tokens > $limit) {
+            throw new \Keepsuit\Liquid\Exceptions\ResourceLimitException('Template token budget exceeded.');
+        }
     }
 
     public function isPartial(): bool
@@ -57,6 +70,14 @@ class ParseContext
      */
     public function tokenize(string $markup): TokenStream
     {
+        $policy = $this->environment->templatePolicy;
+        if ($policy !== null) {
+            $this->budget->bytes += strlen($markup);
+            if (strlen($markup) > $policy->maxSourceBytes || $this->budget->bytes > $policy->maxParseBytes) {
+                throw new \Keepsuit\Liquid\Exceptions\ResourceLimitException('Template source budget exceeded.');
+            }
+        }
+
         return $this->lexer->tokenize($markup);
     }
 
@@ -65,8 +86,9 @@ class ParseContext
      */
     public function parseTemplate(string $templateName, bool $force = false): Template
     {
+        $cacheKey = $this->environment->boundedCompilation ? $this->environment->templateCacheKey($templateName) : $templateName;
         if (! $force) {
-            $cachedTemplate = $this->environment->templatesCache->get($templateName);
+            $cachedTemplate = $this->environment->templatesCache->get($cacheKey);
 
             if ($cachedTemplate !== null) {
                 return $cachedTemplate;
@@ -77,13 +99,16 @@ class ParseContext
 
         $template = $this->parse($source, name: $templateName);
 
-        $this->environment->templatesCache->set($templateName, $template);
+        $this->environment->templatesCache->set($cacheKey, $template);
 
-        return $this->environment->templatesCache->get($templateName) ?? $template;
+        return $this->environment->templatesCache->get($cacheKey) ?? $template;
     }
 
     public function parse(TokenStream|string $source, ?string $name = null): ParsedTemplate
     {
+        if ($this->environment->templatePolicy !== null && $name !== null && strlen($name) > 256) {
+            throw new \Keepsuit\Liquid\Exceptions\ResourceLimitException('Template name budget exceeded.');
+        }
         $this->partials = [];
         $this->outputs = new OutputsBag;
 
@@ -97,6 +122,7 @@ class ParseContext
                 state: new TemplateSharedState(
                     partials: $this->partials,
                     outputs: (clone $this->outputs),
+                    boundedCompilation: $this->environment->boundedCompilation,
                 ),
             );
         } catch (LiquidException $e) {
@@ -115,10 +141,11 @@ class ParseContext
     {
         try {
             // Check if template is already available in the cache
-            $template = $this->environment->templatesCache->get($templateName);
+            $cacheKey = $this->environment->boundedCompilation ? $this->environment->templateCacheKey($templateName) : $templateName;
+            $template = $this->environment->templatesCache->get($cacheKey);
 
             if ($template === null) {
-                $partialParseContext = new ParseContext(environment: $this->environment);
+                $partialParseContext = new ParseContext(environment: $this->environment, budget: $this->budget);
                 $partialParseContext->partial = true;
                 $partialParseContext->depth = $this->depth;
 

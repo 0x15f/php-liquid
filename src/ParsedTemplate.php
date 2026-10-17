@@ -20,13 +20,17 @@ class ParsedTemplate extends AbstractTemplate
      */
     public function render(RenderContext $context): string
     {
+        $root = ! $context->isPartial();
+        if ($root) {
+            $context->resourceLimits->beginExecution();
+        }
         try {
             $this->prepareContext($context);
 
             $output = $this->root->render($context);
 
             // Partials are already part of the root output
-            if (! $context->isPartial()) {
+            if ($root) {
                 $context->resourceLimits->incrementWriteScore($output);
             }
 
@@ -35,6 +39,9 @@ class ParsedTemplate extends AbstractTemplate
             $this->attachTemplateName($e);
             throw $e;
         } finally {
+            if ($root) {
+                $context->resourceLimits->endExecution();
+            }
             $this->persistContext($context);
         }
     }
@@ -44,11 +51,15 @@ class ParsedTemplate extends AbstractTemplate
      */
     public function stream(RenderContext $context): \Generator
     {
+        $root = ! $context->isPartial();
+        if ($root) {
+            $context->resourceLimits->beginExecution();
+        }
         try {
             $this->prepareContext($context);
 
             // Partials are streamed through the root template's loop below
-            if ($context->isPartial()) {
+            if (! $root) {
                 yield from $this->root->stream($context);
 
                 return;
@@ -62,14 +73,27 @@ class ParsedTemplate extends AbstractTemplate
              */
             $context->resourceLimits->resetStreamWriteScore();
 
-            foreach ($this->root->stream($context) as $output) {
-                $context->resourceLimits->incrementStreamWriteScore($output);
+            $outputs = $this->root->stream($context);
+            foreach ($outputs as $output) {
+                try {
+                    $context->resourceLimits->incrementStreamWriteScore($output);
+                } catch (LiquidException $exception) {
+                    try {
+                        $outputs->throw($exception);
+                    } catch (\Throwable) {
+                        // Keep the original output-budget failure.
+                    }
+                    throw $exception;
+                }
                 yield $output;
             }
         } catch (LiquidException $e) {
             $this->attachTemplateName($e);
             throw $e;
         } finally {
+            if ($root) {
+                $context->resourceLimits->endExecution();
+            }
             $this->persistContext($context);
         }
     }

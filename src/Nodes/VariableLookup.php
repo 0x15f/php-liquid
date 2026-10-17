@@ -217,7 +217,7 @@ class VariableLookup implements CanBeEvaluated, CanBeExported, HasParseTreeVisit
         }
 
         if ($object instanceof \Generator) {
-            $object = iterator_to_array($object, preserve_keys: false);
+            $object = $context->resourceLimits->collect($object, preserveKeys: false);
         }
 
         foreach ($lookups as $lookup) {
@@ -234,14 +234,18 @@ class VariableLookup implements CanBeEvaluated, CanBeExported, HasParseTreeVisit
                 continue;
             }
 
-            $key = match (true) {
-                $lookup instanceof VariableLookup => $context->evaluate($lookup),
-                $lookup instanceof BracketKey => $lookup->value,
-                default => $lookup,
-            };
+            if (is_string($lookup)) {
+                $key = $lookup;
+            } else {
+                $key = match (true) {
+                    $lookup instanceof VariableLookup => $context->evaluate($lookup),
+                    $lookup instanceof BracketKey => $lookup->value,
+                    default => $lookup,
+                };
 
-            if (! (is_string($key) || is_int($key))) {
-                return new MissingValue;
+                if (! (is_string($key) || is_int($key))) {
+                    return new MissingValue;
+                }
             }
 
             if (is_int($key) && $key < 0 && is_array($object) && array_is_list($object)) {

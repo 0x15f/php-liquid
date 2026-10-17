@@ -117,7 +117,7 @@ class RenderTag extends Tag implements CanBeCompiled, CanBeStreamed, HasParseTre
 
         $variable = $this->variableNameExpression ? $context->evaluate($this->variableNameExpression) : null;
 
-        $values = self::loopValues($variable, $this->isForLoop);
+        $values = self::loopValues($variable, $this->isForLoop, $context->resourceLimits);
 
         if ($values === null) {
             return $partial->render($this->buildPartialContext($context, $templateName, [
@@ -129,10 +129,10 @@ class RenderTag extends Tag implements CanBeCompiled, CanBeStreamed, HasParseTre
         $output = '';
 
         foreach ($values as $value) {
-            $output .= $partial->render($this->buildPartialContext($context, $templateName, [
+            $context->resourceLimits->append($output, $partial->render($this->buildPartialContext($context, $templateName, [
                 'forloop' => $forLoop,
                 $contextVariableName => $value,
-            ]));
+            ])));
 
             $forLoop->increment();
         }
@@ -193,7 +193,7 @@ class RenderTag extends Tag implements CanBeCompiled, CanBeStreamed, HasParseTre
 
         $variable = $this->variableNameExpression ? $context->evaluate($this->variableNameExpression) : null;
 
-        $values = self::loopValues($variable, $this->isForLoop);
+        $values = self::loopValues($variable, $this->isForLoop, $context->resourceLimits);
 
         if ($values !== null) {
             $forLoop = new ForLoopDrop($templateName, count($values));
@@ -260,7 +260,7 @@ class RenderTag extends Tag implements CanBeCompiled, CanBeStreamed, HasParseTre
      *
      * @return array<mixed>|null
      */
-    public static function loopValues(mixed $variable, bool $isForLoop): ?array
+    public static function loopValues(mixed $variable, bool $isForLoop, ?\Keepsuit\Liquid\Render\ResourceLimits $limits = null): ?array
     {
         if (! $isForLoop) {
             return null;
@@ -270,7 +270,7 @@ class RenderTag extends Tag implements CanBeCompiled, CanBeStreamed, HasParseTre
             throw $variable->toException();
         }
 
-        return is_iterable($variable) ? iterator_to_array($variable) : null;
+        return is_iterable($variable) ? ($limits?->collect($variable) ?? iterator_to_array($variable)) : null;
     }
 
     /** @internal */

@@ -1,0 +1,84 @@
+name: ARM64 security benchmarks
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'resources/**'
+      - 'performance/comparison/**'
+      - '.github/workflows/security-benchmarks.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, intl, bcmath, pcntl
+          coverage: none
+          ini-values: opcache.jit=disable
+
+      - run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Verify restricted execution with hot ARM64 JIT traces
+        run: >-
+          php -d opcache.enable_cli=1 -d opcache.jit_buffer_size=128M
+          -d opcache.jit=tracing -d opcache.jit_hot_func=1 -d opcache.jit_hot_loop=1
+          vendor/bin/pest tests/Integration/UntrustedTemplatesTest.php
+          tests/Integration/CompilationProfileTest.php
+          tests/Integration/StableStreamingTest.php tests/Integration/TemplateSnapshotTest.php
+          tests/Integration/IsolatedRendererTest.php
+
+      - name: Prepare frozen baseline
+        run: python3 performance/comparison/prepare-baseline.py --revision=9d2aa0a
+
+      - name: Measure three independent process cohorts
+        run: |
+          set -euo pipefail
+          mkdir -p build/security-benchmarks
+          for cohort in 1 2 3; do
+            php -d opcache.enable_cli=1 performance/comparison/run.php \
+              --php-only --security --paired-baseline --workload=grid_24 \
+              --rounds=51 --warmup=15 --label=github-arm64-$cohort \
+              --output=build/security-benchmarks/core-$cohort.json
+            php -d opcache.enable_cli=1 -d opcache.jit_buffer_size=128M -d opcache.jit=tracing \
+              performance/comparison/run.php --php-only --security --paired-baseline \
+              --workload=grid_24 --rounds=51 --warmup=15 --label=github-arm64-jit-$cohort \
+              --output=build/security-benchmarks/jit-$cohort.json
+            php performance/comparison/isolated.php --samples=320 \
+              --output=build/security-benchmarks/isolated-$cohort.json
+          done
+          php performance/comparison/stream-memory.php > build/security-benchmarks/stream-memory.json
+          lscpu > build/security-benchmarks/cpu.txt
+          git rev-parse HEAD > build/security-benchmarks/revision.txt
+
+      - name: Verify measurement metadata
+        run: |
+          python3 - <<'PY'
+          import json, pathlib
+          for path in pathlib.Path('build/security-benchmarks').glob('*.json'):
+              result = json.loads(path.read_text())
+              assert result['arch'] == 'aarch64', path
+              assert not any(result.get('profilers_loaded', {}).values()), path
+              if 'samples' in result and isinstance(result['samples'], dict):
+                  assert result['checks']['grid_24']['shopify_reference'], path
+              if path.name.startswith('jit-'):
+                  assert result['jit']['enabled'] and result['jit']['on'], path
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: security-benchmarks-arm64
+          path: build/security-benchmarks
+          if-no-files-found: error

@@ -20,18 +20,30 @@ use Throwable;
 /** @phpstan-import-type CompiledLookup from VariableLookup */
 abstract class CompiledTemplate extends AbstractTemplate
 {
+    protected const SUPPORTS_BOUNDED_EXECUTION = false;
+
+    private readonly ?bool $supportsBoundedExecution;
+
     public function __construct(TemplateSharedState $state = new TemplateSharedState)
     {
+        $this->supportsBoundedExecution = static::SUPPORTS_BOUNDED_EXECUTION;
         parent::__construct($state);
     }
 
     final public function render(RenderContext $context): string
     {
+        if ($context->requiresBoundedExecution && ! ($this->supportsBoundedExecution ?? false)) {
+            throw new \Keepsuit\Liquid\Exceptions\TemplateSecurityException('Compile templates in a restricted or bounded environment before using bounded contexts.');
+        }
+        $root = ! $context->isPartial();
+        if ($root) {
+            $context->resourceLimits->beginExecution();
+        }
         try {
             $this->prepareContext($context);
             $output = $this->renderCompiledString($context);
 
-            if (! $context->isPartial()) {
+            if ($root) {
                 $context->resourceLimits->incrementWriteScore($output);
             }
 
@@ -40,6 +52,9 @@ abstract class CompiledTemplate extends AbstractTemplate
             $this->attachTemplateName($e);
             throw $e;
         } finally {
+            if ($root) {
+                $context->resourceLimits->endExecution();
+            }
             $this->persistContext($context);
         }
     }
@@ -49,11 +64,18 @@ abstract class CompiledTemplate extends AbstractTemplate
      */
     final public function stream(RenderContext $context): \Generator
     {
+        if ($context->requiresBoundedExecution && ! ($this->supportsBoundedExecution ?? false)) {
+            throw new \Keepsuit\Liquid\Exceptions\TemplateSecurityException('Compile templates in a restricted or bounded environment before using bounded contexts.');
+        }
+        $root = ! $context->isPartial();
+        if ($root) {
+            $context->resourceLimits->beginExecution();
+        }
         try {
             $this->prepareContext($context);
 
             // The root template's loop below casts and renumbers every chunk.
-            if ($context->isPartial()) {
+            if (! $root) {
                 yield from $this->renderCompiled($context);
 
                 return;
@@ -70,6 +92,9 @@ abstract class CompiledTemplate extends AbstractTemplate
             $this->attachTemplateName($e);
             throw $e;
         } finally {
+            if ($root) {
+                $context->resourceLimits->endExecution();
+            }
             $this->persistContext($context);
         }
     }
@@ -161,7 +186,7 @@ abstract class CompiledTemplate extends AbstractTemplate
         $name = $partial->name() ?? '';
         $alias = $aliasName ?? RenderTag::defaultVariableName($name);
         $variable = $variable ? VariableLookup::evaluateDescriptor($context, $variable) : null;
-        $values = RenderTag::loopValues($variable, true);
+        $values = RenderTag::loopValues($variable, true, $context->resourceLimits);
 
         if ($values === null) {
             yield from $partial->stream($this->partialLoopContext($context, $name, $alias, $variable, $attributes));
@@ -191,7 +216,7 @@ abstract class CompiledTemplate extends AbstractTemplate
         $name = $partial->name() ?? '';
         $alias = $aliasName ?? RenderTag::defaultVariableName($name);
         $variable = $variable ? VariableLookup::evaluateDescriptor($context, $variable) : null;
-        $values = RenderTag::loopValues($variable, true);
+        $values = RenderTag::loopValues($variable, true, $context->resourceLimits);
 
         if ($values === null) {
             return $partial->render($this->partialLoopContext($context, $name, $alias, $variable, $attributes));
@@ -200,7 +225,7 @@ abstract class CompiledTemplate extends AbstractTemplate
         $loop = new ForLoopDrop($name, count($values));
         $output = '';
         foreach ($values as $value) {
-            $output .= $partial->render($this->partialLoopContext($context, $name, $alias, $value, $attributes, $loop));
+            $context->resourceLimits->append($output, $partial->render($this->partialLoopContext($context, $name, $alias, $value, $attributes, $loop)));
             $loop->increment();
         }
 

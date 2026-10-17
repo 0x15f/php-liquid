@@ -3,6 +3,22 @@
 use Keepsuit\Liquid\Exceptions\ResourceLimitException;
 use Keepsuit\Liquid\Render\ResourceLimits;
 
+test('score increments reject negatives and overflow before changing counters', function (string $kind, bool $reset) {
+    $limits = new ResourceLimits;
+    $increment = 'increment'.$kind.'Score';
+    $current = 'get'.$kind.'Score';
+    $cumulative = 'getCumulative'.$kind.'Score';
+    expect(fn () => $limits->{$increment}(-1))->toThrow(ResourceLimitException::class);
+    expect($limits->{$current}())->toBe(0)->and($limits->{$cumulative}())->toBe(0);
+    $limits->{$increment}(PHP_INT_MAX);
+    if ($reset) {
+        $limits->reset();
+    }
+    expect(fn () => $limits->{$increment}(1))->toThrow(ResourceLimitException::class);
+    expect($limits->{$current}())->toBe($reset ? 0 : PHP_INT_MAX)
+        ->and($limits->{$cumulative}())->toBe(PHP_INT_MAX);
+})->with(['Render', 'Assign'])->with([false, true]);
+
 test('resource limits default cumulative state', function () {
     $limits = new ResourceLimits;
 

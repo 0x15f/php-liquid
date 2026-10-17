@@ -102,7 +102,7 @@ final class CompilerContext
         return '$temp'.$this->temporaryCount++;
     }
 
-    public function __construct(private CodeBuilder $builder = new CodeBuilder) {}
+    public function __construct(private CodeBuilder $builder = new CodeBuilder, private readonly bool $bounded = true) {}
 
     public function isRendering(): bool
     {
@@ -342,9 +342,12 @@ final class CompilerContext
             ? $this->builder->streamBufferState()['maxLength']
             : null;
         if ($this->rendering) {
-            $this->write('$output .= '.$expression.$suffix);
+            if ($suffix !== ';') {
+                throw new \LogicException('Rendered output requires a complete expression.');
+            }
+            $this->writeBoundedAppend('$output', $expression, $length);
         } elseif ($this->buffering) {
-            $this->write('$buffer .= '.$expression.$suffix);
+            $this->writeBoundedAppend('$buffer', $expression, $length);
             $this->builder->setStreamBufferState(['checked' => false, 'empty' => false, 'maxLength' => null]);
         } else {
             $this->writeYield($expression, $suffix);
@@ -362,6 +365,33 @@ final class CompilerContext
         }
 
         return $this;
+    }
+
+    /** Emit allocation checks directly so the render hot path needs no helper call per node. */
+    private function writeBoundedAppend(string $buffer, string $expression, ?int $length): void
+    {
+        if (! $this->bounded) {
+            $this->write($buffer.' .= '.$expression.';');
+
+            return;
+        }
+        if ($length === null) {
+            $chunk = $this->temporaryVariable();
+            $source = $chunk.' = '.$expression.";\n";
+            $bytes = 'strlen('.$chunk.')';
+        } else {
+            $chunk = $expression;
+            $source = '';
+            $bytes = (string) $length;
+        }
+        $limit = '$context->resourceLimits->intermediateBytesLimit';
+        $source .= 'if ('.$limit.' !== null && '.$bytes.' > '.$limit.' - strlen('.$buffer.")) {\n"
+            .'    $context->resourceLimits->throwLimitReachedException();'."\n}\n"
+            .$buffer.' .= '.$chunk.";\n";
+        if ($length === null) {
+            $source .= 'unset('.$chunk.");\n";
+        }
+        $this->writeSource($source);
     }
 
     public function flushStreamBufferIfFull(): void
@@ -649,7 +679,7 @@ final class CompilerContext
         if ($lazy) {
             if ($this->rendering) {
                 $this->outdent()->write('}) as $chunk) {');
-                $this->indent()->write('$output .= $chunk;');
+                $this->indent()->write('$context->resourceLimits->append($output, $chunk);');
                 $this->outdent()->write('}');
             } else {
                 $this->outdent()->write('});');
@@ -663,7 +693,7 @@ final class CompilerContext
         $error = '$this->compiledErrorOutput($exception, $context->handleError($exception, '.$line.'))';
         if ($this->rendering) {
             $this->builder->dedent()->writeLines('} catch (\\Throwable $exception) {'
-                ."\n    \$output .= (".$error.' ?? "");'
+                ."\n    \$context->resourceLimits->append(\$output, (".$error.' ?? ""));'
                 ."\n}");
             $this->builder->setStreamBufferState([
                 'checked' => $successBufferState['checked'],

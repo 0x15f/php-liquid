@@ -1,5 +1,21 @@
 # Open-source release
 
+## 0.2.0 — Restricted templates and stable streaming
+
+- Restricted execution for user-authored templates, with bounded parsing, PHP capabilities, collection materialization, intermediate buffers, assignments, work and cooperative deadlines.
+- Authorized source snapshots and lazy SHA-256 manifests; source-cache hits perform no template-source fetches.
+- Cache identities bind source authorization, policy and sealed PHP capability sets. Laravel retains compiled/Redis caching and stricter application limits.
+- Optional reusable PHP workers enforce independent heap allowances and parent deadlines, discard failed/cancelled requests, and bound private compiled-cache retention.
+- Stable parsed/compiled streaming, Laravel streaming APIs and incremental isolated-worker streaming with byte-preserving transport.
+- Request-local compiled-template object reuse and generated allocation checks without per-node helper calls.
+- Explicit guarded compilation profiles, cache separation and rejection of unrestricted artifacts in bounded contexts; legacy or unspecified AST metadata retains guards.
+
+Use the restricted APIs described in SECURITY.md for user-authored templates. General view APIs retain their compatibility behavior. Streaming chunk boundaries are not an API guarantee; failures can follow already-emitted output. Restart long-lived application workers when upgrading.
+
+Validation: 4,017 tests / 24,216 assertions with real Redis, PHPStan and Pint. Restricted streaming matches all 64 personalized Shopify reference fixtures across parsed/compiled execution. Worker tests cover heap exhaustion, deadlines, cancellation, recovery and bounded private-cache retention.
+
+See [security and streaming measurements](performance/comparison/SECURITY_REPORT.md) for validation and the measured cost of the restrictions.
+
 ## v0.1.0 — PHP Liquid for PHP and Laravel - 2026-10-17
 
 First public release of PHP Liquid, derived from Keepsuit PHP Liquid with MIT attribution preserved.

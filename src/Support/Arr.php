@@ -181,11 +181,11 @@ class Arr
     /**
      * Normalises a value iterated by `for` and `tablerow`: strings iterate once, non-iterables are empty.
      */
-    public static function fromCollection(mixed $collection): array
+    public static function fromCollection(mixed $collection, ?\Keepsuit\Liquid\Render\ResourceLimits $limits = null): array
     {
         return match (true) {
             $collection instanceof UndefinedVariable => throw $collection->toException(),
-            is_iterable($collection) => iterator_to_array($collection),
+            is_iterable($collection) => $limits?->collect($collection) ?? iterator_to_array($collection),
             is_string($collection) => $collection === '' ? [] : [$collection],
             default => [],
         };

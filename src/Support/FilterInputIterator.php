@@ -14,6 +14,8 @@ use Traversable;
  */
 class FilterInputIterator implements IteratorAggregate
 {
+    private int $visited = 0;
+
     public function __construct(
         protected mixed $input,
         protected FilterSupport $support,
@@ -21,6 +23,7 @@ class FilterInputIterator implements IteratorAggregate
 
     public function getIterator(): Traversable
     {
+        $this->visited = 0;
         if ($this->input instanceof UndefinedVariable) {
             throw $this->input->toException();
         }
@@ -43,15 +46,21 @@ class FilterInputIterator implements IteratorAggregate
     protected function normalize(iterable $input): Traversable
     {
         foreach ($input as $value) {
+            if ($this->support->bounded) {
+                $this->support->visit(++$this->visited);
+            }
             yield $this->support->normalize($value);
         }
     }
 
-    protected function flatten(array $input): Traversable
+    protected function flatten(array $input, int $depth = 0): Traversable
     {
         foreach ($input as $value) {
+            if ($this->support->bounded) {
+                $this->support->visit(++$this->visited, $depth);
+            }
             if (is_array($value) && array_is_list($value)) {
-                foreach ($this->flatten($value) as $item) {
+                foreach ($this->flatten($value, $depth + 1) as $item) {
                     yield $item;
                 }
             } else {

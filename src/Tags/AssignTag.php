@@ -49,6 +49,7 @@ class AssignTag extends Tag implements CanBeCompiled, HasParseTreeVisitorChildre
     {
         $value = $this->from->evaluate($context);
 
+        $context->environment->templatePolicy?->assertData($value);
         $context->setToActiveScope($this->to, $value);
         $context->resourceLimits->incrementAssignScore(static::computeAssignScore($value));
 
@@ -63,6 +64,7 @@ class AssignTag extends Tag implements CanBeCompiled, HasParseTreeVisitorChildre
 
     public static function assignValue(RenderContext $context, string $name, mixed $value): void
     {
+        $context->environment->templatePolicy?->assertData($value);
         $context->setToActiveScope($name, $value);
         $context->resourceLimits->incrementAssignScore(static::computeAssignScore($value));
     }

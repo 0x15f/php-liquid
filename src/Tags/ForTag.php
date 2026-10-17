@@ -259,8 +259,8 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
         assert(is_array($offsets));
 
         $collection = $context->evaluate($expression);
-        if (! $collection instanceof ProvidesCollectionSlice && (! $collection instanceof Range || $collection::class !== Range::class)) {
-            $collection = Arr::fromCollection($collection);
+        if (! is_array($collection) && ! $collection instanceof ProvidesCollectionSlice && (! $collection instanceof Range || $collection::class !== Range::class)) {
+            $collection = Arr::fromCollection($collection, $context->resourceLimits);
         }
 
         if ($from === 'continue') {
@@ -282,10 +282,9 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
             default => throw new InvalidArgumentException('Invalid integer'),
         };
         $segment = match (true) {
-            $collection instanceof ProvidesCollectionSlice => $collection->liquidSlice($offset, $length),
-            $collection instanceof Range => $collection->slice($offset, $length),
-            $offset === 0 && $length === null => $collection,
-            default => array_slice($collection, $offset, $length)
+            $collection instanceof ProvidesCollectionSlice => $context->resourceLimits->sliceProvider($collection, $offset, $length),
+            $collection instanceof Range => $collection->slice($offset, $length, $context->resourceLimits),
+            default => $context->resourceLimits->sliceArray($collection, $offset, $length)
         };
         $segment = $reversed ? array_reverse($segment) : $segment;
 
@@ -308,8 +307,8 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
         assert(is_array($offsets));
 
         $collection = VariableLookup::evaluateDescriptor($context, $expression);
-        if (! $collection instanceof ProvidesCollectionSlice && (! $collection instanceof Range || $collection::class !== Range::class)) {
-            $collection = Arr::fromCollection($collection);
+        if (! is_array($collection) && ! $collection instanceof ProvidesCollectionSlice && (! $collection instanceof Range || $collection::class !== Range::class)) {
+            $collection = Arr::fromCollection($collection, $context->resourceLimits);
         }
 
         if ($from === 'continue') {
@@ -331,10 +330,9 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
             default => throw new InvalidArgumentException('Invalid integer'),
         };
         $segment = match (true) {
-            $collection instanceof ProvidesCollectionSlice => $collection->liquidSlice($offset, $length),
-            $collection instanceof Range => $collection->slice($offset, $length),
-            $offset === 0 && $length === null => $collection,
-            default => array_slice($collection, $offset, $length)
+            $collection instanceof ProvidesCollectionSlice => $context->resourceLimits->sliceProvider($collection, $offset, $length),
+            $collection instanceof Range => $collection->slice($offset, $length, $context->resourceLimits),
+            default => $context->resourceLimits->sliceArray($collection, $offset, $length)
         };
         $segment = $reversed ? array_reverse($segment) : $segment;
 
@@ -350,9 +348,14 @@ class ForTag extends TagBlock implements CanBeCompiled, CanBeStreamed, HasParseT
 
         try {
             $output = '';
+            $byteLimit = $context->resourceLimits->intermediateBytesLimit;
             foreach ($segment as $value) {
                 $context->set($this->variableName, $value);
-                $output .= $this->forBlock->render($context);
+                $chunk = $this->forBlock->render($context);
+                if ($byteLimit !== null && strlen($chunk) > $byteLimit - strlen($output)) {
+                    $context->resourceLimits->throwLimitReachedException();
+                }
+                $output .= $chunk;
                 $loopVars->increment();
 
                 if ($context->popInterrupt() instanceof BreakInterrupt) {

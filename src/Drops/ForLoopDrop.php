@@ -33,6 +33,28 @@ class ForLoopDrop extends Drop
         $this->index += 1;
     }
 
+    public function __get(string $name): mixed
+    {
+        // Native loop properties have fixed semantics. Extensions retain the
+        // metadata path, including overridden properties and missing methods.
+        if (static::class !== self::class) {
+            return parent::__get($name);
+        }
+
+        return match ($name) {
+            'first' => $this->index === 0,
+            'last' => $this->index === $this->length - 1,
+            'index' => $this->index + 1,
+            'index0' => $this->index,
+            'rindex' => $this->length - $this->index,
+            'rindex0' => $this->length - $this->index - 1,
+            'length' => $this->length,
+            'name' => $this->name,
+            'parentloop' => $this->parentLoop,
+            default => parent::__get($name),
+        };
+    }
+
     #[DropDynamicProperties(['first', 'last', 'index', 'index0', 'rindex', 'rindex0', 'length', 'name', 'parentloop'])]
     protected function liquidMethodMissing(string $name): mixed
     {

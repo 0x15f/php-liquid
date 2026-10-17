@@ -66,6 +66,8 @@ final class RenderContext
 
     private readonly MissingValue $missingValue;
 
+    public readonly bool $requiresBoundedExecution;
+
     public function __construct(
         /**
          * Environment variables only available in the current context
@@ -98,8 +100,13 @@ final class RenderContext
     ) {
         $this->environment = $environment ?? Environment::default();
         $this->resourceLimits = $resourceLimits ?? ResourceLimits::clone($this->environment->defaultResourceLimits);
+        $this->requiresBoundedExecution = $this->environment->templatePolicy !== null || $this->resourceLimits->bounded;
         $this->errorHandler = $this->options->rethrowErrors ? new RethrowErrorHandler : $this->environment->errorHandler;
 
+        if ($sharedState === null && $this->environment->templatePolicy !== null) {
+            $this->environment->templatePolicy->assertData($data);
+            $this->environment->templatePolicy->assertData($staticData);
+        }
         $this->scopes = [[]];
 
         $this->sharedState = $sharedState ?? new ContextSharedState(
@@ -314,6 +321,10 @@ final class RenderContext
             return is_object($value) ? $this->normalizeValue($value) : $value;
         }
 
+        if ($this->requiresBoundedExecution && is_object($scope)) {
+            $this->environment->templatePolicy?->assertObject($scope);
+            $this->resourceLimits->incrementRenderScore();
+        }
         try {
             $value = match (true) {
                 $scope instanceof Drop => $scope->{$key},
@@ -345,6 +356,8 @@ final class RenderContext
             }
 
             return false;
+        } catch (ResourceLimitException|\Keepsuit\Liquid\Exceptions\TemplateSecurityException $error) {
+            throw $error;
         } catch (Throwable) {
             return false;
         }
@@ -360,6 +373,12 @@ final class RenderContext
 
     public function normalizeValue(mixed $value): mixed
     {
+        if ($this->requiresBoundedExecution) {
+            $this->environment->templatePolicy?->assertData($value);
+            if (is_object($value)) {
+                $this->resourceLimits->incrementRenderScore();
+            }
+        }
         // Only closures and MapsToLiquid values are normalized or cached.
         if (! $value instanceof Closure && ! $value instanceof MapsToLiquid) {
             return $value;
@@ -437,7 +456,7 @@ final class RenderContext
     public function handleError(Throwable $error, ?int $lineNumber = null): string
     {
         $error = match (true) {
-            $error instanceof ResourceLimitException => throw $error,
+            $error instanceof ResourceLimitException, $error instanceof \Keepsuit\Liquid\Exceptions\TemplateSecurityException => throw $error,
             $error instanceof DivisionByZeroError => new ArithmeticException('divided by 0', previous: $error),
             $error instanceof ArithmeticError => new ArithmeticException($error->getMessage(), previous: $error),
             $error instanceof LiquidException => $error,
@@ -464,7 +483,8 @@ final class RenderContext
 
     public function loadPartial(string $templateName): Template
     {
-        if ($partial = $this->environment->templatesCache->get($templateName)) {
+        $cacheKey = $this->environment->boundedCompilation ? $this->environment->templateCacheKey($templateName) : $templateName;
+        if ($partial = $this->environment->templatesCache->get($cacheKey)) {
             return $partial;
         }
 

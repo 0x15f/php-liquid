@@ -16,11 +16,11 @@ function comparisonCpuNs(): int
         + $r['ru_utime.tv_usec'] + $r['ru_stime.tv_usec']) * 1000;
 }
 
-$options = getopt('', ['output:', 'rounds:', 'label:', 'php-only', 'check-only', 'workload:', 'paired-baseline', 'warmup:', 'prepared']);
+$options = getopt('', ['output:', 'rounds:', 'label:', 'php-only', 'check-only', 'workload:', 'paired-baseline', 'warmup:', 'prepared', 'security']);
 $rounds = (int) ($options['rounds'] ?? 31);
 $warmup = (int) ($options['warmup'] ?? 10);
-if (! isset($options['check-only']) && (extension_loaded('xdebug') || extension_loaded('pcov'))) {
-    throw new RuntimeException('Timing requires Xdebug and PCOV to be unloaded, not merely disabled.');
+if (! isset($options['check-only']) && (extension_loaded('xdebug') || extension_loaded('pcov') || extension_loaded('xhprof'))) {
+    throw new RuntimeException('Timing requires profilers to be unloaded, not merely disabled.');
 }
 $fixtures = comparisonFixtures();
 $filesystem = new class($fixtures['templates']) implements LiquidFileSystem
@@ -51,6 +51,34 @@ $backends = [
     'php_compiled' => fn (array $r) => $compiled->parseTemplate($r['template'])->render($compiled->newRenderContext(data: $r['data'])),
 ];
 $initialization = ['php_parsed' => $parsedInitMs, 'php_compiled' => $compiledInitMs];
+$securityDirectory = null;
+if (isset($options['security'])) {
+    $securityDirectory = $directory.'-restricted';
+    $restricted = EnvironmentFactory::forUntrustedTemplates()
+        ->setFilesystem(new \Keepsuit\Liquid\FileSystems\ArrayFileSystem($fixtures['templates']))
+        ->setTemplatesCache(new CompiledTemplatesCache($securityDirectory))->build();
+    foreach (array_keys($fixtures['templates']) as $name) {
+        $restricted->parseTemplate($name);
+    }
+    $backends['php_compiled_restricted'] = fn (array $r) => $restricted->parseTemplate($r['template'])
+        ->render($restricted->newRenderContext(data: $r['data']));
+    $restrictedParsed = EnvironmentFactory::forUntrustedTemplates()
+        ->setFilesystem(new \Keepsuit\Liquid\FileSystems\ArrayFileSystem($fixtures['templates']))->build();
+    foreach (array_keys($fixtures['templates']) as $name) {
+        $restrictedParsed->parseTemplate($name);
+    }
+    $backends['php_parsed_restricted'] = fn (array $r) => $restrictedParsed->parseTemplate($r['template'])
+        ->render($restrictedParsed->newRenderContext(data: $r['data']));
+    $backends['php_compiled_restricted_stream'] = static function (array $r) use ($restricted): string {
+        $output = '';
+        foreach ($restricted->parseTemplate($r['template'])->stream($restricted->newRenderContext(data: $r['data'])) as $chunk) {
+            $output .= $chunk;
+        }
+
+        return $output;
+    };
+
+}
 $baselineDirectory = null;
 if (isset($options['paired-baseline'])) {
     spl_autoload_register(static function (string $class): void {
@@ -91,6 +119,9 @@ if (isset($options['prepared'])) {
 $rustInit = $encode(['op' => 'init', 'templates' => $fixtures['templates'], 'inputs' => $nativeInputs]);
 $extismVersion = null;
 $referencePath = dirname(__DIR__, 2).'/build/reference-hashes.json';
+if (! is_file($referencePath)) {
+    $referencePath = __DIR__.'/results/reference-hashes.json';
+}
 $referenceHashes = is_file($referencePath) ? json_decode(file_get_contents($referencePath), true, flags: JSON_THROW_ON_ERROR) : null;
 if (! isset($options['php-only'])) {
     foreach (['rust_native' => NativeLiquidBridge::class, 'rust_wasm' => WasmLiquidBridge::class] as $name => $class) {
@@ -128,11 +159,11 @@ $result = ['label' => $options['label'] ?? 'unspecified', 'time_utc' => gmdate('
     'native_sha256' => is_file(__DIR__.'/artifacts/libliquid_comparison.so') ? hash_file('sha256', __DIR__.'/artifacts/libliquid_comparison.so') : null,
     'wasm_sha256' => is_file(__DIR__.'/artifacts/liquid_comparison.wasm') ? hash_file('sha256', __DIR__.'/artifacts/liquid_comparison.wasm') : null,
     'opcache' => opcache_get_status(false)['opcache_enabled'] ?? false, 'jit' => opcache_get_status(false)['jit'] ?? null,
-    'profilers_loaded' => ['xdebug' => extension_loaded('xdebug'), 'pcov' => extension_loaded('pcov')], 'warmup_rounds' => $warmup,
+    'profilers_loaded' => ['xdebug' => extension_loaded('xdebug'), 'pcov' => extension_loaded('pcov'), 'xhprof' => extension_loaded('xhprof')], 'warmup_rounds' => $warmup,
     'xdebug_mode' => ini_get('xdebug.mode'), 'cpu_affinity' => trim(shell_exec('taskset -pc '.getmypid()) ?? ''),
-    'cpu_max' => trim(file_get_contents('/sys/fs/cgroup/cpu.max')),
+    'cpu_max' => is_readable('/sys/fs/cgroup/cpu.max') ? trim(file_get_contents('/sys/fs/cgroup/cpu.max')) : null,
     'initialization_ms' => $initialization, 'fixture_sha256' => hash('sha256', $encode($fixtures)),
-    'rounds' => $rounds, 'input_mode' => isset($options['prepared']) ? 'preloaded-native-contexts' : 'php-arrays-with-bridge-conversion', 'samples' => [], 'checks' => [], 'memory' => []];
+    'rounds' => $rounds, 'baseline_revision' => isset($options['paired-baseline']) ? trim(file_get_contents(dirname(__DIR__, 2).'/build/comparison-baseline/REVISION')) : null, 'input_mode' => isset($options['prepared']) ? 'preloaded-native-contexts' : (isset($options['php-only']) ? 'php-arrays' : 'php-arrays-with-bridge-conversion'), 'samples' => [], 'checks' => [], 'memory' => []];
 try {
     foreach ($fixtures['workloads'] as $workload => $requests) {
         if (isset($options['workload']) && $options['workload'] !== $workload) {
@@ -215,6 +246,10 @@ try {
 } finally {
     $compiled->templatesCache->clear();
     rmdir($directory);
+    if ($securityDirectory !== null) {
+        $restricted->templatesCache->clear();
+        rmdir($securityDirectory);
+    }
     if ($baselineDirectory !== null) {
         $baseline->templatesCache->clear();
         rmdir($baselineDirectory);

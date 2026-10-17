@@ -23,6 +23,10 @@ Data is not automatically HTML-escaped: use Liquid's `escape` filter. The view e
 
 ## Cache modes
 
+User-authored templates use `Liquid::untrustedEnvironment($authorizedTemplatesOrManifest, $tenantRevision)`. It retains the configured cache driver, limits PHP capabilities, partitions entries by authorized source snapshot and policy, and avoids the global view finder. See [restricted execution](SECURITY.md#user-authored-templates). Application-wide custom PHP tags, filters and extensions are not inherited by restricted environments.
+
+Restricted environments compile with allocation guards. Their artifacts accept fresh per-request limits; unrestricted view artifacts reject bounded contexts. Compilation profiles have separate cache identities. This release changes the cache format; restart long-lived workers and rebuild standalone compiled caches when upgrading.
+
 Publish `config/liquid.php` with `php artisan vendor:publish --tag=liquid-config`.
 
 | Driver | Behavior |
@@ -43,9 +47,42 @@ LIQUID_CACHE_TTL=3600
 
 Configure the Redis connection/client in Laravel's normal database/cache configuration. Any compatible Laravel repository can be used, including file, database, array and Memcached stores. Only Redis and array stores are exercised in the integration tests; other stores follow the same cache contract. This package never calls the application's global cache flush.
 
-A cold server first checks Redis for a parsed template, then compiles a local PHP artifact. Warm compiled hits use the local artifact. Each namespace reads its generation marker once per scoped cache instance, rather than adding a Redis round trip to every snippet. `cache.ttl` expires shared parsed entries; it does not expire immutable local compiled files. The compiled cache is application-controlled executable storage and must be outside public/web-writable directories.
+A cold server first checks Redis for a parsed template, then compiles a local PHP artifact. Warm compiled hits use the local artifact. Within a request, compiled template objects are reused; each render still creates a fresh data context. Each namespace reads its generation marker once per scoped cache instance, rather than adding a Redis round trip to every snippet. `cache.ttl` expires shared parsed entries; it does not expire immutable local compiled files. The compiled cache is application-controlled executable storage and must be outside public/web-writable directories.
 
 Cache payloads and custom AST objects use PHP serialization, as Laravel stores commonly do. Use a trusted private application cache. Redis values are not evaluated as PHP source. Custom tags/AST objects must be serializable for shared caching; the plain compiled or memory driver is available when a shared backend is unsuitable.
+
+## Streaming
+
+Streaming is stable for parsed and compiled templates, including restricted environments and Redis-backed caches. `Liquid::stream($name, $data, $namespace)` and `Liquid::streamString($source, $data, $namespace)` return `Generator<int, string>`. For an authorized user template, obtain its restricted environment and call the template's `stream()` method:
+
+```php
+use Keepsuit\Liquid\Laravel\Facades\Liquid;
+
+$environment = Liquid::untrustedEnvironment($authorizedSnapshot, "tenant:{$tenantId}");
+$template = $environment->parseTemplate('page'); // Resolve and validate before sending headers.
+
+return response()->stream(function () use ($template, $environment, $authorizedData): void {
+    $stream = $template->stream($environment->newRenderContext(data: $authorizedData));
+    try {
+        foreach ($stream as $chunk) {
+            echo $chunk;
+            if (connection_aborted()) {
+                break;
+            }
+        }
+    } finally {
+        unset($stream);
+    }
+}, 200, ['Content-Type' => 'text/html; charset=UTF-8', 'X-Accel-Buffering' => 'no']);
+```
+
+The contract is byte equality with `render()` for the same repeatable input and fresh contexts. Keys are sequential integers; chunk sizes and boundaries are not stable. Output is pull-based with a small internal buffer, but captures, filters and individual nodes can materialize bounded intermediate values. Streaming does not turn arbitrary database operations into cursors or batch queries.
+
+The root checks total emitted bytes before yielding each chunk. Work and allocation limits also apply inside snippets and captures. A runtime failure can occur after a prefix has reached the client; handle that as a partial response, since headers and bytes cannot be retracted. Syntax/static-snippet validation before sending headers reduces this risk but cannot eliminate runtime failures.
+
+Use one context per response. Overlapping root renders/streams on one context are rejected. On cancellation, release **all** references to the generator so PHP runs `finally` blocks and restores loop scopes. A reusable `IsolatedRenderer` also offers `stream()`; cancellation discards its child process and unread frames. Its deadline includes consumer pauses, and it permits one active request per renderer instance.
+
+Web-server, proxy and compression buffering can delay delivery independently of Liquid. Configure those layers and measure first-byte latency through the real HTTP stack. Keep application worker lifetimes bounded as described below.
 
 ## Invalidation and deployment
 

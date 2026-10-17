@@ -33,11 +33,15 @@ class Variable extends Node implements CanBeCompiled, CanBeEvaluated, CanBeStrea
             return $output;
         }
 
+        if (is_int($output)) {
+            return (string) $output;
+        }
+
         if ($output instanceof CanBeRendered) {
             return $output->render($context);
         }
 
-        return self::renderOutputValue($output);
+        return self::renderOutputValue($output, $context);
     }
 
     public function compile(CompilerContext $context): void
@@ -62,7 +66,7 @@ class Variable extends Node implements CanBeCompiled, CanBeEvaluated, CanBeStrea
                 .' : (is_int('.$value.') ? (string) '.$value.' : '.$context->writeClassName(self::class).'::renderValue($context, '.$value.')))');
         } else {
             $context->write('if (is_string($value = '.$context->writeVariableExpression($this->name).')'
-                .' || is_string($value = '.$context->writeClassName(self::class).'::streamValue($context, $value))) {')
+                .' || is_string($value = is_int($value) ? (string) $value : '.$context->writeClassName(self::class).'::streamValue($context, $value))) {')
                 ->indent();
             $context->writeOutput('$value');
             $context->outdent()->write('} else {')->indent();
@@ -160,13 +164,14 @@ class Variable extends Node implements CanBeCompiled, CanBeEvaluated, CanBeStrea
 
         if ($output instanceof \Generator) {
             foreach ($output as $chunk) {
-                yield self::renderOutputValue($chunk);
+                $context->resourceLimits->incrementRenderScore();
+                yield self::renderOutputValue($chunk, $context);
             }
 
             return;
         }
 
-        yield self::renderOutputValue($output);
+        yield self::renderOutputValue($output, $context);
     }
 
     /**
@@ -178,6 +183,10 @@ class Variable extends Node implements CanBeCompiled, CanBeEvaluated, CanBeStrea
     {
         if (is_string($output)) {
             return $output;
+        }
+
+        if (is_int($output)) {
+            return (string) $output;
         }
 
         if ($output instanceof CanBeEvaluated) {
@@ -193,19 +202,20 @@ class Variable extends Node implements CanBeCompiled, CanBeEvaluated, CanBeStrea
         }
 
         if ($output instanceof \Generator) {
-            return self::streamOutput($output);
+            return self::streamOutput($context, $output);
         }
 
-        return self::renderOutputValue($output);
+        return self::renderOutputValue($output, $context);
     }
 
     /**
      * @return \Generator<string>
      */
-    private static function streamOutput(\Generator $output): \Generator
+    private static function streamOutput(RenderContext $context, \Generator $output): \Generator
     {
         foreach ($output as $chunk) {
-            yield self::renderOutputValue($chunk);
+            $context->resourceLimits->incrementRenderScore();
+            yield self::renderOutputValue($chunk, $context);
         }
     }
 
@@ -244,7 +254,7 @@ class Variable extends Node implements CanBeCompiled, CanBeEvaluated, CanBeStrea
             $value = $context->evaluate($value);
         }
 
-        return $value instanceof \Generator ? iterator_to_array($value, preserve_keys: false) : $value;
+        return $value instanceof \Generator ? $context->resourceLimits->collect($value, preserveKeys: false) : $value;
     }
 
     /**
@@ -257,7 +267,7 @@ class Variable extends Node implements CanBeCompiled, CanBeEvaluated, CanBeStrea
         }
 
         if ($output instanceof \Generator) {
-            $output = iterator_to_array($output, preserve_keys: false);
+            $output = $context->resourceLimits->collect($output, preserveKeys: false);
         }
 
         foreach ($filters as [$filterName, $filterArgs, $filterNamedArgs]) {
@@ -285,11 +295,19 @@ class Variable extends Node implements CanBeCompiled, CanBeEvaluated, CanBeStrea
             return $output->render($context);
         }
 
-        return self::renderOutputValue($output);
+        return self::renderOutputValue($output, $context);
     }
 
-    private static function renderOutputValue(mixed $output): string
+    private static function renderOutputValue(mixed $output, ?RenderContext $context = null, int $depth = 0): string
     {
+        if ($context !== null && $context->environment->templatePolicy !== null) {
+            if ($depth > $context->environment->templatePolicy->maxDataDepth) {
+                $context->resourceLimits->throwLimitReachedException();
+            }
+            if (is_object($output)) {
+                $context->environment->templatePolicy->assertObject($output);
+            }
+        }
         if (is_string($output)) {
             return $output;
         }
@@ -311,11 +329,21 @@ class Variable extends Node implements CanBeCompiled, CanBeEvaluated, CanBeStrea
         }
 
         if ($output instanceof \Generator) {
-            $output = iterator_to_array($output, preserve_keys: false);
+            $output = $context?->resourceLimits->collect($output, preserveKeys: false) ?? iterator_to_array($output, preserve_keys: false);
         }
 
         if (is_array($output)) {
-            return implode('', array_map(self::renderOutputValue(...), $output));
+            if ($context === null || $context->resourceLimits->intermediateBytesLimit === null) {
+                return implode('', array_map(self::renderOutputValue(...), $output));
+            }
+            $context->resourceLimits->checkCollectionSize(count($output));
+            $result = '';
+            foreach ($output as $value) {
+                $context->resourceLimits->incrementRenderScore();
+                $context->resourceLimits->append($result, self::renderOutputValue($value, $context, $depth + 1));
+            }
+
+            return $result;
         }
 
         if (is_object($output) && method_exists($output, '__toString')) {

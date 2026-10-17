@@ -65,7 +65,7 @@ final class LaravelCompiledTemplatesCache implements LiquidTemplatesCache
         $generation = $this->shared->generation();
         if ($this->local === null || $this->generation !== $generation) {
             $this->generation = $generation;
-            $this->local = new CompiledTemplatesCache($this->directory.'/'.$generation, keepInMemory: false);
+            $this->local = new CompiledTemplatesCache($this->directory.'/'.$generation);
         }
 
         return $this->local;

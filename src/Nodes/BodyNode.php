@@ -159,9 +159,51 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
         $context->resourceLimits->incrementRenderScore(max(1, count($this->children)));
 
         $output = '';
+        $byteLimit = $context->resourceLimits->intermediateBytesLimit;
+
+        if ($byteLimit === null) {
+            return $this->renderUnbounded($context);
+        }
 
         foreach ($this->children as $node) {
             // Text is the majority of children and cannot fail or interrupt.
+            if ($node instanceof Text) {
+                if (strlen($node->value) > $byteLimit - strlen($output)) {
+                    $context->resourceLimits->throwLimitReachedException();
+                }
+                $output .= $node->value;
+
+                continue;
+            }
+
+            try {
+                if ($node instanceof Disableable && $node instanceof Tag) {
+                    $node->ensureTagIsEnabled($context);
+                }
+
+                $chunk = $node->render($context);
+                if (strlen($chunk) > $byteLimit - strlen($output)) {
+                    $context->resourceLimits->throwLimitReachedException();
+                }
+                $output .= $chunk;
+            } catch (UndefinedVariableException|UndefinedDropMethodException|UndefinedFilterException $exception) {
+                $context->handleError($exception, $node->lineNumber);
+            } catch (\Throwable $exception) {
+                $context->resourceLimits->append($output, $context->handleError($exception, $node->lineNumber));
+            }
+
+            if ($context->hasInterrupt()) {
+                break;
+            }
+        }
+
+        return $output;
+    }
+
+    private function renderUnbounded(RenderContext $context): string
+    {
+        $output = '';
+        foreach ($this->children as $node) {
             if ($node instanceof Text) {
                 $output .= $node->value;
 
@@ -198,10 +240,14 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
         $context->resourceLimits->incrementRenderScore(max(1, count($this->children)));
 
         $buffer = '';
+        $byteLimit = $context->resourceLimits->intermediateBytesLimit;
 
         foreach ($this->children as $node) {
             // Text is the majority of children and cannot fail or interrupt.
             if ($node instanceof Text) {
+                if ($byteLimit !== null && strlen($node->value) > $byteLimit - strlen($buffer)) {
+                    $context->resourceLimits->throwLimitReachedException();
+                }
                 $buffer .= $node->value;
 
                 continue;
@@ -223,9 +269,7 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
                         $buffer = '';
                     }
 
-                    foreach ($node->stream($context) as $output) {
-                        yield $output;
-                    }
+                    yield from $node->stream($context);
                 } elseif ($node instanceof CanBeStreamed) {
                     // Native scalar variables need no generator. Subclasses
                     // retain their stream overrides and filtered values render
@@ -235,6 +279,9 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
                         : $node->stream($context);
 
                     if (is_string($value)) {
+                        if ($byteLimit !== null && strlen($value) > $byteLimit - strlen($buffer)) {
+                            $context->resourceLimits->throwLimitReachedException();
+                        }
                         $buffer .= $value;
 
                         if (strlen($buffer) >= self::MAX_BUFFERED_BYTES) {
@@ -243,7 +290,14 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
                         }
                     } else {
                         foreach ($value as $output) {
-                            $buffer .= $output;
+                            if (is_string($output)) {
+                                if ($byteLimit !== null && strlen($output) > $byteLimit - strlen($buffer)) {
+                                    $context->resourceLimits->throwLimitReachedException();
+                                }
+                                $buffer .= $output;
+                            } else {
+                                $context->resourceLimits->append($buffer, $output);
+                            }
 
                             if (strlen($buffer) >= self::MAX_BUFFERED_BYTES) {
                                 yield $buffer;
@@ -252,7 +306,11 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
                         }
                     }
                 } else {
-                    $buffer .= $node->render($context);
+                    $chunk = $node->render($context);
+                    if ($byteLimit !== null && strlen($chunk) > $byteLimit - strlen($buffer)) {
+                        $context->resourceLimits->throwLimitReachedException();
+                    }
+                    $buffer .= $chunk;
                 }
             } catch (UndefinedVariableException|UndefinedDropMethodException|UndefinedFilterException $exception) {
                 if ($buffer !== '') {
@@ -261,13 +319,24 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
                 }
 
                 $context->handleError($exception, $node->lineNumber);
+            } catch (\Keepsuit\Liquid\Exceptions\ResourceLimitException|\Keepsuit\Liquid\Exceptions\TemplateSecurityException $exception) {
+                // A root budget failure can arrive while this body buffers a
+                // suspended child. Close it before unwinding, even on PHP 8.2.
+                if (isset($value) && $value instanceof \Generator && $value->valid()) {
+                    try {
+                        $value->throw($exception);
+                    } catch (\Throwable) {
+                        // Preserve the original failure, including on cleanup.
+                    }
+                }
+                throw $exception;
             } catch (\Throwable $exception) {
                 if ($buffer !== '') {
                     yield $buffer;
                     $buffer = '';
                 }
 
-                $buffer .= $context->handleError($exception, $node->lineNumber);
+                $context->resourceLimits->append($buffer, $context->handleError($exception, $node->lineNumber));
             }
 
             if ($context->hasInterrupt()) {
