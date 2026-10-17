@@ -130,7 +130,7 @@ $context = $environment->newRenderContext(
     ],
     // Data shared with all sub-contexts
     staticData: []
-)
+);
 
 $view = $template->render($context);
 // $view = 'Hello John!';
