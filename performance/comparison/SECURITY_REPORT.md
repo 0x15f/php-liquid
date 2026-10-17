@@ -8,7 +8,7 @@ These are local synthetic measurements, not production capacity estimates. The w
 - Three fresh processes per cohort; 51 measured rounds after 15 warm-up rounds. Core modes alternate in balanced/reversed batches in the same process. Timing uses process CPU time, with no profilers loaded. The default cohort has JIT disabled; a separate cohort enables tracing JIT.
 - Warm parsed/compiled caches, fresh render contexts and complete prepared PHP input arrays for every request. Authorization, Laravel/HTTP bootstrap, database work, source retrieval, Redis/network misses and compilation are outside this core timing.
 - Baseline commit `9d2aa0a` has the same `src/` tree as public v0.1.0. It is loaded under a separate namespace for paired timing.
-- All nine core/isolated timing result files use engine source SHA-256 `881753fcf50d21b5bec81654248e07b79211a90a5e168e0bd08f847a6717094a`.
+- All nine core/isolated timing result files use engine source SHA-256 `b5a824b4fa67441f9f989821b63d884b7424cc8edc6b9ffeb36022968fff90e2`.
 
 ## Core rendering
 
@@ -16,14 +16,14 @@ Reported values are the median of three process medians; ranges show those three
 
 | Mode | CPU µs/render | Process-median range |
 | --- | ---: | ---: |
-| v0.1.0 compiled baseline, without restrictions | 425 | 412–428 |
-| Current compiled compatibility mode | 497 | 467–554 |
-| Current interpreted compatibility mode | 712 | 708–719 |
-| Restricted compiled PHP | **825** | 777–855 |
-| Restricted compiled streaming, fully consumed | 870 | 868–918 |
-| Restricted interpretation | 1,040 | 1,007–1,082 |
+| v0.1.0 compiled baseline, without restrictions | 378 | 356–383 |
+| Current compiled compatibility mode | 439 | 416–439 |
+| Current interpreted compatibility mode | 643 | 616–655 |
+| Restricted compiled PHP | **745** | 699–749 |
+| Restricted compiled streaming, fully consumed | 800 | 749–814 |
+| Restricted interpretation | 947 | 902–964 |
 
-Compiled PHP is about 21% faster than the restricted interpreter on this workload. Fully consumed streaming costs about 5% more than restricted string rendering when comparing these aggregate medians. The streaming timing includes concatenation by the benchmark consumer so output equality can be checked; a network consumer need not build that final string.
+Compiled PHP is about 21% faster than the restricted interpreter on this workload. Fully consumed streaming costs about 7% more than restricted string rendering when comparing these aggregate medians. The streaming timing includes concatenation by the benchmark consumer so output equality can be checked; a network consumer need not build that final string.
 
 Security is not free: the restricted profile uses about twice the CPU of the v0.1.0 baseline. It validates input structure/capabilities, binds cache authorization and meters work, allocations and deadlines. The compatibility-mode regression also remains visible above; it is not hidden by comparing only the restricted implementations. Earlier native Rust/WASM figures in REPORT.md do not measure equivalent security policies and should not be used to claim a secure-backend winner.
 
@@ -35,18 +35,25 @@ A separate three-process cohort uses CLI OPcache with a 128 MiB JIT buffer and `
 
 | Mode | CPU µs/render | Process-median range |
 | --- | ---: | ---: |
-| v0.1.0 compiled baseline, without restrictions | 403 | 383–406 |
-| Current compiled compatibility mode | 397 | 378–399 |
-| Current interpreted compatibility mode | 520 | 492–532 |
-| Restricted compiled PHP | **709** | 693–733 |
-| Restricted compiled streaming, fully consumed | 784 | 750–788 |
-| Restricted interpretation | 868 | 833–916 |
+| v0.1.0 compiled baseline, without restrictions | 381 | 377–383 |
+| Current compiled compatibility mode | 374 | 368–382 |
+| Current interpreted compatibility mode | 517 | 503–546 |
+| Restricted compiled PHP | **657** | 641–671 |
+| Restricted compiled streaming, fully consumed | 713 | 710–733 |
+| Restricted interpretation | 826 | 825–873 |
 
-Restricted compiled rendering uses about 14% less CPU than the non-JIT cohort and about 18% less than the JIT restricted interpreter. Fully consumed streaming costs about 11% more than JIT restricted string rendering. Cross-cohort differences can include host variation; the paired modes within each cohort are the stronger comparison. The compatibility-mode overhead seen without JIT is not apparent in this JIT cohort.
+Restricted compiled rendering uses about 12% less CPU than the non-JIT cohort and about 20% less than the JIT restricted interpreter. Fully consumed streaming costs about 9% more than JIT restricted string rendering. Cross-cohort differences can include host variation; the paired modes within each cohort are the stronger comparison. The compatibility-mode overhead seen without JIT is not apparent in this JIT cohort.
 
 JIT is an application deployment choice, not an INI change made by the library. These measurements cover PHP 8.4.26 on ARM64; verify your production PHP build. OPcache/JIT memory sits outside the PHP heap allowance and needs separate deployment accounting. The minimal isolated worker deliberately disables CLI OPcache/JIT. The security suite also passes with function/loop hot thresholds set to 1, including a warmed small range followed by a billion-item range that must fail before allocation.
 
 Raw JIT results: [run 1](results/security-jit-1.json), [run 2](results/security-jit-2.json), [run 3](results/security-jit-3.json).
+
+### CI compatibility regression gate
+
+At PR revision `3fd1ac5`, all PHP 8.2–8.5 correctness jobs (including hot JIT), Laravel 12/13 Redis integration, static analysis, formatting and production-only installation pass. The separate non-JIT PHPBench compatibility canary still fails its existing 5% throughput-regression threshold. Across those four PHP builds, compilation loses 21–23% throughput, compiled rendering loses 10–15%, and streaming loses 12–16%. Parsing/tokenization are within 3% after removing redundant token-budget calls. These are a different storefront workload and x86 CI machines, not the ARM64 grid measurements above.
+
+The performance gate is not green and has not been weakened. Compilation now emits allocation guards, and compatibility rendering retains runtime checks because compiled artifacts can receive bounded contexts. Further optimization must preserve those guards and the regression tests. See the [PR's benchmark comments](https://github.com/0x15f/php-liquid/pull/1) for complete paired results.
+
 
 
 ## Isolated PHP worker
@@ -55,11 +62,11 @@ This separate benchmark measures parent-observed **wall time**, including JSON v
 
 | Metric | Three-process result |
 | --- | ---: |
-| Median request wall time | 1.24–1.52 ms; median of medians **1.29 ms** |
-| Mean wall time, including recycling | 1.88–2.99 ms |
-| p95 within each process | 2.09–6.95 ms |
-| First cold worker request | 75.7–136.2 ms |
-| Largest measured request, including recycling | 60.6–77.0 ms |
+| Median request wall time | 1.44–1.55 ms; median of medians **1.50 ms** |
+| Mean wall time, including recycling | 2.56–2.91 ms |
+| p95 within each process | 3.18–4.24 ms |
+| First cold worker request | 94.0–128.7 ms |
+| Largest measured request, including recycling | 83.8–156.4 ms |
 
 Worker startup/recycling is a real tail cost. Reuse workers, and tune lifetime against observed heap usage and template revision churn. These sequential measurements do not establish concurrency, HTTP first-byte latency or fleet capacity. Approved lazy database adapters belong in the in-process restricted API inside an externally limited application worker; the minimal isolated worker accepts JSON values and does not bootstrap Laravel or database adapters.
 
