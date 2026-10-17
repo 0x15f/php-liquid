@@ -12,5 +12,7 @@ class TemplateSharedState
         /** @var string[] */
         public array $partials = [],
         public OutputsBag $outputs = new OutputsBag,
+        /** Null means unspecified; compilation retains allocation guards. */
+        public readonly ?bool $boundedCompilation = null,
     ) {}
 }

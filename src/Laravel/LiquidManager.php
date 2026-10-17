@@ -142,7 +142,7 @@ final class LiquidManager
     {
         $reference = InstalledVersions::isInstalled('0x15f/liquid') ? InstalledVersions::getReference('0x15f/liquid') : null;
 
-        return json_encode(['liquid-format-2', $reference ?? 'development', PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION,
+        return json_encode(['liquid-format-3', $reference ?? 'development', PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION,
             $this->config['cache']['prefix'], $this->config['cache']['version'], $namespace,
             hash('sha256', serialize([$this->config['extensions'], $this->config['tags'], $this->config['filters']]))], JSON_THROW_ON_ERROR);
     }

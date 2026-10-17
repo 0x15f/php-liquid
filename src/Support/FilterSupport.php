@@ -16,7 +16,7 @@ class FilterSupport
 
     public function __construct(protected RenderContext $context)
     {
-        $this->bounded = $context->resourceLimits->bounded || $context->environment->templatePolicy !== null;
+        $this->bounded = $context->requiresBoundedExecution;
     }
 
     public function visit(int $count, int $depth = 0): void

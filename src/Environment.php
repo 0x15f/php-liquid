@@ -40,6 +40,8 @@ class Environment
 
     public readonly ResourceLimits $defaultResourceLimits;
 
+    public readonly bool $boundedCompilation;
+
     public readonly RenderContextOptions $defaultRenderContextOptions;
 
     /**
@@ -72,10 +74,11 @@ class Environment
         }
         $fingerprint = $this->fileSystem instanceof \Keepsuit\Liquid\FileSystems\ArrayFileSystem || $this->fileSystem instanceof \Keepsuit\Liquid\FileSystems\TemplateSnapshot
             ? $this->fileSystem->fingerprint() : 'blank';
-        $this->templateCacheScope = $templatePolicy === null ? null : hash('sha256', serialize(['restricted-format-1', $fingerprint, $templatePolicy]));
+        $this->templateCacheScope = $templatePolicy === null ? null : hash('sha256', serialize(['restricted-format-2', $fingerprint, $templatePolicy]));
         $this->errorHandler = $errorHandler ?? new DefaultErrorHandler;
         $this->templatesCache = $templatesCache ?? new MemoryTemplatesCache;
         $this->defaultResourceLimits = $defaultResourceLimits ?? ($templatePolicy === null ? new ResourceLimits : ResourceLimits::forUntrustedTemplates());
+        $this->boundedCompilation = $templatePolicy !== null || $this->defaultResourceLimits->bounded;
         $this->defaultRenderContextOptions = $defaultRenderContextOptions ?? ($templatePolicy === null ? new RenderContextOptions : new RenderContextOptions(strictFilters: true, rethrowErrors: true));
 
         foreach ($extensions as $extension) {
@@ -113,7 +116,7 @@ class Environment
     public function templateCacheKey(string $name): string
     {
         if ($this->templateCacheScope === null) {
-            return $name;
+            return $this->boundedCompilation ? 'bounded-format-1:'.hash('sha256', $name) : $name;
         }
         if ($this->fileSystem instanceof \Keepsuit\Liquid\FileSystems\ArrayFileSystem || $this->fileSystem instanceof \Keepsuit\Liquid\FileSystems\TemplateSnapshot) {
             $this->fileSystem->assertAuthorized($name);

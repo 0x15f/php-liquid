@@ -106,6 +106,10 @@ class FilterRegistry
                     $instance->setContext($context);
                 }
 
+                if (! $context->requiresBoundedExecution) {
+                    return $instance->{$method}($value, ...$args);
+                }
+
                 if ($context->environment->templatePolicy !== null) {
                     $context->environment->templatePolicy->assertData($value);
                     if ($args !== []) {
@@ -120,23 +124,20 @@ class FilterRegistry
                         }
                     }
                 }
-                $bounded = $context->resourceLimits->bounded || $context->environment->templatePolicy !== null;
-                if ($bounded) {
-                    $context->resourceLimits->incrementRenderScore();
-                    if (is_string($value)) {
-                        $context->resourceLimits->checkStringSize(strlen($value));
-                    }
-                    foreach ($args as $operand) {
-                        if (is_string($operand)) {
-                            $context->resourceLimits->checkStringSize(strlen($operand));
-                        }
+                $context->resourceLimits->incrementRenderScore();
+                if (is_string($value)) {
+                    $context->resourceLimits->checkStringSize(strlen($value));
+                }
+                foreach ($args as $operand) {
+                    if (is_string($operand)) {
+                        $context->resourceLimits->checkStringSize(strlen($operand));
                     }
                 }
                 $result = $instance->{$method}($value, ...$args);
                 $context->environment->templatePolicy?->assertData($result);
-                if ($bounded && is_string($result)) {
+                if (is_string($result)) {
                     $context->resourceLimits->checkStringSize(strlen($result));
-                } elseif ($bounded && is_array($result)) {
+                } elseif (is_array($result)) {
                     $context->resourceLimits->checkCollectionSize(count($result));
                 }
 

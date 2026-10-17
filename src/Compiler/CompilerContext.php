@@ -102,7 +102,7 @@ final class CompilerContext
         return '$temp'.$this->temporaryCount++;
     }
 
-    public function __construct(private CodeBuilder $builder = new CodeBuilder) {}
+    public function __construct(private CodeBuilder $builder = new CodeBuilder, private readonly bool $bounded = true) {}
 
     public function isRendering(): bool
     {
@@ -370,6 +370,11 @@ final class CompilerContext
     /** Emit allocation checks directly so the render hot path needs no helper call per node. */
     private function writeBoundedAppend(string $buffer, string $expression, ?int $length): void
     {
+        if (! $this->bounded) {
+            $this->write($buffer.' .= '.$expression.';');
+
+            return;
+        }
         if ($length === null) {
             $chunk = $this->temporaryVariable();
             $source = $chunk.' = '.$expression.";\n";

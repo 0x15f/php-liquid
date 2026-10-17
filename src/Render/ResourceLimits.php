@@ -100,6 +100,9 @@ class ResourceLimits
     /** @param array<mixed> $values @return array<mixed> */
     public function sliceArray(array $values, int $offset, ?int $length): array
     {
+        if ($this->collectionSizeLimit === null) {
+            return $offset === 0 && $length === null ? $values : array_slice($values, $offset, $length);
+        }
         $count = count($values);
         $start = $offset >= 0 ? min($offset, $count) : max(0, $count + $offset);
         $available = $count - $start;
@@ -145,7 +148,9 @@ class ResourceLimits
     public function collect(iterable $values, bool $preserveKeys = true): array
     {
         if (is_array($values)) {
-            $this->checkCollectionSize(count($values));
+            if ($this->collectionSizeLimit !== null) {
+                $this->checkCollectionSize(count($values));
+            }
 
             return $preserveKeys ? $values : array_values($values);
         }

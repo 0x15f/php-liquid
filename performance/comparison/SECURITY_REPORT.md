@@ -50,10 +50,9 @@ Raw JIT results: [run 1](results/security-jit-1.json), [run 2](results/security-
 
 ### CI compatibility regression gate
 
-At PR revision `3fd1ac5`, all PHP 8.2–8.5 correctness jobs (including hot JIT), Laravel 12/13 Redis integration, static analysis, formatting and production-only installation pass. The separate non-JIT PHPBench compatibility canary still fails its existing 5% throughput-regression threshold. Across those four PHP builds, compilation loses 21–23% throughput, compiled rendering loses 10–15%, and streaming loses 12–16%. Parsing/tokenization are within 3% after removing redundant token-budget calls. These are a different storefront workload and x86 CI machines, not the ARM64 grid measurements above.
+At PR revision `88b0c3a`, all PHP 8.2–8.5 correctness jobs (including hot JIT), Laravel 12/13 Redis integration, static analysis, formatting and production-only installation pass. Compiler-emission optimization preserves byte-identical generated PHP and brings compilation throughput to unchanged–4% faster than v0.1.0. The separate non-JIT PHPBench compatibility canary still fails its existing 5% threshold: compiled rendering loses 10–14% throughput, and streaming loses 9–15%. These are a different storefront workload and x86 CI machines, not the ARM64 grid measurements above.
 
-The performance gate is not green and has not been weakened. Subsequent compiler-emission optimization preserves byte-identical generated PHP for the storefront fixtures; its CI performance result is pending. Compilation now emits allocation guards, and compatibility rendering retains runtime checks because compiled artifacts can receive bounded contexts. Further optimization must preserve those guards and the regression tests. See the [PR's benchmark comments](https://github.com/0x15f/php-liquid/pull/1) for complete paired results.
-
+The performance gate has not been weakened. Subsequent changes specialize compilation profiles: guarded artifacts retain allocation checks, unrestricted artifacts reject bounded contexts, and cache identities distinguish the modes. Immutable data-access decisions, filter dispatch and buffer appends also have fast paths. Their final CI and refreshed ARM64 measurements are pending. See the [PR's benchmark comments](https://github.com/0x15f/php-liquid/pull/1) for complete paired results.
 
 
 ## Isolated PHP worker
@@ -85,7 +84,7 @@ That is a 99.5% reduction for this deliberately large response, not a general me
 
 ## Verification and reproduction
 
-The release gate passes 3,996 tests / 24,115 assertions with real Redis, PHPStan and Pint. Streaming is checked against all 64 personalized Shopify reference cases across interpreted/compiled and restricted/compatibility execution. Adversarial tests cover range/string/collection growth, parser depth and token limits, PHP capabilities, cache authorization, global callback isolation, data-provider budgets, parent transport expansion, worker heap exhaustion, deadlines, cancellation, recovery and bounded private-cache disk retention.
+The release gate passes 4,009 tests / 24,148 assertions with real Redis, PHPStan and Pint. Streaming is checked against all 64 personalized Shopify reference cases across interpreted/compiled and restricted/compatibility execution. Adversarial tests cover range/string/collection growth, parser depth and token limits, PHP capabilities, cache authorization, global callback isolation, data-provider budgets, parent transport expansion, worker heap exhaustion, deadlines, cancellation, recovery and bounded private-cache disk retention.
 
 Prepare the baseline with Python and Git on the host (or in a container with both installed):
 

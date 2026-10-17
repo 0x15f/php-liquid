@@ -159,11 +159,15 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
         $context->resourceLimits->incrementRenderScore(max(1, count($this->children)));
 
         $output = '';
+        $byteLimit = $context->resourceLimits->intermediateBytesLimit;
 
         foreach ($this->children as $node) {
             // Text is the majority of children and cannot fail or interrupt.
             if ($node instanceof Text) {
-                $context->resourceLimits->append($output, $node->value);
+                if ($byteLimit !== null && strlen($node->value) > $byteLimit - strlen($output)) {
+                    $context->resourceLimits->throwLimitReachedException();
+                }
+                $output .= $node->value;
 
                 continue;
             }
@@ -173,7 +177,11 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
                     $node->ensureTagIsEnabled($context);
                 }
 
-                $context->resourceLimits->append($output, $node->render($context));
+                $chunk = $node->render($context);
+                if ($byteLimit !== null && strlen($chunk) > $byteLimit - strlen($output)) {
+                    $context->resourceLimits->throwLimitReachedException();
+                }
+                $output .= $chunk;
             } catch (UndefinedVariableException|UndefinedDropMethodException|UndefinedFilterException $exception) {
                 $context->handleError($exception, $node->lineNumber);
             } catch (\Throwable $exception) {
@@ -198,11 +206,15 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
         $context->resourceLimits->incrementRenderScore(max(1, count($this->children)));
 
         $buffer = '';
+        $byteLimit = $context->resourceLimits->intermediateBytesLimit;
 
         foreach ($this->children as $node) {
             // Text is the majority of children and cannot fail or interrupt.
             if ($node instanceof Text) {
-                $context->resourceLimits->append($buffer, $node->value);
+                if ($byteLimit !== null && strlen($node->value) > $byteLimit - strlen($buffer)) {
+                    $context->resourceLimits->throwLimitReachedException();
+                }
+                $buffer .= $node->value;
 
                 continue;
             }
@@ -233,7 +245,10 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
                         : $node->stream($context);
 
                     if (is_string($value)) {
-                        $context->resourceLimits->append($buffer, $value);
+                        if ($byteLimit !== null && strlen($value) > $byteLimit - strlen($buffer)) {
+                            $context->resourceLimits->throwLimitReachedException();
+                        }
+                        $buffer .= $value;
 
                         if (strlen($buffer) >= self::MAX_BUFFERED_BYTES) {
                             yield $buffer;
@@ -250,7 +265,11 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
                         }
                     }
                 } else {
-                    $context->resourceLimits->append($buffer, $node->render($context));
+                    $chunk = $node->render($context);
+                    if ($byteLimit !== null && strlen($chunk) > $byteLimit - strlen($buffer)) {
+                        $context->resourceLimits->throwLimitReachedException();
+                    }
+                    $buffer .= $chunk;
                 }
             } catch (UndefinedVariableException|UndefinedDropMethodException|UndefinedFilterException $exception) {
                 if ($buffer !== '') {

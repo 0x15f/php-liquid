@@ -25,6 +25,8 @@ Data is not automatically HTML-escaped: use Liquid's `escape` filter. The view e
 
 User-authored templates use `Liquid::untrustedEnvironment($authorizedTemplatesOrManifest, $tenantRevision)`. It retains the configured cache driver, limits PHP capabilities, partitions entries by authorized source snapshot and policy, and avoids the global view finder. See [restricted execution](SECURITY.md#user-authored-templates). Application-wide custom PHP tags, filters and extensions are not inherited by restricted environments.
 
+Restricted environments compile with allocation guards. Their artifacts accept fresh per-request limits; unrestricted view artifacts reject bounded contexts. Compilation profiles have separate cache identities. This release changes the cache format; restart long-lived workers and rebuild standalone compiled caches when upgrading.
+
 Publish `config/liquid.php` with `php artisan vendor:publish --tag=liquid-config`.
 
 | Driver | Behavior |

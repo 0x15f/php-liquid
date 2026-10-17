@@ -465,8 +465,13 @@ $environment = \Keepsuit\Liquid\EnvironmentFactory::new()
 - `assignScoreLimit`: limits assignment and capture work for a render pass.
 - `cumulativeRenderScoreLimit`: limits total render work across a full render tree, including partial renders.
 - `cumulativeAssignScoreLimit`: limits total assignment and capture work across a full render tree, including partial renders.
+- `intermediateBytesLimit`: checks buffer growth before concatenation.
+- `collectionSizeLimit`: bounds collection materialization and selected slices.
+- `renderTimeLimitMilliseconds`: checks a cooperative deadline between render operations.
 
 Per-render counters can be reset between renders. Cumulative counters are intended for a full render lifecycle so repeated partial renders can share the same budget.
+
+Configure bounded limits on the environment before parsing/compiling. Compiled artifacts declare whether they contain allocation guards; unrestricted artifacts reject bounded contexts. Guarded artifacts accept different limits in fresh request contexts. For user-authored templates, `EnvironmentFactory::forUntrustedTemplates()` selects the guarded profile and PHP capability policy together; see [security guidance](SECURITY.md).
 
 ## Custom tags and filters
 

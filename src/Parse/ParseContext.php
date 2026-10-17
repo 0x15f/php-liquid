@@ -86,7 +86,7 @@ class ParseContext
      */
     public function parseTemplate(string $templateName, bool $force = false): Template
     {
-        $cacheKey = $this->environment->templatePolicy === null ? $templateName : $this->environment->templateCacheKey($templateName);
+        $cacheKey = $this->environment->boundedCompilation ? $this->environment->templateCacheKey($templateName) : $templateName;
         if (! $force) {
             $cachedTemplate = $this->environment->templatesCache->get($cacheKey);
 
@@ -122,6 +122,7 @@ class ParseContext
                 state: new TemplateSharedState(
                     partials: $this->partials,
                     outputs: (clone $this->outputs),
+                    boundedCompilation: $this->environment->boundedCompilation,
                 ),
             );
         } catch (LiquidException $e) {
@@ -140,7 +141,7 @@ class ParseContext
     {
         try {
             // Check if template is already available in the cache
-            $cacheKey = $this->environment->templatePolicy === null ? $templateName : $this->environment->templateCacheKey($templateName);
+            $cacheKey = $this->environment->boundedCompilation ? $this->environment->templateCacheKey($templateName) : $templateName;
             $template = $this->environment->templatesCache->get($cacheKey);
 
             if ($template === null) {

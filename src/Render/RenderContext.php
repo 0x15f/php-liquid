@@ -66,7 +66,7 @@ final class RenderContext
 
     private readonly MissingValue $missingValue;
 
-    private readonly bool $boundedDataAccess;
+    public readonly bool $requiresBoundedExecution;
 
     public function __construct(
         /**
@@ -100,7 +100,7 @@ final class RenderContext
     ) {
         $this->environment = $environment ?? Environment::default();
         $this->resourceLimits = $resourceLimits ?? ResourceLimits::clone($this->environment->defaultResourceLimits);
-        $this->boundedDataAccess = $this->environment->templatePolicy !== null || $this->resourceLimits->bounded;
+        $this->requiresBoundedExecution = $this->environment->templatePolicy !== null || $this->resourceLimits->bounded;
         $this->errorHandler = $this->options->rethrowErrors ? new RethrowErrorHandler : $this->environment->errorHandler;
 
         if ($sharedState === null && $this->environment->templatePolicy !== null) {
@@ -321,7 +321,7 @@ final class RenderContext
             return is_object($value) ? $this->normalizeValue($value) : $value;
         }
 
-        if ($this->boundedDataAccess && is_object($scope)) {
+        if ($this->requiresBoundedExecution && is_object($scope)) {
             $this->environment->templatePolicy?->assertObject($scope);
             $this->resourceLimits->incrementRenderScore();
         }
@@ -373,7 +373,7 @@ final class RenderContext
 
     public function normalizeValue(mixed $value): mixed
     {
-        if ($this->boundedDataAccess) {
+        if ($this->requiresBoundedExecution) {
             $this->environment->templatePolicy?->assertData($value);
             if (is_object($value)) {
                 $this->resourceLimits->incrementRenderScore();
@@ -483,7 +483,7 @@ final class RenderContext
 
     public function loadPartial(string $templateName): Template
     {
-        $cacheKey = $this->environment->templatePolicy === null ? $templateName : $this->environment->templateCacheKey($templateName);
+        $cacheKey = $this->environment->boundedCompilation ? $this->environment->templateCacheKey($templateName) : $templateName;
         if ($partial = $this->environment->templatesCache->get($cacheKey)) {
             return $partial;
         }

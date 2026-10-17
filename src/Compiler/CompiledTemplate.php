@@ -20,6 +20,8 @@ use Throwable;
 /** @phpstan-import-type CompiledLookup from VariableLookup */
 abstract class CompiledTemplate extends AbstractTemplate
 {
+    protected const SUPPORTS_BOUNDED_EXECUTION = false;
+
     public function __construct(TemplateSharedState $state = new TemplateSharedState)
     {
         parent::__construct($state);
@@ -27,6 +29,9 @@ abstract class CompiledTemplate extends AbstractTemplate
 
     final public function render(RenderContext $context): string
     {
+        if (! static::SUPPORTS_BOUNDED_EXECUTION && $context->requiresBoundedExecution) {
+            throw new \Keepsuit\Liquid\Exceptions\TemplateSecurityException('Compile templates in a restricted or bounded environment before using bounded contexts.');
+        }
         $root = ! $context->isPartial();
         if ($root) {
             $context->resourceLimits->beginExecution();
@@ -56,6 +61,9 @@ abstract class CompiledTemplate extends AbstractTemplate
      */
     final public function stream(RenderContext $context): \Generator
     {
+        if (! static::SUPPORTS_BOUNDED_EXECUTION && $context->requiresBoundedExecution) {
+            throw new \Keepsuit\Liquid\Exceptions\TemplateSecurityException('Compile templates in a restricted or bounded environment before using bounded contexts.');
+        }
         $root = ! $context->isPartial();
         if ($root) {
             $context->resourceLimits->beginExecution();

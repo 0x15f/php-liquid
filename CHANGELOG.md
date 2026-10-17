@@ -8,10 +8,11 @@
 - Optional reusable PHP workers enforce independent heap allowances and parent deadlines, discard failed/cancelled requests, and bound private compiled-cache retention.
 - Stable parsed/compiled streaming, Laravel streaming APIs and incremental isolated-worker streaming with byte-preserving transport.
 - Request-local compiled-template object reuse and generated allocation checks without per-node helper calls.
+- Explicit guarded compilation profiles, cache separation and rejection of unrestricted artifacts in bounded contexts; legacy or unspecified AST metadata retains guards.
 
 Use the restricted APIs described in SECURITY.md for user-authored templates. General view APIs retain their compatibility behavior. Streaming chunk boundaries are not an API guarantee; failures can follow already-emitted output. Restart long-lived application workers when upgrading.
 
-Validation: 3,996 tests / 24,115 assertions with real Redis, PHPStan and Pint. Restricted streaming matches all 64 personalized Shopify reference fixtures across parsed/compiled execution. Worker tests cover heap exhaustion, deadlines, cancellation, recovery and bounded private-cache retention.
+Validation: 4,009 tests / 24,148 assertions with real Redis, PHPStan and Pint. Restricted streaming matches all 64 personalized Shopify reference fixtures across parsed/compiled execution. Worker tests cover heap exhaustion, deadlines, cancellation, recovery and bounded private-cache retention.
 
 See [security and streaming measurements](performance/comparison/SECURITY_REPORT.md) for validation and the measured cost of the restrictions.
 
