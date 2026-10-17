@@ -188,7 +188,9 @@ class ResourceLimits
      */
     public function incrementRenderScore(int $amount = 1): ResourceLimits
     {
-        if ($amount < 0 || $amount > PHP_INT_MAX - $this->renderScore || $amount > PHP_INT_MAX - $this->cumulativeRenderScore) {
+        // Nonnegative increments and reset() keep the cumulative score at
+        // least as large as the per-render score. One overflow check covers both.
+        if ($amount < 0 || $amount > PHP_INT_MAX - $this->cumulativeRenderScore) {
             $this->throwLimitReachedException();
         }
         if ($this->renderTimeLimitMilliseconds !== null) {
@@ -213,7 +215,7 @@ class ResourceLimits
      */
     public function incrementAssignScore(int $amount = 1): ResourceLimits
     {
-        if ($amount < 0 || $amount > PHP_INT_MAX - $this->assignScore || $amount > PHP_INT_MAX - $this->cumulativeAssignScore) {
+        if ($amount < 0 || $amount > PHP_INT_MAX - $this->cumulativeAssignScore) {
             $this->throwLimitReachedException();
         }
 
