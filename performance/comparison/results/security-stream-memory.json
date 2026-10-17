@@ -3,7 +3,7 @@
     "arch": "aarch64",
     "output_bytes": 8192000,
     "chunks": 2000,
-    "render_peak_heap_delta_bytes": 8333840,
+    "render_peak_heap_delta_bytes": 8337752,
     "stream_peak_heap_delta_bytes": 42768,
     "output_sha256": "6a948f672047b8766f5c8390adc6ba2a9e209d1f51c18fc50126d31b18fcb0e7",
     "metric": "PHP allocated heap delta, not RSS; compilation excluded"

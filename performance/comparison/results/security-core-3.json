@@ -1,11 +1,11 @@
 {
-    "label": "security-release-3",
-    "time_utc": "2026-10-17T19:35:34+00:00",
+    "label": "github-arm64-3",
+    "time_utc": "2026-10-17T20:10:49+00:00",
     "php": "8.4.26",
     "arch": "aarch64",
-    "kernel": "7.0.14-orbstack-00380-ga7e0a2dc9535",
+    "kernel": "6.17.0-1022-azure",
     "extism": null,
-    "engine_source_sha256": "0e53497dbf15c3f215ce5acf9d3599e21da94051e5c5887b6535c0b8f83f9684",
+    "engine_source_sha256": "c6e2d5d9805aed591e010d219b9bdeb8e2e9d4b89f63a7a88ca28c203503a96b",
     "rust_source_sha256": "28335f7fc87cc3e0fcd107b19f5678949139de993c0035f030544eb21fcedb52",
     "cargo_lock_sha256": "83d7ade9ddb65367e329be56697cdd4ef289cc8cc33525d655f6aab52dd7f1d7",
     "native_sha256": null,
@@ -27,11 +27,11 @@
     },
     "warmup_rounds": 15,
     "xdebug_mode": false,
-    "cpu_affinity": "pid 35527's current affinity list: 0-4",
-    "cpu_max": "200000 100000",
+    "cpu_affinity": "pid 3091's current affinity list: 0-3",
+    "cpu_max": null,
     "initialization_ms": {
-        "php_parsed": 22.049061,
-        "php_compiled": 40.827734
+        "php_parsed": 17.323138,
+        "php_compiled": 8.122852
     },
     "fixture_sha256": "0ca62b9ac65ef42659aa66853b0146b00d9287b9b4751ed4528748f971e6078e",
     "rounds": 51,
@@ -42,2155 +42,2155 @@
             "php_parsed_restricted": [
                 {
                     "round": 0,
-                    "revs": 48,
-                    "cpu_us": 1000.1041666666666,
-                    "wall_us": 999.9792916666667,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1208.875,
+                    "wall_us": 1208.567625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 1,
-                    "revs": 48,
-                    "cpu_us": 921.125,
-                    "wall_us": 920.9521875,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1220.125,
+                    "wall_us": 1220.6530625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 2,
-                    "revs": 48,
-                    "cpu_us": 898.5833333333334,
-                    "wall_us": 898.4818958333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1219.625,
+                    "wall_us": 1219.32265625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 3,
-                    "revs": 48,
-                    "cpu_us": 908.3958333333334,
-                    "wall_us": 908.31775,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1217.09375,
+                    "wall_us": 1216.74809375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 4,
-                    "revs": 48,
-                    "cpu_us": 898.0208333333334,
-                    "wall_us": 897.9471875,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1225.8125,
+                    "wall_us": 1225.5185,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 5,
-                    "revs": 48,
-                    "cpu_us": 960.0208333333334,
-                    "wall_us": 959.9232083333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1220.5625,
+                    "wall_us": 1220.210875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 6,
-                    "revs": 48,
-                    "cpu_us": 896.8958333333334,
-                    "wall_us": 898.6798125,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1220.40625,
+                    "wall_us": 1220.61909375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 7,
-                    "revs": 48,
-                    "cpu_us": 903.4375,
-                    "wall_us": 903.2960833333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1219.25,
+                    "wall_us": 1219.56540625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 8,
-                    "revs": 48,
-                    "cpu_us": 891.1041666666666,
-                    "wall_us": 891.0210208333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1221.59375,
+                    "wall_us": 1221.993,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 9,
-                    "revs": 48,
-                    "cpu_us": 1311.0625,
-                    "wall_us": 1310.8924375,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1214.3125,
+                    "wall_us": 1214.03175,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 10,
-                    "revs": 48,
-                    "cpu_us": 1038.75,
-                    "wall_us": 1038.5892083333333,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1218.84375,
+                    "wall_us": 1219.10790625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 11,
-                    "revs": 48,
-                    "cpu_us": 907.2916666666666,
-                    "wall_us": 910.2144375,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1218.59375,
+                    "wall_us": 1218.30971875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 12,
-                    "revs": 48,
-                    "cpu_us": 988.625,
-                    "wall_us": 991.0618333333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1216.53125,
+                    "wall_us": 1216.191875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 13,
-                    "revs": 48,
-                    "cpu_us": 896.5208333333334,
-                    "wall_us": 896.40725,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1213.03125,
+                    "wall_us": 1212.73384375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 14,
-                    "revs": 48,
-                    "cpu_us": 901.1041666666666,
-                    "wall_us": 900.9879583333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1212.875,
+                    "wall_us": 1212.63734375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 15,
-                    "revs": 48,
-                    "cpu_us": 984.2708333333334,
-                    "wall_us": 984.1747291666667,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1217.5,
+                    "wall_us": 1218.0095,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 16,
-                    "revs": 48,
-                    "cpu_us": 945.0416666666666,
-                    "wall_us": 946.3764583333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1218.84375,
+                    "wall_us": 1218.5359375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 17,
-                    "revs": 48,
-                    "cpu_us": 920.6458333333334,
-                    "wall_us": 920.5537708333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1217.71875,
+                    "wall_us": 1218.15496875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 18,
-                    "revs": 48,
-                    "cpu_us": 888,
-                    "wall_us": 887.9446666666666,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1218.21875,
+                    "wall_us": 1217.9125,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 19,
-                    "revs": 48,
-                    "cpu_us": 963.875,
-                    "wall_us": 963.7790833333333,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1215.4375,
+                    "wall_us": 1215.1556875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 20,
-                    "revs": 48,
-                    "cpu_us": 898.1666666666666,
-                    "wall_us": 898.0661041666666,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1217.84375,
+                    "wall_us": 1217.5123125,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 21,
-                    "revs": 48,
-                    "cpu_us": 1005.7916666666666,
-                    "wall_us": 1005.7075416666667,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1224.40625,
+                    "wall_us": 1224.06534375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 22,
-                    "revs": 48,
-                    "cpu_us": 937.0416666666666,
-                    "wall_us": 936.9372916666666,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1217.78125,
+                    "wall_us": 1218.182,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 23,
-                    "revs": 48,
-                    "cpu_us": 1213.5,
-                    "wall_us": 1213.2101041666667,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1222.53125,
+                    "wall_us": 1222.19296875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 24,
-                    "revs": 48,
-                    "cpu_us": 920.6458333333334,
-                    "wall_us": 920.5563541666667,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1213.1875,
+                    "wall_us": 1212.90009375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 25,
-                    "revs": 48,
-                    "cpu_us": 915,
-                    "wall_us": 914.9305416666666,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1219.3125,
+                    "wall_us": 1219.0611875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 26,
-                    "revs": 48,
-                    "cpu_us": 929.9375,
-                    "wall_us": 929.8366458333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1217.0625,
+                    "wall_us": 1216.76009375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 27,
-                    "revs": 48,
-                    "cpu_us": 879.4583333333334,
-                    "wall_us": 879.3700833333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1219.84375,
+                    "wall_us": 1219.47240625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 28,
-                    "revs": 48,
-                    "cpu_us": 980.6458333333334,
-                    "wall_us": 980.535875,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1228,
+                    "wall_us": 1227.698375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 29,
-                    "revs": 48,
-                    "cpu_us": 1007.1875,
-                    "wall_us": 1007.0946875,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1213.6875,
+                    "wall_us": 1213.3580625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 30,
-                    "revs": 48,
-                    "cpu_us": 954.25,
-                    "wall_us": 954.1550208333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1218.59375,
+                    "wall_us": 1219.34290625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 31,
-                    "revs": 48,
-                    "cpu_us": 936.8541666666666,
-                    "wall_us": 936.7454583333333,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1214.0625,
+                    "wall_us": 1214.78446875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 32,
-                    "revs": 48,
-                    "cpu_us": 890.3541666666666,
-                    "wall_us": 890.22675,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1216.4375,
+                    "wall_us": 1216.109625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 33,
-                    "revs": 48,
-                    "cpu_us": 941.0833333333334,
-                    "wall_us": 940.9763125,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1213.53125,
+                    "wall_us": 1213.2698125,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 34,
-                    "revs": 48,
-                    "cpu_us": 973.5,
-                    "wall_us": 973.3927083333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1216.25,
+                    "wall_us": 1216.336875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 35,
-                    "revs": 48,
-                    "cpu_us": 905.1458333333334,
-                    "wall_us": 905.0443333333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1215.1875,
+                    "wall_us": 1214.91471875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 36,
-                    "revs": 48,
-                    "cpu_us": 940.875,
-                    "wall_us": 940.702875,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1214.5,
+                    "wall_us": 1214.197,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 37,
-                    "revs": 48,
-                    "cpu_us": 908.7083333333334,
-                    "wall_us": 909.4045416666667,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1218.4375,
+                    "wall_us": 1218.1166875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 38,
-                    "revs": 48,
-                    "cpu_us": 887.7083333333334,
-                    "wall_us": 887.7111458333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1214.5625,
+                    "wall_us": 1214.33271875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 39,
-                    "revs": 48,
-                    "cpu_us": 903.0833333333334,
-                    "wall_us": 903.0365416666666,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1215.90625,
+                    "wall_us": 1215.551625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 40,
-                    "revs": 48,
-                    "cpu_us": 943.2916666666666,
-                    "wall_us": 943.2106666666666,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1218,
+                    "wall_us": 1217.66475,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 41,
-                    "revs": 48,
-                    "cpu_us": 893.625,
-                    "wall_us": 893.5123125,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1217.46875,
+                    "wall_us": 1217.20503125,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 42,
-                    "revs": 48,
-                    "cpu_us": 920.3958333333334,
-                    "wall_us": 920.3436875,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1214.46875,
+                    "wall_us": 1214.16196875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 43,
-                    "revs": 48,
-                    "cpu_us": 889.3333333333334,
-                    "wall_us": 889.1564583333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1213.375,
+                    "wall_us": 1213.714,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 44,
-                    "revs": 48,
-                    "cpu_us": 903.6666666666666,
-                    "wall_us": 903.5651875,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1218.09375,
+                    "wall_us": 1218.4946875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 45,
-                    "revs": 48,
-                    "cpu_us": 1102.9166666666667,
-                    "wall_us": 1102.7058333333332,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1216.84375,
+                    "wall_us": 1216.5133125,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 46,
-                    "revs": 48,
-                    "cpu_us": 896.7916666666666,
-                    "wall_us": 905.0764583333333,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1219.34375,
+                    "wall_us": 1219.766375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 47,
-                    "revs": 48,
-                    "cpu_us": 881.7291666666666,
-                    "wall_us": 881.6044375,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1215.8125,
+                    "wall_us": 1215.535625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 48,
-                    "revs": 48,
-                    "cpu_us": 858.4791666666666,
-                    "wall_us": 858.4258125,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1217.375,
+                    "wall_us": 1217.07928125,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 49,
-                    "revs": 48,
-                    "cpu_us": 965.6666666666666,
-                    "wall_us": 986.5896458333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1217.90625,
+                    "wall_us": 1218.13771875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 50,
-                    "revs": 48,
-                    "cpu_us": 873.9583333333334,
-                    "wall_us": 873.8961666666667,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1219.375,
+                    "wall_us": 1219.97359375,
+                    "output_bytes": 353388
                 }
             ],
             "php_compiled_restricted_stream": [
                 {
                     "round": 0,
                     "revs": 32,
-                    "cpu_us": 868.03125,
-                    "wall_us": 867.76734375,
+                    "cpu_us": 1054.78125,
+                    "wall_us": 1054.478875,
                     "output_bytes": 353388
                 },
                 {
                     "round": 1,
                     "revs": 32,
-                    "cpu_us": 773.40625,
-                    "wall_us": 773.27725,
+                    "cpu_us": 1053.125,
+                    "wall_us": 1053.40171875,
                     "output_bytes": 353388
                 },
                 {
                     "round": 2,
                     "revs": 32,
-                    "cpu_us": 760,
-                    "wall_us": 759.83334375,
+                    "cpu_us": 1056.1875,
+                    "wall_us": 1055.88828125,
                     "output_bytes": 353388
                 },
                 {
                     "round": 3,
                     "revs": 32,
-                    "cpu_us": 775.09375,
-                    "wall_us": 774.97775,
+                    "cpu_us": 1056.78125,
+                    "wall_us": 1057.1771875,
                     "output_bytes": 353388
                 },
                 {
                     "round": 4,
                     "revs": 32,
-                    "cpu_us": 777.84375,
-                    "wall_us": 777.72121875,
+                    "cpu_us": 1054.4375,
+                    "wall_us": 1054.15540625,
                     "output_bytes": 353388
                 },
                 {
                     "round": 5,
                     "revs": 32,
-                    "cpu_us": 767.46875,
-                    "wall_us": 767.3905625,
+                    "cpu_us": 1054.71875,
+                    "wall_us": 1055.0623125,
                     "output_bytes": 353388
                 },
                 {
                     "round": 6,
                     "revs": 32,
-                    "cpu_us": 752.71875,
-                    "wall_us": 752.6654375,
+                    "cpu_us": 1088.34375,
+                    "wall_us": 1088.01915625,
                     "output_bytes": 353388
                 },
                 {
                     "round": 7,
                     "revs": 32,
-                    "cpu_us": 782.1875,
-                    "wall_us": 782.0089375,
+                    "cpu_us": 1051.28125,
+                    "wall_us": 1050.99559375,
                     "output_bytes": 353388
                 },
                 {
                     "round": 8,
                     "revs": 32,
-                    "cpu_us": 780.21875,
-                    "wall_us": 780.063625,
+                    "cpu_us": 1046.65625,
+                    "wall_us": 1046.36390625,
                     "output_bytes": 353388
                 },
                 {
                     "round": 9,
                     "revs": 32,
-                    "cpu_us": 895.25,
-                    "wall_us": 894.98715625,
+                    "cpu_us": 1051.9375,
+                    "wall_us": 1051.6630625,
                     "output_bytes": 353388
                 },
                 {
                     "round": 10,
                     "revs": 32,
-                    "cpu_us": 781.6875,
-                    "wall_us": 781.617,
+                    "cpu_us": 1048,
+                    "wall_us": 1047.6840625,
                     "output_bytes": 353388
                 },
                 {
                     "round": 11,
                     "revs": 32,
-                    "cpu_us": 785.875,
-                    "wall_us": 785.80578125,
+                    "cpu_us": 1045.625,
+                    "wall_us": 1045.31375,
                     "output_bytes": 353388
                 },
                 {
                     "round": 12,
                     "revs": 32,
-                    "cpu_us": 796.09375,
-                    "wall_us": 795.99059375,
+                    "cpu_us": 1055.28125,
+                    "wall_us": 1054.95459375,
                     "output_bytes": 353388
                 },
                 {
                     "round": 13,
                     "revs": 32,
-                    "cpu_us": 852.71875,
-                    "wall_us": 852.565625,
+                    "cpu_us": 1077.75,
+                    "wall_us": 1077.47609375,
                     "output_bytes": 353388
                 },
                 {
                     "round": 14,
                     "revs": 32,
-                    "cpu_us": 815.90625,
-                    "wall_us": 815.8003125,
+                    "cpu_us": 1047.875,
+                    "wall_us": 1047.62034375,
                     "output_bytes": 353388
                 },
                 {
                     "round": 15,
                     "revs": 32,
-                    "cpu_us": 817.40625,
-                    "wall_us": 817.24171875,
+                    "cpu_us": 1044.96875,
+                    "wall_us": 1044.67475,
                     "output_bytes": 353388
                 },
                 {
                     "round": 16,
                     "revs": 32,
-                    "cpu_us": 912.84375,
-                    "wall_us": 912.63803125,
+                    "cpu_us": 1056.5625,
+                    "wall_us": 1056.26525,
                     "output_bytes": 353388
                 },
                 {
                     "round": 17,
                     "revs": 32,
-                    "cpu_us": 784.65625,
-                    "wall_us": 784.5219375,
+                    "cpu_us": 1052.59375,
+                    "wall_us": 1052.29053125,
                     "output_bytes": 353388
                 },
                 {
                     "round": 18,
                     "revs": 32,
-                    "cpu_us": 779.59375,
-                    "wall_us": 785.9411875,
+                    "cpu_us": 1055.625,
+                    "wall_us": 1055.3213125,
                     "output_bytes": 353388
                 },
                 {
                     "round": 19,
                     "revs": 32,
-                    "cpu_us": 831.71875,
-                    "wall_us": 831.58925,
+                    "cpu_us": 1055.65625,
+                    "wall_us": 1055.90403125,
                     "output_bytes": 353388
                 },
                 {
                     "round": 20,
                     "revs": 32,
-                    "cpu_us": 819.625,
-                    "wall_us": 819.45521875,
+                    "cpu_us": 1047.78125,
+                    "wall_us": 1047.44359375,
                     "output_bytes": 353388
                 },
                 {
                     "round": 21,
                     "revs": 32,
-                    "cpu_us": 751.1875,
-                    "wall_us": 752.23446875,
+                    "cpu_us": 1099.78125,
+                    "wall_us": 1099.47490625,
                     "output_bytes": 353388
                 },
                 {
                     "round": 22,
                     "revs": 32,
-                    "cpu_us": 764.78125,
-                    "wall_us": 764.72653125,
+                    "cpu_us": 1063.0625,
+                    "wall_us": 1062.7573125,
                     "output_bytes": 353388
                 },
                 {
                     "round": 23,
                     "revs": 32,
-                    "cpu_us": 1519.71875,
-                    "wall_us": 1519.3099375,
+                    "cpu_us": 1056.625,
+                    "wall_us": 1056.31525,
                     "output_bytes": 353388
                 },
                 {
                     "round": 24,
                     "revs": 32,
-                    "cpu_us": 799.9375,
-                    "wall_us": 799.779625,
+                    "cpu_us": 1053.125,
+                    "wall_us": 1052.88346875,
                     "output_bytes": 353388
                 },
                 {
                     "round": 25,
                     "revs": 32,
-                    "cpu_us": 769.4375,
-                    "wall_us": 769.30203125,
+                    "cpu_us": 1056.875,
+                    "wall_us": 1057.1461875,
                     "output_bytes": 353388
                 },
                 {
                     "round": 26,
                     "revs": 32,
-                    "cpu_us": 846.96875,
-                    "wall_us": 846.8365,
+                    "cpu_us": 1062.84375,
+                    "wall_us": 1062.49784375,
                     "output_bytes": 353388
                 },
                 {
                     "round": 27,
                     "revs": 32,
-                    "cpu_us": 799.375,
-                    "wall_us": 799.2588125,
+                    "cpu_us": 1054.5625,
+                    "wall_us": 1054.81909375,
                     "output_bytes": 353388
                 },
                 {
                     "round": 28,
                     "revs": 32,
-                    "cpu_us": 778.65625,
-                    "wall_us": 778.5519375,
+                    "cpu_us": 1058.34375,
+                    "wall_us": 1058.06665625,
                     "output_bytes": 353388
                 },
                 {
                     "round": 29,
                     "revs": 32,
-                    "cpu_us": 790.6875,
-                    "wall_us": 790.63646875,
+                    "cpu_us": 1051.375,
+                    "wall_us": 1051.05934375,
                     "output_bytes": 353388
                 },
                 {
                     "round": 30,
                     "revs": 32,
-                    "cpu_us": 852.84375,
-                    "wall_us": 852.6424375,
+                    "cpu_us": 1050.9375,
+                    "wall_us": 1050.686375,
                     "output_bytes": 353388
                 },
                 {
                     "round": 31,
                     "revs": 32,
-                    "cpu_us": 1093.28125,
-                    "wall_us": 1093.10915625,
+                    "cpu_us": 1049.15625,
+                    "wall_us": 1048.83925,
                     "output_bytes": 353388
                 },
                 {
                     "round": 32,
                     "revs": 32,
-                    "cpu_us": 763.125,
-                    "wall_us": 763.066375,
+                    "cpu_us": 1043.5625,
+                    "wall_us": 1043.260875,
                     "output_bytes": 353388
                 },
                 {
                     "round": 33,
                     "revs": 32,
-                    "cpu_us": 777.03125,
-                    "wall_us": 776.98684375,
+                    "cpu_us": 1070.25,
+                    "wall_us": 1069.98884375,
                     "output_bytes": 353388
                 },
                 {
                     "round": 34,
                     "revs": 32,
-                    "cpu_us": 973.59375,
-                    "wall_us": 973.46040625,
+                    "cpu_us": 1062.4375,
+                    "wall_us": 1062.42359375,
                     "output_bytes": 353388
                 },
                 {
                     "round": 35,
                     "revs": 32,
-                    "cpu_us": 768.34375,
-                    "wall_us": 768.30203125,
+                    "cpu_us": 1065.6875,
+                    "wall_us": 1066.14759375,
                     "output_bytes": 353388
                 },
                 {
                     "round": 36,
                     "revs": 32,
-                    "cpu_us": 788.1875,
-                    "wall_us": 788.03490625,
+                    "cpu_us": 1060.40625,
+                    "wall_us": 1060.13,
                     "output_bytes": 353388
                 },
                 {
                     "round": 37,
                     "revs": 32,
-                    "cpu_us": 781.5625,
-                    "wall_us": 781.34096875,
+                    "cpu_us": 1057.09375,
+                    "wall_us": 1056.7701875,
                     "output_bytes": 353388
                 },
                 {
                     "round": 38,
                     "revs": 32,
-                    "cpu_us": 745.5,
-                    "wall_us": 745.40378125,
+                    "cpu_us": 1056.40625,
+                    "wall_us": 1056.6189375,
                     "output_bytes": 353388
                 },
                 {
                     "round": 39,
                     "revs": 32,
-                    "cpu_us": 744.15625,
-                    "wall_us": 744.12384375,
+                    "cpu_us": 1060.4375,
+                    "wall_us": 1060.15571875,
                     "output_bytes": 353388
                 },
                 {
                     "round": 40,
                     "revs": 32,
-                    "cpu_us": 832.96875,
-                    "wall_us": 832.849625,
+                    "cpu_us": 1061.96875,
+                    "wall_us": 1061.666875,
                     "output_bytes": 353388
                 },
                 {
                     "round": 41,
                     "revs": 32,
-                    "cpu_us": 747.4375,
-                    "wall_us": 747.26703125,
+                    "cpu_us": 1058.125,
+                    "wall_us": 1057.785125,
                     "output_bytes": 353388
                 },
                 {
                     "round": 42,
                     "revs": 32,
-                    "cpu_us": 759.96875,
-                    "wall_us": 759.7435,
+                    "cpu_us": 1055.25,
+                    "wall_us": 1055.63053125,
                     "output_bytes": 353388
                 },
                 {
                     "round": 43,
                     "revs": 32,
-                    "cpu_us": 786.25,
-                    "wall_us": 786.11828125,
+                    "cpu_us": 1057.46875,
+                    "wall_us": 1057.776125,
                     "output_bytes": 353388
                 },
                 {
                     "round": 44,
                     "revs": 32,
-                    "cpu_us": 768.9375,
-                    "wall_us": 768.78509375,
+                    "cpu_us": 1048.9375,
+                    "wall_us": 1048.63196875,
                     "output_bytes": 353388
                 },
                 {
                     "round": 45,
                     "revs": 32,
-                    "cpu_us": 832.1875,
-                    "wall_us": 831.96815625,
+                    "cpu_us": 1057.65625,
+                    "wall_us": 1057.33190625,
                     "output_bytes": 353388
                 },
                 {
                     "round": 46,
                     "revs": 32,
-                    "cpu_us": 747.46875,
-                    "wall_us": 747.3868125,
+                    "cpu_us": 1052,
+                    "wall_us": 1051.6525625,
                     "output_bytes": 353388
                 },
                 {
                     "round": 47,
                     "revs": 32,
-                    "cpu_us": 739.75,
-                    "wall_us": 739.65121875,
+                    "cpu_us": 1054.3125,
+                    "wall_us": 1053.992875,
                     "output_bytes": 353388
                 },
                 {
                     "round": 48,
                     "revs": 32,
-                    "cpu_us": 777.21875,
-                    "wall_us": 777.06496875,
+                    "cpu_us": 1056.03125,
+                    "wall_us": 1055.73225,
                     "output_bytes": 353388
                 },
                 {
                     "round": 49,
                     "revs": 32,
-                    "cpu_us": 934.875,
-                    "wall_us": 934.695125,
+                    "cpu_us": 1055.65625,
+                    "wall_us": 1055.3673125,
                     "output_bytes": 353388
                 },
                 {
                     "round": 50,
                     "revs": 32,
-                    "cpu_us": 764.1875,
-                    "wall_us": 764.0299375,
+                    "cpu_us": 1057.34375,
+                    "wall_us": 1057.0101875,
                     "output_bytes": 353388
                 }
             ],
             "php_compiled_baseline": [
                 {
                     "round": 0,
-                    "revs": 48,
-                    "cpu_us": 386.0208333333333,
-                    "wall_us": 385.928125,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 510.984375,
+                    "wall_us": 510.83015625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 1,
-                    "revs": 48,
-                    "cpu_us": 364.6666666666667,
-                    "wall_us": 364.592375,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 511.390625,
+                    "wall_us": 511.231515625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 2,
-                    "revs": 48,
-                    "cpu_us": 356.5,
-                    "wall_us": 356.4353125,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 516.203125,
+                    "wall_us": 516.035046875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 3,
-                    "revs": 48,
-                    "cpu_us": 364.0416666666667,
-                    "wall_us": 363.99775,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 512.703125,
+                    "wall_us": 512.571171875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 4,
-                    "revs": 48,
-                    "cpu_us": 365.6041666666667,
-                    "wall_us": 365.5498125,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 510.0625,
+                    "wall_us": 509.932453125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 5,
-                    "revs": 48,
-                    "cpu_us": 387.375,
-                    "wall_us": 387.3248125,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 515.171875,
+                    "wall_us": 515.046,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 6,
-                    "revs": 48,
-                    "cpu_us": 376.0208333333333,
-                    "wall_us": 375.98464583333333,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 512.21875,
+                    "wall_us": 512.383171875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 7,
-                    "revs": 48,
-                    "cpu_us": 346.2083333333333,
-                    "wall_us": 346.1723958333333,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 514.125,
+                    "wall_us": 513.9800625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 8,
-                    "revs": 48,
-                    "cpu_us": 371.8125,
-                    "wall_us": 371.7598333333333,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 508.203125,
+                    "wall_us": 508.071953125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 9,
-                    "revs": 48,
-                    "cpu_us": 400.7083333333333,
-                    "wall_us": 400.61635416666667,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 509.234375,
+                    "wall_us": 509.083765625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 10,
-                    "revs": 48,
-                    "cpu_us": 371.9375,
-                    "wall_us": 371.912625,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 511.828125,
+                    "wall_us": 511.938453125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 11,
-                    "revs": 48,
-                    "cpu_us": 476.6875,
-                    "wall_us": 477.4672708333333,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 519.0625,
+                    "wall_us": 518.924859375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 12,
-                    "revs": 48,
-                    "cpu_us": 377.3125,
-                    "wall_us": 377.1052916666667,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 517.796875,
+                    "wall_us": 517.676953125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 13,
-                    "revs": 48,
-                    "cpu_us": 549.6041666666666,
-                    "wall_us": 549.5169791666666,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 509.96875,
+                    "wall_us": 509.82734375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 14,
-                    "revs": 48,
-                    "cpu_us": 441.5,
-                    "wall_us": 441.41377083333333,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 514,
+                    "wall_us": 514.1505625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 15,
-                    "revs": 48,
-                    "cpu_us": 368.4166666666667,
-                    "wall_us": 368.27202083333333,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 509.921875,
+                    "wall_us": 510.048578125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 16,
-                    "revs": 48,
-                    "cpu_us": 1048.8333333333333,
-                    "wall_us": 1048.6082083333333,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 515.046875,
+                    "wall_us": 515.156,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 17,
-                    "revs": 48,
-                    "cpu_us": 532.6875,
-                    "wall_us": 525.0918541666666,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 517.015625,
+                    "wall_us": 516.870765625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 18,
-                    "revs": 48,
-                    "cpu_us": 357.0625,
-                    "wall_us": 357.0255833333333,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 517.234375,
+                    "wall_us": 517.106375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 19,
-                    "revs": 48,
-                    "cpu_us": 374.2083333333333,
-                    "wall_us": 374.1139791666667,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 513.359375,
+                    "wall_us": 513.209,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 20,
-                    "revs": 48,
-                    "cpu_us": 380.125,
-                    "wall_us": 380.0471041666667,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 516.875,
+                    "wall_us": 517.02775,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 21,
-                    "revs": 48,
-                    "cpu_us": 355.5208333333333,
-                    "wall_us": 355.42664583333334,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 523.09375,
+                    "wall_us": 522.958109375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 22,
-                    "revs": 48,
-                    "cpu_us": 351,
-                    "wall_us": 350.9301666666667,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 517.96875,
+                    "wall_us": 517.8215625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 23,
-                    "revs": 48,
-                    "cpu_us": 374.0208333333333,
-                    "wall_us": 373.9368958333333,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 519.15625,
+                    "wall_us": 519.399453125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 24,
-                    "revs": 48,
-                    "cpu_us": 381.4791666666667,
-                    "wall_us": 381.4194791666667,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 512.703125,
+                    "wall_us": 512.540671875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 25,
-                    "revs": 48,
-                    "cpu_us": 350.1666666666667,
-                    "wall_us": 350.0898958333333,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 511.1875,
+                    "wall_us": 511.043265625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 26,
-                    "revs": 48,
-                    "cpu_us": 355.8958333333333,
-                    "wall_us": 355.83983333333333,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 515.1875,
+                    "wall_us": 515.31946875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 27,
-                    "revs": 48,
-                    "cpu_us": 347.6875,
-                    "wall_us": 351.47183333333334,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 515,
+                    "wall_us": 514.882765625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 28,
-                    "revs": 48,
-                    "cpu_us": 373.3333333333333,
-                    "wall_us": 373.25810416666667,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 519.03125,
+                    "wall_us": 518.903609375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 29,
-                    "revs": 48,
-                    "cpu_us": 366.7916666666667,
-                    "wall_us": 366.58366666666666,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 514.84375,
+                    "wall_us": 514.935515625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 30,
-                    "revs": 48,
-                    "cpu_us": 348.4375,
-                    "wall_us": 348.420625,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 513.5625,
+                    "wall_us": 513.444984375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 31,
-                    "revs": 48,
-                    "cpu_us": 360.375,
-                    "wall_us": 360.3155,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 531.59375,
+                    "wall_us": 531.724640625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 32,
-                    "revs": 48,
-                    "cpu_us": 351.9791666666667,
-                    "wall_us": 351.9292708333333,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 515.28125,
+                    "wall_us": 515.139375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 33,
-                    "revs": 48,
-                    "cpu_us": 356.7708333333333,
-                    "wall_us": 356.7278541666667,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 508.984375,
+                    "wall_us": 508.84465625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 34,
-                    "revs": 48,
-                    "cpu_us": 357.2708333333333,
-                    "wall_us": 357.2486666666667,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 510.859375,
+                    "wall_us": 510.70728125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 35,
-                    "revs": 48,
-                    "cpu_us": 342.0625,
-                    "wall_us": 342.037875,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 516.359375,
+                    "wall_us": 516.190671875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 36,
-                    "revs": 48,
-                    "cpu_us": 387.75,
-                    "wall_us": 387.64425,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 511.9375,
+                    "wall_us": 511.82496875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 37,
-                    "revs": 48,
-                    "cpu_us": 386.8125,
-                    "wall_us": 386.7310625,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 512.125,
+                    "wall_us": 511.9815625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 38,
-                    "revs": 48,
-                    "cpu_us": 473.6458333333333,
-                    "wall_us": 473.5558541666667,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 525.53125,
+                    "wall_us": 525.394671875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 39,
-                    "revs": 48,
-                    "cpu_us": 347.6041666666667,
-                    "wall_us": 347.5508333333333,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 516.078125,
+                    "wall_us": 516.21503125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 40,
-                    "revs": 48,
-                    "cpu_us": 370.9375,
-                    "wall_us": 370.8778958333333,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 512.703125,
+                    "wall_us": 513.05275,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 41,
-                    "revs": 48,
-                    "cpu_us": 374.625,
-                    "wall_us": 374.5618958333333,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 517.359375,
+                    "wall_us": 517.20634375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 42,
-                    "revs": 48,
-                    "cpu_us": 343.5208333333333,
-                    "wall_us": 343.4996458333333,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 515.15625,
+                    "wall_us": 515.02325,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 43,
-                    "revs": 48,
-                    "cpu_us": 366.0625,
-                    "wall_us": 366.0125,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 513.578125,
+                    "wall_us": 513.7301875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 44,
-                    "revs": 48,
-                    "cpu_us": 377.9375,
-                    "wall_us": 377.8691666666667,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 514.3125,
+                    "wall_us": 514.441890625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 45,
-                    "revs": 48,
-                    "cpu_us": 395.8958333333333,
-                    "wall_us": 395.7292708333333,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 513.25,
+                    "wall_us": 513.127875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 46,
-                    "revs": 48,
-                    "cpu_us": 347.7916666666667,
-                    "wall_us": 347.7253125,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 512.625,
+                    "wall_us": 512.49365625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 47,
-                    "revs": 48,
-                    "cpu_us": 354.7083333333333,
-                    "wall_us": 354.6410625,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 520.390625,
+                    "wall_us": 520.246375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 48,
-                    "revs": 48,
-                    "cpu_us": 349.3541666666667,
-                    "wall_us": 349.29127083333333,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 512.734375,
+                    "wall_us": 512.610890625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 49,
-                    "revs": 48,
-                    "cpu_us": 440.4791666666667,
-                    "wall_us": 443.4415,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 516.5,
+                    "wall_us": 516.626265625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 50,
-                    "revs": 48,
-                    "cpu_us": 422.6875,
-                    "wall_us": 422.47208333333333,
-                    "output_bytes": 530082
+                    "revs": 64,
+                    "cpu_us": 516.1875,
+                    "wall_us": 516.519015625,
+                    "output_bytes": 706776
                 }
             ],
             "php_parsed": [
                 {
                     "round": 0,
                     "revs": 48,
-                    "cpu_us": 627.25,
-                    "wall_us": 627.152625,
+                    "cpu_us": 807.9375,
+                    "wall_us": 807.7214583333333,
                     "output_bytes": 530082
                 },
                 {
                     "round": 1,
                     "revs": 48,
-                    "cpu_us": 749.0833333333334,
-                    "wall_us": 751.161125,
+                    "cpu_us": 792.2916666666666,
+                    "wall_us": 792.115,
                     "output_bytes": 530082
                 },
                 {
                     "round": 2,
                     "revs": 48,
-                    "cpu_us": 597.8125,
-                    "wall_us": 597.6919375,
+                    "cpu_us": 795.7916666666666,
+                    "wall_us": 796.0025625,
                     "output_bytes": 530082
                 },
                 {
                     "round": 3,
                     "revs": 48,
-                    "cpu_us": 668.0833333333334,
-                    "wall_us": 668.0715208333334,
+                    "cpu_us": 789.5208333333334,
+                    "wall_us": 789.3246666666666,
                     "output_bytes": 530082
                 },
                 {
                     "round": 4,
                     "revs": 48,
-                    "cpu_us": 601.1875,
-                    "wall_us": 601.103375,
+                    "cpu_us": 782.8958333333334,
+                    "wall_us": 782.677125,
                     "output_bytes": 530082
                 },
                 {
                     "round": 5,
                     "revs": 48,
-                    "cpu_us": 625.3958333333334,
-                    "wall_us": 625.2186041666666,
+                    "cpu_us": 792.2708333333334,
+                    "wall_us": 792.0754791666666,
                     "output_bytes": 530082
                 },
                 {
                     "round": 6,
                     "revs": 48,
-                    "cpu_us": 605.125,
-                    "wall_us": 605.9878541666666,
+                    "cpu_us": 790.4375,
+                    "wall_us": 790.2427708333333,
                     "output_bytes": 530082
                 },
                 {
                     "round": 7,
                     "revs": 48,
-                    "cpu_us": 588.8958333333334,
-                    "wall_us": 588.8560625,
+                    "cpu_us": 791.75,
+                    "wall_us": 791.5796875,
                     "output_bytes": 530082
                 },
                 {
                     "round": 8,
                     "revs": 48,
-                    "cpu_us": 619.7708333333334,
-                    "wall_us": 621.4321666666666,
+                    "cpu_us": 783.9583333333334,
+                    "wall_us": 783.777875,
                     "output_bytes": 530082
                 },
                 {
                     "round": 9,
                     "revs": 48,
-                    "cpu_us": 658.5833333333334,
-                    "wall_us": 658.5030625,
+                    "cpu_us": 782.625,
+                    "wall_us": 782.4504583333334,
                     "output_bytes": 530082
                 },
                 {
                     "round": 10,
                     "revs": 48,
-                    "cpu_us": 733.3125,
-                    "wall_us": 733.224625,
+                    "cpu_us": 790.8125,
+                    "wall_us": 790.6164375,
                     "output_bytes": 530082
                 },
                 {
                     "round": 11,
                     "revs": 48,
-                    "cpu_us": 585.4791666666666,
-                    "wall_us": 585.3925416666666,
+                    "cpu_us": 796.0833333333334,
+                    "wall_us": 797.1253125,
                     "output_bytes": 530082
                 },
                 {
                     "round": 12,
                     "revs": 48,
-                    "cpu_us": 600.1875,
-                    "wall_us": 600.0504375,
+                    "cpu_us": 790.5,
+                    "wall_us": 790.3129375,
                     "output_bytes": 530082
                 },
                 {
                     "round": 13,
                     "revs": 48,
-                    "cpu_us": 646,
-                    "wall_us": 645.9154791666666,
+                    "cpu_us": 783.4791666666666,
+                    "wall_us": 783.30725,
                     "output_bytes": 530082
                 },
                 {
                     "round": 14,
                     "revs": 48,
-                    "cpu_us": 725.5,
-                    "wall_us": 725.4035,
+                    "cpu_us": 782.4583333333334,
+                    "wall_us": 782.2979791666667,
                     "output_bytes": 530082
                 },
                 {
                     "round": 15,
                     "revs": 48,
-                    "cpu_us": 1034.2916666666665,
-                    "wall_us": 1034.1126666666667,
+                    "cpu_us": 788.4791666666666,
+                    "wall_us": 788.9855208333333,
                     "output_bytes": 530082
                 },
                 {
                     "round": 16,
                     "revs": 48,
-                    "cpu_us": 730.7916666666666,
-                    "wall_us": 730.5666666666666,
+                    "cpu_us": 787.6041666666666,
+                    "wall_us": 787.4127916666666,
                     "output_bytes": 530082
                 },
                 {
                     "round": 17,
                     "revs": 48,
-                    "cpu_us": 648,
-                    "wall_us": 647.8842083333334,
+                    "cpu_us": 790.2916666666666,
+                    "wall_us": 790.0912916666666,
                     "output_bytes": 530082
                 },
                 {
                     "round": 18,
                     "revs": 48,
-                    "cpu_us": 609.4166666666666,
-                    "wall_us": 609.3211875,
+                    "cpu_us": 791.1666666666666,
+                    "wall_us": 791.3600416666666,
                     "output_bytes": 530082
                 },
                 {
                     "round": 19,
                     "revs": 48,
-                    "cpu_us": 639.7708333333334,
-                    "wall_us": 639.669875,
+                    "cpu_us": 790,
+                    "wall_us": 789.7946458333333,
                     "output_bytes": 530082
                 },
                 {
                     "round": 20,
                     "revs": 48,
-                    "cpu_us": 579.3958333333334,
-                    "wall_us": 579.3083958333334,
+                    "cpu_us": 789.7083333333334,
+                    "wall_us": 789.5171666666666,
                     "output_bytes": 530082
                 },
                 {
                     "round": 21,
                     "revs": 48,
-                    "cpu_us": 631.8125,
-                    "wall_us": 631.691625,
+                    "cpu_us": 789.9375,
+                    "wall_us": 789.7468125,
                     "output_bytes": 530082
                 },
                 {
                     "round": 22,
                     "revs": 48,
-                    "cpu_us": 584.8958333333334,
-                    "wall_us": 584.8022916666666,
+                    "cpu_us": 795.5833333333334,
+                    "wall_us": 795.3839375,
                     "output_bytes": 530082
                 },
                 {
                     "round": 23,
                     "revs": 48,
-                    "cpu_us": 592.9791666666666,
-                    "wall_us": 592.8950833333333,
+                    "cpu_us": 789.6875,
+                    "wall_us": 789.4768333333334,
                     "output_bytes": 530082
                 },
                 {
                     "round": 24,
                     "revs": 48,
-                    "cpu_us": 592.625,
-                    "wall_us": 597.3290833333334,
+                    "cpu_us": 789.4583333333334,
+                    "wall_us": 789.2728333333333,
                     "output_bytes": 530082
                 },
                 {
                     "round": 25,
                     "revs": 48,
-                    "cpu_us": 665.4583333333334,
-                    "wall_us": 665.3718958333334,
+                    "cpu_us": 790.5625,
+                    "wall_us": 791.0532291666666,
                     "output_bytes": 530082
                 },
                 {
                     "round": 26,
                     "revs": 48,
-                    "cpu_us": 615.4375,
-                    "wall_us": 619.0103333333334,
+                    "cpu_us": 792.2083333333334,
+                    "wall_us": 792.0126666666666,
                     "output_bytes": 530082
                 },
                 {
                     "round": 27,
                     "revs": 48,
-                    "cpu_us": 596.1458333333334,
-                    "wall_us": 596.0652083333333,
+                    "cpu_us": 814.1875,
+                    "wall_us": 813.9983541666667,
                     "output_bytes": 530082
                 },
                 {
                     "round": 28,
                     "revs": 48,
-                    "cpu_us": 612.0833333333334,
-                    "wall_us": 611.9739375,
+                    "cpu_us": 791.5833333333334,
+                    "wall_us": 791.394875,
                     "output_bytes": 530082
                 },
                 {
                     "round": 29,
                     "revs": 48,
-                    "cpu_us": 638.625,
-                    "wall_us": 638.5492083333334,
+                    "cpu_us": 791.7291666666666,
+                    "wall_us": 791.5430416666667,
                     "output_bytes": 530082
                 },
                 {
                     "round": 30,
                     "revs": 48,
-                    "cpu_us": 561.8541666666666,
-                    "wall_us": 561.8085625,
+                    "cpu_us": 788.4791666666666,
+                    "wall_us": 788.3373958333334,
                     "output_bytes": 530082
                 },
                 {
                     "round": 31,
                     "revs": 48,
-                    "cpu_us": 664.9375,
-                    "wall_us": 664.8111666666666,
+                    "cpu_us": 788.4791666666666,
+                    "wall_us": 788.2985625,
                     "output_bytes": 530082
                 },
                 {
                     "round": 32,
                     "revs": 48,
-                    "cpu_us": 594.6666666666666,
-                    "wall_us": 596.6042708333333,
+                    "cpu_us": 787.375,
+                    "wall_us": 787.1788125,
                     "output_bytes": 530082
                 },
                 {
                     "round": 33,
                     "revs": 48,
-                    "cpu_us": 645.9583333333334,
-                    "wall_us": 645.865125,
+                    "cpu_us": 789.7291666666666,
+                    "wall_us": 789.5373333333333,
                     "output_bytes": 530082
                 },
                 {
                     "round": 34,
                     "revs": 48,
-                    "cpu_us": 590.7708333333334,
-                    "wall_us": 590.7215208333333,
+                    "cpu_us": 786.3958333333334,
+                    "wall_us": 786.6261875,
                     "output_bytes": 530082
                 },
                 {
                     "round": 35,
                     "revs": 48,
-                    "cpu_us": 613.3333333333334,
-                    "wall_us": 613.2403958333334,
+                    "cpu_us": 790.8125,
+                    "wall_us": 790.6256041666667,
                     "output_bytes": 530082
                 },
                 {
                     "round": 36,
                     "revs": 48,
-                    "cpu_us": 588.1666666666666,
-                    "wall_us": 588.0010416666667,
+                    "cpu_us": 787.9791666666666,
+                    "wall_us": 787.7920833333334,
                     "output_bytes": 530082
                 },
                 {
                     "round": 37,
                     "revs": 48,
-                    "cpu_us": 605.9583333333334,
-                    "wall_us": 605.8689583333334,
+                    "cpu_us": 791.375,
+                    "wall_us": 791.7366666666667,
                     "output_bytes": 530082
                 },
                 {
                     "round": 38,
                     "revs": 48,
-                    "cpu_us": 596.5416666666666,
-                    "wall_us": 598.5825625,
+                    "cpu_us": 786.6875,
+                    "wall_us": 786.4788333333333,
                     "output_bytes": 530082
                 },
                 {
                     "round": 39,
                     "revs": 48,
-                    "cpu_us": 631.6666666666666,
-                    "wall_us": 631.5605625,
+                    "cpu_us": 791.1458333333334,
+                    "wall_us": 790.9637083333333,
                     "output_bytes": 530082
                 },
                 {
                     "round": 40,
                     "revs": 48,
-                    "cpu_us": 606.1875,
-                    "wall_us": 606.1041875,
+                    "cpu_us": 786.8125,
+                    "wall_us": 786.6696666666667,
                     "output_bytes": 530082
                 },
                 {
                     "round": 41,
                     "revs": 48,
-                    "cpu_us": 588.2291666666666,
-                    "wall_us": 588.1251666666666,
+                    "cpu_us": 791.0625,
+                    "wall_us": 791.2285416666666,
                     "output_bytes": 530082
                 },
                 {
                     "round": 42,
                     "revs": 48,
-                    "cpu_us": 628.7916666666666,
-                    "wall_us": 628.6734375,
+                    "cpu_us": 786.7083333333334,
+                    "wall_us": 786.5231666666666,
                     "output_bytes": 530082
                 },
                 {
                     "round": 43,
                     "revs": 48,
-                    "cpu_us": 591.75,
-                    "wall_us": 594.7848541666666,
+                    "cpu_us": 786.75,
+                    "wall_us": 786.5681875,
                     "output_bytes": 530082
                 },
                 {
                     "round": 44,
                     "revs": 48,
-                    "cpu_us": 591.2291666666666,
-                    "wall_us": 591.113,
+                    "cpu_us": 788.0833333333334,
+                    "wall_us": 787.9194166666666,
                     "output_bytes": 530082
                 },
                 {
                     "round": 45,
                     "revs": 48,
-                    "cpu_us": 572.7708333333334,
-                    "wall_us": 572.693875,
+                    "cpu_us": 789.9375,
+                    "wall_us": 789.7169583333334,
                     "output_bytes": 530082
                 },
                 {
                     "round": 46,
                     "revs": 48,
-                    "cpu_us": 561.75,
-                    "wall_us": 561.7104791666666,
+                    "cpu_us": 787.9375,
+                    "wall_us": 787.7591041666666,
                     "output_bytes": 530082
                 },
                 {
                     "round": 47,
                     "revs": 48,
-                    "cpu_us": 561.8333333333334,
-                    "wall_us": 561.7938125,
+                    "cpu_us": 792.375,
+                    "wall_us": 792.1744791666666,
                     "output_bytes": 530082
                 },
                 {
                     "round": 48,
                     "revs": 48,
-                    "cpu_us": 561.0208333333334,
-                    "wall_us": 560.9743541666667,
+                    "cpu_us": 790.8333333333334,
+                    "wall_us": 790.6133958333334,
                     "output_bytes": 530082
                 },
                 {
                     "round": 49,
                     "revs": 48,
-                    "cpu_us": 668.8958333333334,
-                    "wall_us": 668.779,
+                    "cpu_us": 793.3541666666666,
+                    "wall_us": 793.555875,
                     "output_bytes": 530082
                 },
                 {
                     "round": 50,
                     "revs": 48,
-                    "cpu_us": 601.25,
-                    "wall_us": 622.7082083333333,
+                    "cpu_us": 791.75,
+                    "wall_us": 791.5396666666667,
                     "output_bytes": 530082
                 }
             ],
             "php_compiled": [
                 {
                     "round": 0,
-                    "revs": 80,
-                    "cpu_us": 397.975,
-                    "wall_us": 397.9236875,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 532.21875,
+                    "wall_us": 532.070984375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 1,
-                    "revs": 80,
-                    "cpu_us": 396.4625,
-                    "wall_us": 396.4065,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 539.640625,
+                    "wall_us": 539.78359375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 2,
-                    "revs": 80,
-                    "cpu_us": 390.375,
-                    "wall_us": 390.3232125,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 541.96875,
+                    "wall_us": 541.83409375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 3,
-                    "revs": 80,
-                    "cpu_us": 410.3,
-                    "wall_us": 410.25325,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 538.59375,
+                    "wall_us": 538.464453125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 4,
-                    "revs": 80,
-                    "cpu_us": 392.55,
-                    "wall_us": 392.5055,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 537.53125,
+                    "wall_us": 537.411390625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 5,
-                    "revs": 80,
-                    "cpu_us": 408.925,
-                    "wall_us": 409.9652375,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 533.6875,
+                    "wall_us": 533.551640625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 6,
-                    "revs": 80,
-                    "cpu_us": 405.4125,
-                    "wall_us": 405.35382500000003,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 540.9375,
+                    "wall_us": 541.382125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 7,
-                    "revs": 80,
-                    "cpu_us": 401.3375,
-                    "wall_us": 401.3075,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 543.890625,
+                    "wall_us": 543.74484375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 8,
-                    "revs": 80,
-                    "cpu_us": 387.4,
-                    "wall_us": 387.376375,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 535.5625,
+                    "wall_us": 535.420890625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 9,
-                    "revs": 80,
-                    "cpu_us": 376.6375,
-                    "wall_us": 376.6019875,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 536.421875,
+                    "wall_us": 536.566078125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 10,
-                    "revs": 80,
-                    "cpu_us": 551.95,
-                    "wall_us": 551.885375,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 533.90625,
+                    "wall_us": 533.7705,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 11,
-                    "revs": 80,
-                    "cpu_us": 384.35,
-                    "wall_us": 384.30765,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 538.84375,
+                    "wall_us": 538.717296875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 12,
-                    "revs": 80,
-                    "cpu_us": 506.7375,
-                    "wall_us": 506.66805,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 538.390625,
+                    "wall_us": 538.235828125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 13,
-                    "revs": 80,
-                    "cpu_us": 393.7125,
-                    "wall_us": 393.6664125,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 532.078125,
+                    "wall_us": 531.963125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 14,
-                    "revs": 80,
-                    "cpu_us": 390.2375,
-                    "wall_us": 390.20811249999997,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 536.046875,
+                    "wall_us": 536.13509375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 15,
-                    "revs": 80,
-                    "cpu_us": 422.4375,
-                    "wall_us": 422.3542,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 539.984375,
+                    "wall_us": 540.3558125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 16,
-                    "revs": 80,
-                    "cpu_us": 396.275,
-                    "wall_us": 398.3846125,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 542.171875,
+                    "wall_us": 542.028078125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 17,
-                    "revs": 80,
-                    "cpu_us": 393.9,
-                    "wall_us": 393.83465,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 537.65625,
+                    "wall_us": 537.5165,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 18,
-                    "revs": 80,
-                    "cpu_us": 397.25,
-                    "wall_us": 397.19503749999996,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 539.4375,
+                    "wall_us": 539.271890625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 19,
-                    "revs": 80,
-                    "cpu_us": 388.525,
-                    "wall_us": 388.48990000000003,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 558.1875,
+                    "wall_us": 558.022625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 20,
-                    "revs": 80,
-                    "cpu_us": 399.3125,
-                    "wall_us": 399.2575125,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 539.328125,
+                    "wall_us": 539.186515625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 21,
-                    "revs": 80,
-                    "cpu_us": 392.0625,
-                    "wall_us": 391.9945625,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 540.03125,
+                    "wall_us": 539.88759375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 22,
-                    "revs": 80,
-                    "cpu_us": 404.5625,
-                    "wall_us": 404.5376875,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 546.203125,
+                    "wall_us": 546.0496875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 23,
-                    "revs": 80,
-                    "cpu_us": 402.3125,
-                    "wall_us": 402.2585375,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 536.625,
+                    "wall_us": 536.4773125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 24,
-                    "revs": 80,
-                    "cpu_us": 384.25,
-                    "wall_us": 384.20816249999996,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 538.390625,
+                    "wall_us": 538.726546875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 25,
-                    "revs": 80,
-                    "cpu_us": 429.575,
-                    "wall_us": 429.51871250000005,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 552.21875,
+                    "wall_us": 552.06915625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 26,
-                    "revs": 80,
-                    "cpu_us": 412.7625,
-                    "wall_us": 412.69855,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 541.359375,
+                    "wall_us": 541.214,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 27,
-                    "revs": 80,
-                    "cpu_us": 400.1,
-                    "wall_us": 400.0319875,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 540.796875,
+                    "wall_us": 540.678921875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 28,
-                    "revs": 80,
-                    "cpu_us": 387.3875,
-                    "wall_us": 388.194075,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 538.203125,
+                    "wall_us": 538.080578125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 29,
-                    "revs": 80,
-                    "cpu_us": 463.975,
-                    "wall_us": 463.918425,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 533.4375,
+                    "wall_us": 533.31253125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 30,
-                    "revs": 80,
-                    "cpu_us": 470.3875,
-                    "wall_us": 470.32671250000004,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 540.25,
+                    "wall_us": 540.4014375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 31,
-                    "revs": 80,
-                    "cpu_us": 386.0125,
-                    "wall_us": 385.93523749999997,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 538.984375,
+                    "wall_us": 538.844046875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 32,
-                    "revs": 80,
-                    "cpu_us": 409.0875,
-                    "wall_us": 409.06108750000004,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 537.953125,
+                    "wall_us": 537.793984375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 33,
-                    "revs": 80,
-                    "cpu_us": 372.7625,
-                    "wall_us": 372.74159999999995,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 536.03125,
+                    "wall_us": 536.09596875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 34,
-                    "revs": 80,
-                    "cpu_us": 366.825,
-                    "wall_us": 366.7916625,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 534.453125,
+                    "wall_us": 534.32909375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 35,
-                    "revs": 80,
-                    "cpu_us": 395.9375,
-                    "wall_us": 395.87735,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 536.765625,
+                    "wall_us": 536.6534375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 36,
-                    "revs": 80,
-                    "cpu_us": 379.9875,
-                    "wall_us": 379.94675,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 535.4375,
+                    "wall_us": 535.280515625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 37,
-                    "revs": 80,
-                    "cpu_us": 436.7,
-                    "wall_us": 436.6592875,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 536.515625,
+                    "wall_us": 536.766796875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 38,
-                    "revs": 80,
-                    "cpu_us": 389.125,
-                    "wall_us": 389.0664625,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 540.078125,
+                    "wall_us": 539.915703125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 39,
-                    "revs": 80,
-                    "cpu_us": 398.5125,
-                    "wall_us": 398.4596125,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 541.390625,
+                    "wall_us": 541.53609375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 40,
-                    "revs": 80,
-                    "cpu_us": 436.4625,
-                    "wall_us": 436.37854999999996,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 538.28125,
+                    "wall_us": 538.65565625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 41,
-                    "revs": 80,
-                    "cpu_us": 376.5625,
-                    "wall_us": 376.5082375,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 536.265625,
+                    "wall_us": 536.117078125,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 42,
-                    "revs": 80,
-                    "cpu_us": 374.55,
-                    "wall_us": 374.49158750000004,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 536.84375,
+                    "wall_us": 536.702546875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 43,
-                    "revs": 80,
-                    "cpu_us": 398.4625,
-                    "wall_us": 398.411175,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 535.125,
+                    "wall_us": 534.99415625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 44,
-                    "revs": 80,
-                    "cpu_us": 381.1625,
-                    "wall_us": 381.093625,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 536.78125,
+                    "wall_us": 537.180140625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 45,
-                    "revs": 80,
-                    "cpu_us": 383.175,
-                    "wall_us": 383.1284875,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 538.0625,
+                    "wall_us": 538.3696875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 46,
-                    "revs": 80,
-                    "cpu_us": 378.0625,
-                    "wall_us": 377.983225,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 537.375,
+                    "wall_us": 537.241265625,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 47,
-                    "revs": 80,
-                    "cpu_us": 373.4375,
-                    "wall_us": 373.3681625,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 538.546875,
+                    "wall_us": 538.424171875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 48,
-                    "revs": 80,
-                    "cpu_us": 542.075,
-                    "wall_us": 541.9552625,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 537.90625,
+                    "wall_us": 537.765484375,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 49,
-                    "revs": 80,
-                    "cpu_us": 376.1,
-                    "wall_us": 376.041575,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 540.65625,
+                    "wall_us": 540.499796875,
+                    "output_bytes": 706776
                 },
                 {
                     "round": 50,
-                    "revs": 80,
-                    "cpu_us": 399.925,
-                    "wall_us": 400.07313750000003,
-                    "output_bytes": 883470
+                    "revs": 64,
+                    "cpu_us": 564.40625,
+                    "wall_us": 564.272203125,
+                    "output_bytes": 706776
                 }
             ],
             "php_compiled_restricted": [
                 {
                     "round": 0,
-                    "revs": 48,
-                    "cpu_us": 711.125,
-                    "wall_us": 723.0754166666667,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 993.03125,
+                    "wall_us": 992.73275,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 1,
-                    "revs": 48,
-                    "cpu_us": 718.5208333333334,
-                    "wall_us": 718.4374166666666,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 997.5625,
+                    "wall_us": 997.2694375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 2,
-                    "revs": 48,
-                    "cpu_us": 701.5,
-                    "wall_us": 701.445375,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 999.125,
+                    "wall_us": 998.8568125,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 3,
-                    "revs": 48,
-                    "cpu_us": 715.6875,
-                    "wall_us": 715.5355416666666,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 996.34375,
+                    "wall_us": 996.04778125,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 4,
-                    "revs": 48,
-                    "cpu_us": 711.2083333333334,
-                    "wall_us": 711.1258541666666,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1003.15625,
+                    "wall_us": 1003.45175,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 5,
-                    "revs": 48,
-                    "cpu_us": 698.7708333333334,
-                    "wall_us": 698.685875,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 998.75,
+                    "wall_us": 999.0465625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 6,
-                    "revs": 48,
-                    "cpu_us": 697.5208333333334,
-                    "wall_us": 697.4558333333333,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 994,
+                    "wall_us": 993.72265625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 7,
-                    "revs": 48,
-                    "cpu_us": 735.5625,
-                    "wall_us": 735.4668125,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 997.25,
+                    "wall_us": 996.65621875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 8,
-                    "revs": 48,
-                    "cpu_us": 701.5208333333334,
-                    "wall_us": 701.4766458333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 995.21875,
+                    "wall_us": 994.98659375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 9,
-                    "revs": 48,
-                    "cpu_us": 740.3958333333334,
-                    "wall_us": 740.294,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 997.0625,
+                    "wall_us": 996.80521875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 10,
-                    "revs": 48,
-                    "cpu_us": 713.6875,
-                    "wall_us": 713.5867708333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 994.375,
+                    "wall_us": 994.07840625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 11,
-                    "revs": 48,
-                    "cpu_us": 821.7916666666666,
-                    "wall_us": 821.6969583333333,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 997.75,
+                    "wall_us": 998.141625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 12,
-                    "revs": 48,
-                    "cpu_us": 890.0208333333334,
-                    "wall_us": 889.8925625,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 998.5,
+                    "wall_us": 998.226875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 13,
-                    "revs": 48,
-                    "cpu_us": 713.5625,
-                    "wall_us": 713.433125,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 988.6875,
+                    "wall_us": 988.392,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 14,
-                    "revs": 48,
-                    "cpu_us": 742.0416666666666,
-                    "wall_us": 741.8972916666667,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 995.25,
+                    "wall_us": 994.98259375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 15,
-                    "revs": 48,
-                    "cpu_us": 761.1458333333334,
-                    "wall_us": 761.0125833333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 998.40625,
+                    "wall_us": 998.082125,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 16,
-                    "revs": 48,
-                    "cpu_us": 697.9375,
-                    "wall_us": 697.8664375,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 997.03125,
+                    "wall_us": 996.73121875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 17,
-                    "revs": 48,
-                    "cpu_us": 750.2083333333334,
-                    "wall_us": 750.0526041666666,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 995.0625,
+                    "wall_us": 994.79134375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 18,
-                    "revs": 48,
-                    "cpu_us": 724.8541666666666,
-                    "wall_us": 724.7316458333333,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 991.09375,
+                    "wall_us": 990.816375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 19,
-                    "revs": 48,
-                    "cpu_us": 838.2708333333334,
-                    "wall_us": 838.1160833333333,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1000.5,
+                    "wall_us": 1000.2695,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 20,
-                    "revs": 48,
-                    "cpu_us": 731.4583333333334,
-                    "wall_us": 731.35225,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 998.5,
+                    "wall_us": 998.197375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 21,
-                    "revs": 48,
-                    "cpu_us": 766.25,
-                    "wall_us": 766.141,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 998.9375,
+                    "wall_us": 999.9215,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 22,
-                    "revs": 48,
-                    "cpu_us": 705.9166666666666,
-                    "wall_us": 721.4851458333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 997.6875,
+                    "wall_us": 997.39640625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 23,
-                    "revs": 48,
-                    "cpu_us": 703.6458333333334,
-                    "wall_us": 703.5729583333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1000.25,
+                    "wall_us": 999.95525,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 24,
-                    "revs": 48,
-                    "cpu_us": 732.9791666666666,
-                    "wall_us": 732.8531041666666,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 997.5,
+                    "wall_us": 997.2414375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 25,
-                    "revs": 48,
-                    "cpu_us": 758.75,
-                    "wall_us": 768.4890833333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 996.9375,
+                    "wall_us": 996.64071875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 26,
-                    "revs": 48,
-                    "cpu_us": 713.1666666666666,
-                    "wall_us": 713.0694166666666,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 994.375,
+                    "wall_us": 994.120375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 27,
-                    "revs": 48,
-                    "cpu_us": 708.4791666666666,
-                    "wall_us": 710.3402708333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 996.28125,
+                    "wall_us": 996.017,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 28,
-                    "revs": 48,
-                    "cpu_us": 706.4166666666666,
-                    "wall_us": 706.3290208333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 995.5625,
+                    "wall_us": 995.3183125,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 29,
-                    "revs": 48,
-                    "cpu_us": 696.75,
-                    "wall_us": 696.7084375,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 994.625,
+                    "wall_us": 994.88634375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 30,
-                    "revs": 48,
-                    "cpu_us": 684.0625,
-                    "wall_us": 683.9785208333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 993.21875,
+                    "wall_us": 992.95921875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 31,
-                    "revs": 48,
-                    "cpu_us": 769.6875,
-                    "wall_us": 769.5888958333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 990.40625,
+                    "wall_us": 990.12665625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 32,
-                    "revs": 48,
-                    "cpu_us": 738.2916666666666,
-                    "wall_us": 739.1221458333333,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 993.03125,
+                    "wall_us": 992.7335,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 33,
-                    "revs": 48,
-                    "cpu_us": 710.7291666666666,
-                    "wall_us": 710.6900833333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 991.84375,
+                    "wall_us": 991.5405625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 34,
-                    "revs": 48,
-                    "cpu_us": 1001.75,
-                    "wall_us": 1001.6025416666666,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 990.53125,
+                    "wall_us": 990.71059375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 35,
-                    "revs": 48,
-                    "cpu_us": 704.2083333333334,
-                    "wall_us": 704.1155,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 998.0625,
+                    "wall_us": 998.25484375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 36,
-                    "revs": 48,
-                    "cpu_us": 779.4791666666666,
-                    "wall_us": 779.4238958333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1000.625,
+                    "wall_us": 1001.076625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 37,
-                    "revs": 48,
-                    "cpu_us": 708,
-                    "wall_us": 707.908875,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 988.125,
+                    "wall_us": 987.85478125,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 38,
-                    "revs": 48,
-                    "cpu_us": 746.0625,
-                    "wall_us": 746.0144375,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 989.53125,
+                    "wall_us": 989.2719375,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 39,
-                    "revs": 48,
-                    "cpu_us": 715.6041666666666,
-                    "wall_us": 715.4504791666666,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 995.59375,
+                    "wall_us": 995.34953125,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 40,
-                    "revs": 48,
-                    "cpu_us": 743.1041666666666,
-                    "wall_us": 743.0005833333333,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 991.96875,
+                    "wall_us": 991.70053125,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 41,
-                    "revs": 48,
-                    "cpu_us": 722.4375,
-                    "wall_us": 722.3566666666667,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 988.90625,
+                    "wall_us": 988.63646875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 42,
-                    "revs": 48,
-                    "cpu_us": 681.5416666666666,
-                    "wall_us": 681.4395,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 990.40625,
+                    "wall_us": 990.15140625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 43,
-                    "revs": 48,
-                    "cpu_us": 686.2291666666666,
-                    "wall_us": 687.010625,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 990.6875,
+                    "wall_us": 990.389625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 44,
-                    "revs": 48,
-                    "cpu_us": 708.9166666666666,
-                    "wall_us": 710.09375,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1031.03125,
+                    "wall_us": 1030.70415625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 45,
-                    "revs": 48,
-                    "cpu_us": 707.7916666666666,
-                    "wall_us": 707.6849166666666,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 994.46875,
+                    "wall_us": 994.163625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 46,
-                    "revs": 48,
-                    "cpu_us": 709.6875,
-                    "wall_us": 709.4418333333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 993.375,
+                    "wall_us": 993.1136875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 47,
-                    "revs": 48,
-                    "cpu_us": 694.5208333333334,
-                    "wall_us": 694.4306875,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 992.65625,
+                    "wall_us": 992.35475,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 48,
-                    "revs": 48,
-                    "cpu_us": 969.9375,
-                    "wall_us": 970.7156458333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 992.40625,
+                    "wall_us": 993.36515625,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 49,
-                    "revs": 48,
-                    "cpu_us": 721.6875,
-                    "wall_us": 721.5962708333334,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 1000.40625,
+                    "wall_us": 1000.09921875,
+                    "output_bytes": 353388
                 },
                 {
                     "round": 50,
-                    "revs": 48,
-                    "cpu_us": 682.1875,
-                    "wall_us": 682.1261041666667,
-                    "output_bytes": 530082
+                    "revs": 32,
+                    "cpu_us": 996.34375,
+                    "wall_us": 996.08525,
+                    "output_bytes": 353388
                 }
             ]
         }
@@ -2205,7 +2205,7 @@
     },
     "memory": {
         "php_peak_bytes": 14680064,
-        "process_max_rss_kib": 48696
+        "process_max_rss_kib": 72496
     },
     "jit_after": {
         "enabled": false,
