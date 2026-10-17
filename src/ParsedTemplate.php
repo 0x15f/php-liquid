@@ -73,8 +73,18 @@ class ParsedTemplate extends AbstractTemplate
              */
             $context->resourceLimits->resetStreamWriteScore();
 
-            foreach ($this->root->stream($context) as $output) {
-                $context->resourceLimits->incrementStreamWriteScore($output);
+            $outputs = $this->root->stream($context);
+            foreach ($outputs as $output) {
+                try {
+                    $context->resourceLimits->incrementStreamWriteScore($output);
+                } catch (LiquidException $exception) {
+                    try {
+                        $outputs->throw($exception);
+                    } catch (\Throwable) {
+                        // Keep the original output-budget failure.
+                    }
+                    throw $exception;
+                }
                 yield $output;
             }
         } catch (LiquidException $e) {

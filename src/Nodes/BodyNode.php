@@ -223,9 +223,7 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
                         $buffer = '';
                     }
 
-                    foreach ($node->stream($context) as $output) {
-                        yield $output;
-                    }
+                    yield from $node->stream($context);
                 } elseif ($node instanceof CanBeStreamed) {
                     // Native scalar variables need no generator. Subclasses
                     // retain their stream overrides and filtered values render
@@ -261,6 +259,17 @@ class BodyNode extends Node implements CanBeCompiled, CanBeStreamed
                 }
 
                 $context->handleError($exception, $node->lineNumber);
+            } catch (\Keepsuit\Liquid\Exceptions\ResourceLimitException|\Keepsuit\Liquid\Exceptions\TemplateSecurityException $exception) {
+                // A root budget failure can arrive while this body buffers a
+                // suspended child. Close it before unwinding, even on PHP 8.2.
+                if (isset($value) && $value instanceof \Generator && $value->valid()) {
+                    try {
+                        $value->throw($exception);
+                    } catch (\Throwable) {
+                        // Preserve the original failure, including on cleanup.
+                    }
+                }
+                throw $exception;
             } catch (\Throwable $exception) {
                 if ($buffer !== '') {
                     yield $buffer;

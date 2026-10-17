@@ -57,6 +57,30 @@ test('a stream never yields bytes beyond its output allowance', function (bool $
     expect($context->getRegister('for_stack'))->toBe([]);
 })->with([false, true]);
 
+test('failed streams release nested scopes while callers retain the generator and exception', function (bool $compiled) {
+    $environment = EnvironmentFactory::forUntrustedTemplates()
+        ->setFilesystem(new ArrayFileSystem([
+            'page' => '{% for outer in (1..3) %}{% render "card", text: text %}{% endfor %}',
+            'card' => '{% for inner in (1..20) %}{{ text }}{% endfor %}',
+        ]))
+        ->setTemplatesCache($compiled ? testCompiledTemplatesCache() : new Keepsuit\Liquid\TemplatesCache\MemoryTemplatesCache)->build();
+    $context = $environment->newRenderContext(data: ['text' => str_repeat('x', 4096)], resourceLimits: new ResourceLimits(renderLengthLimit: 8192));
+    $stream = $environment->parseTemplate('page')->stream($context);
+    $failure = null;
+    try {
+        foreach ($stream as $chunk) {
+            // Retain the generator even after its output-budget failure.
+        }
+    } catch (ResourceLimitException $exception) {
+        $failure = $exception;
+    }
+    expect($failure)->toBeInstanceOf(ResourceLimitException::class);
+    expect($context->getRegister('for_stack'))->toBe([]);
+    expect($context->get('outer'))->toBeNull();
+    expect($context->get('inner'))->toBeNull();
+    expect($stream->valid())->toBeFalse();
+})->with([false, true]);
+
 test('streaming a large response avoids allocating the complete HTML string', function (bool $compiled) {
     $environment = EnvironmentFactory::forUntrustedTemplates()
         ->setTemplatesCache($compiled ? testCompiledTemplatesCache() : new Keepsuit\Liquid\TemplatesCache\MemoryTemplatesCache)->build();

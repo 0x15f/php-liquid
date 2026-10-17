@@ -78,7 +78,7 @@ That is a 99.5% reduction for this deliberately large response, not a general me
 
 ## Verification and reproduction
 
-The release gate passes 3,989 tests / 24,100 assertions with real Redis, PHPStan and Pint. Streaming is checked against all 64 personalized Shopify reference cases across interpreted/compiled and restricted/compatibility execution. Adversarial tests cover range/string/collection growth, parser depth and token limits, PHP capabilities, cache authorization, global callback isolation, data-provider budgets, parent transport expansion, worker heap exhaustion, deadlines, cancellation, recovery and bounded private-cache disk retention.
+The release gate passes 3,991 tests / 24,110 assertions with real Redis, PHPStan and Pint. Streaming is checked against all 64 personalized Shopify reference cases across interpreted/compiled and restricted/compatibility execution. Adversarial tests cover range/string/collection growth, parser depth and token limits, PHP capabilities, cache authorization, global callback isolation, data-provider budgets, parent transport expansion, worker heap exhaustion, deadlines, cancellation, recovery and bounded private-cache disk retention.
 
 Prepare the baseline with Python and Git on the host (or in a container with both installed):
 
