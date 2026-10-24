@@ -77,7 +77,7 @@ jobs:
                   assert result['jit']['enabled'] and result['jit']['on'], path
           PY
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: security-benchmarks-arm64
           path: build/security-benchmarks
